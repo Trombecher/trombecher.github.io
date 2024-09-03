@@ -1,0 +1,13 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+interface Props extends HTMLAttributes<'footer'> {}
+
+const {class: className, ...rest} = Astro.props;
+---
+
+<footer {...rest} class={`mt-auto text-sm text-center ${className}`}>
+    &copy; {new Date().getFullYear()} Tobias Hillemanns. All rights reserved.<br><br>
+    Built with <a href="https://astro.build/" class="underline">Astro</a> & <a href="https://tailwindcss.com/" class="underline">TailwindCSS</a><br>
+    Hosted by <a href="https://pages.github.com/" class="underline">GitHub Pages</a> ❤️
+</footer>

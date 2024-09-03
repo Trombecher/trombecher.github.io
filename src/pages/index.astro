@@ -1,12 +1,114 @@
 ---
 import Page from "../components/Page.astro";
+
+/*
+0.04 0.04 0.04 0.04 0.04 0.04 0.04 0.04 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.06 0.06 0.07 0.07 0.08 0.09 0.09 0.10 0.11 0.11 0.12 0.12 0.13 0.14 0.14 0.15 0.16 0.19 0.21 0.24 0.27 0.29 0.32 0.34 0.37 0.40 0.42 0.45 0.47 0.50 0.52 0.55 0.58 0.60 0.63 0.65 0.68 0.71 0.73 0.76 0.78 0.81 0.84 0.86 0.89 0.91 0.94 0.96 0.97 0.96 0.95 0.94 0.93 0.92 0.91 0.90 0.89 0.88 0.87 0.86 0.85 0.84 0.83 0.82 0.78 0.74 0.70 0.66 0.62 0.58 0.53 0.49 0.45 0.41 0.37 0.33 0.28 0.24 0.20 
+0.04 0.05 0.06 0.07 0.08 0.09 0.11 0.12 0.13 0.14 0.15 0.16 0.18 0.19 0.20 0.21 0.22 0.23 0.25 0.26 0.27 0.28 0.29 0.30 0.31 0.32 0.33 0.34 0.35 0.36 0.37 0.38 0.39 0.40 0.41 0.42 0.43 0.43 0.43 0.44 0.44 0.44 0.44 0.45 0.45 0.45 0.45 0.46 0.46 0.46 0.46 0.47 0.47 0.47 0.47 0.47 0.48 0.48 0.48 0.48 0.49 0.49 0.49 0.49 0.50 0.50 0.50 0.50 0.51 0.49 0.47 0.44 0.42 0.39 0.37 0.35 0.32 0.30 0.28 0.25 0.23 0.20 0.18 0.16 0.13 0.12 0.11 0.10 0.10 0.09 0.08 0.07 0.06 0.05 0.04 0.03 0.03 0.02 0.01 0.00 
+0.14 0.15 0.16 0.18 0.19 0.21 0.22 0.23 0.25 0.26 0.27 0.29 0.30 0.32 0.33 0.34 0.36 0.37 0.39 0.40 0.41 0.42 0.43 0.43 0.43 0.43 0.44 0.44 0.44 0.44 0.44 0.45 0.45 0.45 0.45 0.46 0.46 0.46 0.45 0.44 0.44 0.43 0.42 0.42 0.41 0.40 0.40 0.39 0.39 0.38 0.37 0.37 0.36 0.35 0.35 0.34 0.33 0.33 0.32 0.31 0.31 0.30 0.30 0.29 0.28 0.28 0.27 0.26 0.26 0.25 0.24 0.23 0.22 0.21 0.20 0.19 0.17 0.16 0.15 0.14 0.13 0.12 0.11 0.10 0.09 0.09 0.10 0.10 0.11 0.11 0.12 0.12 0.13 0.13 0.13 0.14 0.14 0.15 0.15 0.16 
+*/
 ---
 
 <Page>
-    <main class="p-6">
-        <p>
-            A NEW ERA...
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" class="absolute top-0 left-0 -z-50">
+        <filter id="m" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="100%" width="200%" x="-50%" y="0">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="30" result="blur"/>
+            <feComponentTransfer in="blur">
+                <feFuncR type="table" tableValues="0 0   0   0 1"/>
+                <feFuncG type="table" tableValues="1 0.6 0.3 1 1"/>
+                <feFuncB type="table" tableValues="1 1   1   1 1"/>
+            </feComponentTransfer>
+        </filter>
+        <g filter="url(#m)" id="circles">
+            <rect width="100%" height="100%" fill="#fff" x="0"/>
+            <path d="M361.383 218.2841C548.897 219.0014 646.246 85.1913 718.107 269.3574 789.969 453.523 917.71 686.32 633.104 619.87 348.492 553.416 342.278 645.662 457.096 444.862 571.911 244.0627 217.324 266.3366 184.086 474.861 150.847 683.386 643.276 707.742 348.082 714.354 52.8877 720.966-50.5163 640.255 20.582 371.855 91.6802 103.4556 173.866 217.5669 361.383 218.2841ZM-200 1000c232 223 115.009 307.8785 349.002 162.0025 233.994-145.8761 265.98 522.973-218.003 310.997-483.984-211.977-306.999-663.9995-130.999-472.9995z" fill="#000000" stroke="none" />
+            <circle r="60" cx="600" cy="600" fill="#000" id="move" class="transition-[opacity] opacity-0 duration-[0.3s] ease-[cubic-bezier(0.07,0.7,0.27,1)]"/>
+        </g>
+    </svg>
+    <section class="p-6 h-[700px]">
+        <h1 class="font-semibold text-4xl mt-6 expanded">Hi, I'm Tobias!</h1>
+        <p class="text-xl mt-3">I do coding, music and art.</p>
+        <button id="scroll" class="inline-block mt-7 text-xl bg-black text-white expanded px-4 rounded-full py-1 font-semibold">Explore ↓</button>
+        <p id="info" class="mt-8 text-sm select-none text-black/50 transition-[opacity] duration-700">
+            Point using
+            <code class="bg-black/10 rounded-md px-1">LeftClick</code><br>
+            Draw using <code class="bg-black/10 rounded-md px-1">CTRL+LeftClick</code>
         </p>
-        <a class="block bg-black text-white px-4 py-1 rounded-full mt-3" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">GO ⮕</a>
-    </main>
+    </section>
+    <section id="explore" class="p-6">
+        <h2 class="expanded font-semibold text-4xl">Vine</h2>
+        <p class="text-xl mt-3">I am working on a general purpose programming language called <a href="https://github.com/Trombecher/vine" class="text-[#00f] underline">Vine</a>, because I was dissatisfied using TypeScript.</p>
+    </section>
+    <section class="p-6">
+        <h2 class="expanded font-semibold text-4xl">Aena</h2>
+        <p class="text-xl mt-3 mb-6">
+            I also have been working on a web framework for single-page-applications called
+            <a href="https://github.com/Trombecher/aena" class="text-blue underline">Aena</a>,
+            because I disliked React.
+        </p>
+    </section>
 </Page>
+
+<script>
+    const explore = document.querySelector("#explore")! as HTMLDivElement;
+    (document.querySelector("#scroll")! as HTMLButtonElement).onclick = () => scrollTo({
+        left: 0,
+        top: explore.getBoundingClientRect().y,
+        behavior: "smooth"
+    })
+</script>
+
+<script>
+    const svg = document.querySelector("svg")!;
+    const cursorCircle = document.querySelector("#move")!;
+    const circles = document.querySelector("#circles")!;
+    const info = document.querySelector("#info")!;
+    
+    (onresize = () => {
+        svg.setAttribute("viewBox", `${-innerWidth / 2 + 150} 0 ${innerWidth} ${document.body.scrollHeight}`);
+        svg.setAttribute("width", "" + innerWidth);
+        svg.setAttribute("height", "" + document.body.scrollHeight);
+    })();
+
+    const spawn = (e: MouseEvent) => {
+        if(!e.ctrlKey) return;
+
+        info.classList.add("opacity-0");
+
+        const clone = cursorCircle.cloneNode() as SVGCircleElement;
+        clone.removeAttribute("id");
+        circles.append(clone);
+
+        // cursorCircle.setAttribute("r", String(70));
+    };
+
+    document.onmousemove = e => {
+        const {x, y} = svg.getBoundingClientRect();
+
+        cursorCircle.setAttribute("cx", "" + (e.clientX - x - innerWidth / 2 + 150));
+        cursorCircle.setAttribute("cy", "" + (e.clientY - y));
+        
+        if(e.buttons === 1) spawn(e);
+    };
+
+    document.onkeydown = e => {
+        if(e.ctrlKey)
+            document.body.classList.add("select-none");
+    };
+
+    document.onkeyup = e => {
+        if(!e.ctrlKey)
+            document.body.classList.remove("select-none");
+    }
+
+    document.onmousedown = e => {
+        spawn(e);
+        
+        cursorCircle.classList.remove("opacity-0");
+        cursorCircle.classList.add("opacity-100");
+    };
+
+    document.onmouseup = () => {
+        cursorCircle.classList.remove("opacity-100");
+        cursorCircle.classList.add("opacity-0");
+    };
+</script>

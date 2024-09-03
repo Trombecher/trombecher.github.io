@@ -2,8 +2,13 @@
 export default {
 	content: ["./src/**/*.astro"],
 	theme: {
+        colors: {
+            "white": "#fff",
+            "black": "#000",
+            "blue": "#00f"
+        },
 		fontFamily: {
-            sans: ["Arial", "system-ui", "sans-serif"]
+            sans: ["system-ui", "sans-serif"]
         }
 	}
 }
