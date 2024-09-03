@@ -1,43 +1,47 @@
 ---
 import Footer from './Footer.astro';
+import HeaderLink from './HeaderLink.astro';
 
 interface Props {
 	title?: string;
 	description?: string;
 	image?: string;
+    imagePreloadList?: string[]
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const {
     title = "Tobias Hillemanns",
-    description = "This is my personal portfolio website where display all kinds of stuff.",
-    image
+    description = "This is my personal portfolio website.",
+    image,
+    imagePreloadList = []
 } = Astro.props;
 
-/*
-    <!-- Font preloads -->
-    <link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />
-    <link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin />
-*/
+// →
 ---
 
 <html lang="en">
     <head>
         <!-- Global Metadata -->
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
+        
         <link rel="icon" type="image/webp" href="/favicon.webp" />
-        <meta name="generator" content={Astro.generator} />
 
+        {imagePreloadList.map(href => (
+            <link rel="preload" as="image" href={href}/>
+        ))}
+        
         <!-- Canonical URL -->
         <link rel="canonical" href={canonicalURL} />
-
+        
         <!-- Primary Meta Tags -->
         <title>{title}</title>
         <meta name="title" content={title} />
         <meta name="description" content={description} />
-        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="generator" content={Astro.generator} />
+        <meta name="mobile-web-app-capable" content="yes">
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website" />
@@ -58,17 +62,33 @@ const {
                 font-stretch: expanded;
             }
         </style>
-
-        <title>Document</title>
     </head>
-    <body class="flex min-h-screen selection:bg-black/80 selection:text-white overflow-x-hidden">
-        <aside class="max-md:hidden w-60 flex flex-col sticky top-0 h-screen p-6">
-            <a href="/" class="text-blue hover:bg-blue/10 rounded-xl py-1 px-3 font-semibold">→ Home</a>
-            <Footer/>
+    <body class="flex min-h-screen selection:bg-black/70 selection:text-white overflow-x-hidden">
+        <aside class="max-md:contents w-60 flex flex-col sticky top-0 h-screen">
+            <header class="md:block hidden max-md:fixed max-md:top-0 max-md:left-0 max-md:w-screen max-md:h-screen p-6 pt-12 max-md:bg-white/50 max-md:backdrop-blur-2xl max-md:backdrop-saturate-200 max-md:text-3xl max-md:*:mb-3 expanded text-xl" id="menu">
+                <HeaderLink href="/">Home</HeaderLink>
+                <HeaderLink href="/blog">Blog</HeaderLink>
+                <HeaderLink href="/art">Art</HeaderLink>
+            </header>
+            <Footer class="max-md:hidden p-6"/>
         </aside>
-        <main class="w-full max-w-screen-sm mx-auto">
+        <button id="menu-toggle" class="fixed md:hidden right-0 top-0 block p-1 m-4 bg-white/20 backdrop-blur-xl rounded-xl">
+            <svg viewBox="0 0 32 32" width="32" height="32" class="fill-black">
+                <path d="M6 9q-1 0-1-1t1-1h20q1 0 1 1t-1 1zM6 17q-1 0-1-1t1-1h20q1 0 1 1t-1 1zM6 25q-1 0-1-1t1-1h20q1 0 1 1t-1 1z"/>
+            </svg>
+        </button>
+        <main class="w-full max-w-screen-sm mx-auto flex flex-col">
             <slot/>
             <Footer class={"md:hidden p-6"}/>
         </main>
     </body>
 </html>
+
+<script>
+    const menuButton = document.querySelector<HTMLButtonElement>("#menu-toggle")!;
+    const menu = document.querySelector<HTMLDivElement>("#menu")!;
+
+    menuButton.onclick = () => {
+        menu.classList.toggle("hidden");
+    };
+</script>

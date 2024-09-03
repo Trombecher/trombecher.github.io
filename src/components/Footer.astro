@@ -6,8 +6,9 @@ interface Props extends HTMLAttributes<'footer'> {}
 const {class: className, ...rest} = Astro.props;
 ---
 
-<footer {...rest} class={`mt-auto text-sm text-center ${className}`}>
+<footer {...rest} class={`mt-auto text-sm text-center ${className} select-none`}>
     &copy; {new Date().getFullYear()} Tobias Hillemanns. All rights reserved.<br><br>
-    Built with <a href="https://astro.build/" class="underline">Astro</a> & <a href="https://tailwindcss.com/" class="underline">TailwindCSS</a><br>
-    Hosted by <a href="https://pages.github.com/" class="underline">GitHub Pages</a> ❤️
+    Built with <a href="https://astro.build/" class="underline hover:text-black/70 transition">Astro</a> &
+    <a href="https://tailwindcss.com/" class="underline hover:text-black/70 transition">TailwindCSS</a><br>
+    Hosted by <a href="https://pages.github.com/" class="underline hover:text-black/70 transition">GitHub Pages</a> ❤️
 </footer>

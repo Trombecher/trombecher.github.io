@@ -5,7 +5,7 @@ export default {
         colors: {
             "white": "#fff",
             "black": "#000",
-            "blue": "#00f"
+            "blue": "#0077ff"
         },
 		fontFamily: {
             sans: ["system-ui", "sans-serif"]
