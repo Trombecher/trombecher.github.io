@@ -1,11 +1,11 @@
 ---
-import HeroSection from "../components/HeroSection.astro";
-import Page from "../components/Page.astro";
+import HeroSection from "@/comp/HeroSection.astro";
+import Page from "@/comp/Page.astro";
 ---
 
 <Page imagePreloadList={["/socials/yt.webp", "/socials/ig.webp"]}>
-    <svg xmlns="http://www.w3.org/2000/svg" id="graphic" viewBox="0 0 1000 1000" class="absolute top-0 left-0 -z-50">
-        <filter id="m" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="100%" width="200%" x="-50%" y="0">
+    <svg xmlns="http://www.w3.org/2000/svg" id="graphic" class="absolute left-0 top-0 -z-50 h-full w-full">
+        <filter id="m" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
             <feGaussianBlur in="SourceGraphic" stdDeviation="30" result="blur"/>
             <feComponentTransfer in="blur">
                 <feFuncR type="table" tableValues="0 0   0   0 1"/>
@@ -13,10 +13,12 @@ import Page from "../components/Page.astro";
                 <feFuncB type="table" tableValues="1 1   1   1 1"/>
             </feComponentTransfer>
         </filter>
-        <g filter="url(#m)" id="circles">
-            <rect width="100%" height="100%" fill="#fff" x="0"/>
-            <path d="M361.383 218.2841C548.897 219.0014 646.246 85.1913 718.107 269.3574 789.969 453.523 917.71 686.32 633.104 619.87 348.492 553.416 342.278 645.662 457.096 444.862 571.911 244.0627 217.324 266.3366 184.086 474.861 150.847 683.386 643.276 707.742 348.082 714.354 52.8877 720.966-50.5163 640.255 20.582 371.855 91.6802 103.4556 173.866 217.5669 361.383 218.2841ZM-200 1000c232 223 115.009 307.8785 349.002 162.0025 233.994-145.8761 265.98 522.973-218.003 310.997-483.984-211.977-306.999-663.9995-130.999-472.9995z" fill="#000000" stroke="none" />
-            <circle r="60" cx="600" cy="600" fill="#000" id="move" class="transition-[opacity] opacity-0 duration-[0.3s] ease-[cubic-bezier(0.07,0.7,0.27,1)]"/>
+        <g filter="url(#m)">
+            <g style="transform: translateX(50%);" id="circles">
+                <rect width="100%" height="100%" fill="#fff" x="-100"/>
+                <path d="M261.383 218.2841c187.514.7173 284.863-133.0928 356.724 51.0733 71.862 184.1656 199.603 416.9626-85.003 350.5126-284.612-66.454-290.826 25.792-176.008-175.008 114.815-200.7993-239.772-178.5254-273.01 29.999-33.239 208.525 459.19 232.881 163.996 239.493-295.1943 6.612-398.5983-74.099-327.5-342.499 71.0982-268.3994 153.284-154.2881 340.801-153.5709zM-200 1000c232 223 115.009 307.8785 349.002 162.0025 233.994-145.8761 265.98 522.973-218.003 310.997-483.984-211.977-306.999-663.9995-130.999-472.9995z" fill="#000000" stroke="none" />
+                <circle r="60" cx="600" cy="600" fill="#000" id="move" class="transition-[opacity] opacity-0 duration-[0.3s] ease-[cubic-bezier(0.07,0.7,0.27,1)]"/>
+            </g>
         </g>
     </svg>
     <section class="p-6 h-[700px]">
@@ -25,8 +27,8 @@ import Page from "../components/Page.astro";
         <button id="scroll" class="inline-block mt-7 text-xl bg-black text-white expanded px-4 rounded-full py-1 font-semibold hover:bg-black/70 transition">Explore ↓</button>
         <p id="info" class="mt-8 text-sm select-none text-black/50 transition-[opacity] duration-700">
             Point using
-            <code class="bg-black/10 rounded-md px-1">LeftClick</code><br>
-            Draw using <code class="bg-black/10 rounded-md px-1">ALT+LeftClick</code>
+            <code class="inline-block bg-white/20 backdrop-blur-md rounded-md px-1">LeftClick</code><br>
+            Draw using <code class="inline-block bg-white/20 backdrop-blur-md rounded-md px-1">ALT+LeftClick</code>
         </p>
     </section>
     <section id="projects" class="p-6">
@@ -77,12 +79,18 @@ import Page from "../components/Page.astro";
     const cursorCircle = document.querySelector("#move")!;
     const circles = document.querySelector("#circles")!;
     const info = document.querySelector("#info")!;
-    
-    (onresize = () => {
-        svg.setAttribute("viewBox", `${-document.body.clientWidth / 2 + 150} 0 ${document.body.clientWidth} ${document.body.scrollHeight}`);
-        svg.setAttribute("width", "" + document.body.clientWidth);
-        svg.setAttribute("height", "" + document.body.scrollHeight);
-    })();
+
+    const updateHeight = () => svg.setAttribute("height", `${document.body.scrollHeight}`);
+    const obs = new ResizeObserver(updateHeight);
+    obs.observe(document.body);
+    updateHeight();
+    svg.classList.remove("h-full");
+
+    // (onresize = () => {
+    //     svg.setAttribute("viewBox", `${-document.body.clientWidth / 2 + 150} 0 ${document.body.clientWidth} ${document.body.scrollHeight}`);
+    //     svg.setAttribute("width", "" + document.body.clientWidth);
+    //     svg.setAttribute("height", "" + document.body.scrollHeight);
+    // })();
 
     if(!navigator.maxTouchPoints) {
         const spawn = (e: MouseEvent) => {
@@ -100,7 +108,7 @@ import Page from "../components/Page.astro";
         document.onmousemove = e => {
             const {x, y} = svg.getBoundingClientRect();
 
-            cursorCircle.setAttribute("cx", "" + (e.clientX - x - document.body.clientWidth / 2 + 150));
+            cursorCircle.setAttribute("cx", "" + (e.clientX - x - document.body.clientWidth / 2));
             cursorCircle.setAttribute("cy", "" + (e.clientY - y));
             
             if(e.buttons === 1) spawn(e);

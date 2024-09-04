@@ -1,0 +1,14 @@
+---
+import Page from "@/comp/Page.astro";
+import { getCollection } from "astro:content";
+
+const blogPosts = await getCollection("blog");
+blogPosts.sort((a, b) => a.data.pubUnix - b.data.pubUnix);
+---
+
+<Page title="Blog — Tobias Hillemanns">
+    <h1 class="px-6 pt-12 font-bold text-3xl expanded">Personal Blog</h1>
+    {blogPosts.map(post => (
+        <a href={`/blog/${post.slug}/`} class="p-6">{post.data.title}</a>
+    ))}
+</Page>

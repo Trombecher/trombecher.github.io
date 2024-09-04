@@ -64,22 +64,22 @@ const {
         </style>
     </head>
     <body class="flex min-h-screen selection:bg-black/70 selection:text-white overflow-x-hidden">
-        <aside class="max-md:contents w-60 flex flex-col sticky top-0 h-screen">
-            <header class="md:block hidden max-md:fixed max-md:top-0 max-md:left-0 max-md:w-screen max-md:h-screen p-6 pt-12 max-md:bg-white/50 max-md:backdrop-blur-2xl max-md:backdrop-saturate-200 max-md:text-3xl max-md:*:mb-3 expanded text-xl" id="menu">
+        <aside class="max-sm:contents w-60 flex flex-col sticky top-0 h-screen shrink-0">
+            <header class="sm:block hidden max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:w-screen max-sm:h-screen p-6 pt-12 max-sm:bg-white/50 max-sm:backdrop-blur-2xl max-sm:backdrop-saturate-200 max-sm:text-3xl max-sm:*:mb-3 expanded text-xl z-40" id="menu">
                 <HeaderLink href="/">Home</HeaderLink>
-                <HeaderLink href="/blog">Blog</HeaderLink>
-                <HeaderLink href="/art">Art</HeaderLink>
+                <HeaderLink href="/blog/">Blog</HeaderLink>
+                <HeaderLink href="/art/">Art</HeaderLink>
             </header>
-            <Footer class="max-md:hidden p-6"/>
+            <Footer class="max-sm:hidden p-6"/>
         </aside>
-        <button id="menu-toggle" class="fixed md:hidden right-0 top-0 block p-1 m-4 bg-white/20 backdrop-blur-xl rounded-xl">
+        <button name="Toggle Menu" title="Toggle Menu" id="menu-toggle" class="fixed sm:hidden right-0 top-0 block p-1 m-4 bg-white/20 backdrop-blur-xl rounded-xl z-50">
             <svg viewBox="0 0 32 32" width="32" height="32" class="fill-black">
                 <path d="M6 9q-1 0-1-1t1-1h20q1 0 1 1t-1 1zM6 17q-1 0-1-1t1-1h20q1 0 1 1t-1 1zM6 25q-1 0-1-1t1-1h20q1 0 1 1t-1 1z"/>
             </svg>
         </button>
         <main class="w-full max-w-screen-sm mx-auto flex flex-col">
             <slot/>
-            <Footer class={"md:hidden p-6"}/>
+            <Footer class={"sm:hidden p-6"}/>
         </main>
     </body>
 </html>

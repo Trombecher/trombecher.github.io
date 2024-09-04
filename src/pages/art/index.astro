@@ -1,0 +1,34 @@
+---
+import Page from "@/comp/Page.astro";
+---
+
+<Page title="Art — Tobias Hillemanns">
+    <h1 class="px-6 py-12 font-bold text-3xl expanded">Art</h1>
+    <svg height="500" class="select-none">
+        <filter id="blur-sm" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3"/>
+        </filter>
+        <filter id="blur-lg" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="20"/>
+        </filter>
+        <filter id="map" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+            <feComponentTransfer in="SourceGraphic">
+                <feFuncR type="table" tableValues="1 0.5 0   1 1"/>
+                <feFuncG type="table" tableValues="1 1   0.5 0 1"/>
+                <feFuncB type="table" tableValues="1 1   1   0 1"/>
+            </feComponentTransfer>
+        </filter>
+        <g filter="url(#map)">
+            <rect width="100%" height="100%" fill="#fff"/>
+            <g filter="url(#blur-sm)">
+                <text x="50" y="100" class="text-9xl font-black">UP</text>
+                <text x="50" y="220" class="text-9xl font-black">CO</text>
+                <text x="50" y="340" class="text-9xl font-black">MI</text>
+                <text x="50" y="460" class="text-9xl font-black">NG</text>
+            </g>
+            <g filter="url(#blur-lg)">
+                <rect x="170" y="40" width="200" height="400"/>
+            </g>
+        </g>
+    </svg>
+</Page>

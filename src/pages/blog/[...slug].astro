@@ -1,0 +1,28 @@
+---
+import type { GetStaticPaths } from "astro";
+import Page from "@/comp/Page.astro";
+import { getCollection, getEntry } from "astro:content"
+
+export const getStaticPaths: GetStaticPaths = async () => {
+    const collection = await getCollection("blog");
+
+    return collection.map(({slug}) => ({
+        params: {slug},
+        props: {}
+    }));
+};
+
+const slug = Astro.params.slug as string;
+const entry = await getEntry({collection: "blog", slug});
+if(!entry) throw 404;
+
+const {Content} = await entry.render();
+
+---
+
+<Page title={`${entry.data.title} — Tobias' Blog`}>
+    <article>
+        <h1 class="font-bold text-3xl expanded">{entry.data.title}</h1>
+        <Content/>
+    </article>
+</Page>
