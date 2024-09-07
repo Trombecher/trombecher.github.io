@@ -7,4 +7,9 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
     site: 'https://trombecher.github.io',
     integrations: [mdx(), sitemap(), tailwind()],
+    markdown: {
+        shikiConfig: {
+            theme: "github-dark-default"
+        }
+    }
 });

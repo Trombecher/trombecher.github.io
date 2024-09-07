@@ -4,7 +4,7 @@ import Page from "@/comp/Page.astro";
 ---
 
 <Page imagePreloadList={["/socials/yt.webp", "/socials/ig.webp"]}>
-    <svg xmlns="http://www.w3.org/2000/svg" id="graphic" class="absolute left-0 top-0 -z-50 h-full w-full">
+    <svg xmlns="http://www.w3.org/2000/svg" id="graphic" class="absolute left-0 top-0 -z-50 h-full w-full opacity-0 transition-[opacity] ease-out">
         <filter id="m" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
             <feGaussianBlur in="SourceGraphic" stdDeviation="30" result="blur"/>
             <feComponentTransfer in="blur">
@@ -75,7 +75,29 @@ import Page from "@/comp/Page.astro";
 </script>
 
 <script>
-    const svg = document.querySelector("#graphic")!;
+    const svg = document.querySelector<SVGSVGElement>("#graphic")!;
+        const fect = svg.querySelector<SVGFEComponentTransferElement>("feComponentTransfer")!;
+            
+            const setDarkMode = () => {
+        fect.innerHTML = `
+        <feFuncR type="table" tableValues="0 0   0 0   0"/>
+        <feFuncG type="table" tableValues="0   0   0 0   0"/>
+        <feFuncB type="table" tableValues="1 0.3 1 0.3 0"/>`;
+    };
+
+    const setLightMode = () => {
+        fect.innerHTML = `
+        <feFuncR type="table" tableValues="0 0   0   0 1"/>
+        <feFuncG type="table" tableValues="1 0.6 0.3 1 1"/>
+        <feFuncB type="table" tableValues="1 1   1   1 1"/>`;
+    };
+    
+    if(matchMedia("(prefers-color-scheme: dark)").matches) setDarkMode();
+    matchMedia("(prefers-color-scheme: dark)").onchange = event =>
+        event.matches ? setDarkMode() : setLightMode();
+
+    svg.classList.remove("opacity-0");
+    
     const cursorCircle = document.querySelector("#move")!;
     const circles = document.querySelector("#circles")!;
     const info = document.querySelector("#info")!;

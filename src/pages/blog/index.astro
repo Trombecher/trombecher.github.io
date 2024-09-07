@@ -1,14 +1,36 @@
 ---
 import Page from "@/comp/Page.astro";
+import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 
 const blogPosts = await getCollection("blog");
-blogPosts.sort((a, b) => a.data.pubUnix - b.data.pubUnix);
+blogPosts.sort((a, b) => a.data.pubUnix.valueOf() - b.data.pubUnix.valueOf());
 ---
 
-<Page title="Blog — Tobias Hillemanns">
+<Page title="Blog — Tobias Hillemanns" wide={true}>
     <h1 class="px-6 pt-12 font-bold text-3xl expanded">Personal Blog</h1>
-    {blogPosts.map(post => (
-        <a href={`/blog/${post.slug}/`} class="p-6">{post.data.title}</a>
-    ))}
+    <div class="px-3 mt-6 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
+        {blogPosts.map(post => (
+            <a href={`/blog/${post.slug}/`} class="p-3 pb-6 hover:bg-blue/10 rounded-3xl transition active:bg-blue/20">
+                {post.data.hero && (
+                    <Image
+                        src={post.data.hero}
+                        alt=""
+                        widths={[400 / 4, 400 / 2, 400, 400 * 2]}
+                        class={"rounded-2xl mb-3"}
+                    />
+                )}
+                <div class="text-black/50">
+                    {post.data.pubUnix.toLocaleDateString()}
+                </div>
+                <div class="text-2xl expanded font-semibold">
+                    {post.data.title}
+                </div>
+            </a>
+        ))}
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
 </Page>

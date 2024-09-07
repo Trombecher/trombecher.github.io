@@ -6,7 +6,8 @@ interface Props {
 	title?: string;
 	description?: string;
 	image?: string;
-    imagePreloadList?: string[]
+    imagePreloadList?: string[],
+    wide?: boolean,
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -15,7 +16,8 @@ const {
     title = "Tobias Hillemanns",
     description = "This is my personal portfolio website.",
     image,
-    imagePreloadList = []
+    imagePreloadList = [],
+    wide = false,
 } = Astro.props;
 
 // →
@@ -58,12 +60,22 @@ const {
         {image && <meta property="twitter:image" content={new URL(image, Astro.url)} />}
         
         <style is:global>
-            .expanded {
-                font-stretch: expanded;
+            body {
+                --white: 255 255 255;
+                --black: 0 0 0;
+                --blue: 0 119 255;
+            }
+
+            @media (prefers-color-scheme: dark) {
+                body {
+                    --white: 0 0 0;
+                    --black: 255 255 255;
+                    --blue: 102 111 207;
+                }
             }
         </style>
     </head>
-    <body class="flex min-h-screen selection:bg-black/70 selection:text-white overflow-x-hidden">
+    <body class="text-black bg-white flex min-h-screen selection:bg-black selection:text-white overflow-x-hidden">
         <aside class="max-sm:contents w-60 flex flex-col sticky top-0 h-screen shrink-0">
             <header class="sm:block hidden max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:w-screen max-sm:h-screen p-6 pt-12 max-sm:bg-white/50 max-sm:backdrop-blur-2xl max-sm:backdrop-saturate-200 max-sm:text-3xl max-sm:*:mb-3 expanded text-xl z-40" id="menu">
                 <HeaderLink href="/">Home</HeaderLink>
@@ -77,7 +89,7 @@ const {
                 <path d="M6 9q-1 0-1-1t1-1h20q1 0 1 1t-1 1zM6 17q-1 0-1-1t1-1h20q1 0 1 1t-1 1zM6 25q-1 0-1-1t1-1h20q1 0 1 1t-1 1z"/>
             </svg>
         </button>
-        <main class="w-full max-w-screen-sm mx-auto flex flex-col">
+        <main class={`w-full mx-auto flex flex-col ${wide ? "" : "max-w-screen-sm"}`}>
             <slot/>
             <Footer class={"sm:hidden p-6"}/>
         </main>
