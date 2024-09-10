@@ -1,19 +1,15 @@
 ---
 import type { GetStaticPaths } from "astro";
 import Page from "@/comp/Page.astro";
-import { getCollection, getEntry } from "astro:content";
+import { getEntry } from "astro:content";
 import BlogImage from "@/comp/BlogImage.astro";
+import { getAllPosts } from "@/util";
 
-export const getStaticPaths: GetStaticPaths = async () => {
-    const posts = await getCollection("posts");
-
-    return posts
-        .filter(e => import.meta.env.DEV || e.data.pubUnix !== undefined)
-        .map(({slug}) => ({
-            params: {slug},
-            props: {}
-        }));
-};
+export const getStaticPaths: GetStaticPaths = async () => (await getAllPosts())
+    .map(({slug}) => ({
+        params: {slug},
+        props: {}
+    }));
 
 const slug = Astro.params.slug as string;
 const entry = await getEntry({collection: "posts", slug});
@@ -24,6 +20,7 @@ const {Content} = await entry.render();
 ---
 
 <Page title={`${entry.data.title} — Tobias' Blog`}>
+    <div class="mt-12"></div>
     {entry.data.hero && (
         <div class="sm:px-6 mb-6">
             <BlogImage
@@ -34,7 +31,7 @@ const {Content} = await entry.render();
             />
         </div>
     )}
-    <article class="px-6 pb-6 mt-6 text-lg dark:text-black/90 max-w-full">
+    <article class="px-6 pb-6 text-lg dark:text-black/90 max-w-full">
         <div class="text-black/70">
             published <time>{entry.data.pubUnix?.toLocaleDateString("en-US", {
                 day: "2-digit",
@@ -121,6 +118,7 @@ const {Content} = await entry.render();
 
 <script>
     import {isDarkMode, isDarkModeQuery, isLowPowerMode} from "@/util";
+    import {toHSLFromRGB, toRGBFromHSL} from "allc";
 
     const img = document.querySelector<HTMLImageElement>("#hero")!;
     
@@ -155,16 +153,21 @@ const {Content} = await entry.render();
                 // totalAlpha += pixels[i+3];
             }
 
-            const FACTOR = 0.3;
+            const {h, s} = toHSLFromRGB({
+                r: Math.floor(totalRed / pixelCount) / 255,
+                g: Math.floor(totalGreen / pixelCount) / 255,
+                b: Math.floor(totalBlue / pixelCount) / 255,
+            });
 
-            const avgRed = Math.floor(totalRed / pixelCount) * FACTOR;
-            const avgGreen = Math.floor(totalGreen / pixelCount) * FACTOR;
-            const avgBlue = Math.floor(totalBlue / pixelCount) * FACTOR;
-            // const avgAlpha = Math.floor(totalAlpha / pixelCount) * FACTOR;
+            const rgb = toRGBFromHSL({
+                h,
+                s,
+                l: .04
+            });
 
-            document.body.style.backgroundColor = ``;
+            // document.body.style.backgroundColor = ``;
             const style = document.createElement("style");
-            style.textContent = `@media (prefers-color-scheme: dark) { body { background-color: rgb(${avgRed}, ${avgGreen}, ${avgBlue}) !important; } }`;
+            style.textContent = `@media (prefers-color-scheme: dark) { body { --white: ${rgb.r * 255} ${rgb.g * 255} ${rgb.b * 255} !important; } }`;
             document.head.append(style);
         };
 
@@ -176,7 +179,7 @@ const {Content} = await entry.render();
 
     if(!isLowPowerMode()) {
         const dmq = isDarkModeQuery();
-        dmq.onchange = () => calculateAvg();
+        dmq.onchange = calculateAvg;
         if(isDarkMode(dmq)) calculateAvg();
     }
 </script>

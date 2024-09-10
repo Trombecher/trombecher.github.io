@@ -1,9 +1,9 @@
 ---
 import Page from "@/comp/Page.astro";
+import { getAllPosts } from "@/util";
 import { Image } from "astro:assets";
-import { getCollection } from "astro:content";
 
-const blogPosts = await getCollection("posts");
+const blogPosts = await getAllPosts();
 blogPosts.sort((a, b) => (a.data.pubUnix?.valueOf() || 0) - (b.data.pubUnix?.valueOf() || 0));
 ---
 
