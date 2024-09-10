@@ -5,6 +5,10 @@
         "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*"]
-        }
+        },
+        "jsx": "preserve",
+        "jsxFragmentFactory": "Fragment",
+        "jsxFactory": "createElement",
+        "jsxImportSource": "aena"
     }
 }

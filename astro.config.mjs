@@ -11,5 +11,10 @@ export default defineConfig({
         shikiConfig: {
             theme: "github-dark-default"
         }
+    },
+    vite: {
+        esbuild: {
+            jsxInject: "import {createElement, Fragment} from \"aena\"",
+        }
     }
 });

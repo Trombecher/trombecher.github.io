@@ -1,21 +1,54 @@
 ---
 import HeroSection from "@/comp/HeroSection.astro";
 import Page from "@/comp/Page.astro";
+
+/*
+<svg xmlns="http://www.w3.org/2000/svg" auto-height class="absolute left-0 top-0 -z-50 h-full w-full">
+        <filter id="noise" filterUnits="userSpaceOnUse">
+            <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.2"
+                numOctaves="10"
+                result="noise"
+            />
+            <feColorMatrix
+                in="noise"
+                type="saturate"
+                values="0"
+                result="grayscale"
+            />
+            
+            <feComponentTransfer in="grayscale">
+                <feFuncR type="discrete" tableValues="0 0 0 1" />
+                <feFuncG type="discrete" tableValues="0 0 0 1" />
+                <feFuncB type="discrete" tableValues="0 0 0 1" />
+            </feComponentTransfer>
+        </filter>
+        <rect width="100%" height="100%" filter="url(#noise)"/>
+    </svg>
+
+*/
 ---
 
 <Page imagePreloadList={["/socials/yt.webp", "/socials/ig.webp"]}>
-    <svg xmlns="http://www.w3.org/2000/svg" id="graphic" class="absolute left-0 top-0 -z-50 h-full w-full opacity-0 transition-[opacity] ease-out">
+    <svg xmlns="http://www.w3.org/2000/svg" auto-height id="graphic" class="absolute left-0 top-0 -z-50 h-full w-full opacity-0 transition-[opacity] ease-out duration-1000">
         <filter id="m" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
             <feGaussianBlur in="SourceGraphic" stdDeviation="30" result="blur"/>
-            <feComponentTransfer in="blur">
+            <feComponentTransfer result="comp" in="blur" id="components">
                 <feFuncR type="table" tableValues="0 0   0   0 1"/>
                 <feFuncG type="table" tableValues="1 0.6 0.3 1 1"/>
                 <feFuncB type="table" tableValues="1 1   1   1 1"/>
             </feComponentTransfer>
+            <feColorMatrix type="matrix" values="
+                1  0  0  0  0
+                0  1  0  0  0
+                0  0  1  0  0
+                0  0  1  0  0
+            "/>
         </filter>
         <g filter="url(#m)">
+            <rect width="100%" height="100%" fill="#fff"/>
             <g style="transform: translateX(50%);" id="circles">
-                <rect width="100%" height="100%" fill="#fff" x="-100"/>
                 <path d="M261.383 218.2841c187.514.7173 284.863-133.0928 356.724 51.0733 71.862 184.1656 199.603 416.9626-85.003 350.5126-284.612-66.454-290.826 25.792-176.008-175.008 114.815-200.7993-239.772-178.5254-273.01 29.999-33.239 208.525 459.19 232.881 163.996 239.493-295.1943 6.612-398.5983-74.099-327.5-342.499 71.0982-268.3994 153.284-154.2881 340.801-153.5709zM-200 1000c232 223 115.009 307.8785 349.002 162.0025 233.994-145.8761 265.98 522.973-218.003 310.997-483.984-211.977-306.999-663.9995-130.999-472.9995z" fill="#000000" stroke="none" />
                 <circle r="60" cx="600" cy="600" fill="#000" id="move" class="transition-[opacity] opacity-0 duration-[0.3s] ease-[cubic-bezier(0.07,0.7,0.27,1)]"/>
             </g>
@@ -57,12 +90,11 @@ import Page from "@/comp/Page.astro";
             </a>
             <a class="p-2 hover:bg-black/10 flex items-center justify-center trasition rounded-xl" href="https://x.com/trombecher" title="𝕏">
                 <svg width="32" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="black"/>
+                    <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" class="fill-black"/>
                 </svg>
             </a>
         </div>
     </section>
-    <div id="test"></div>
 </Page>
 
 <script>
@@ -75,10 +107,12 @@ import Page from "@/comp/Page.astro";
 </script>
 
 <script>
+    import {isDarkModeQuery, isDarkMode} from "@/util";
+
     const svg = document.querySelector<SVGSVGElement>("#graphic")!;
-        const fect = svg.querySelector<SVGFEComponentTransferElement>("feComponentTransfer")!;
+    const fect = svg.querySelector<SVGFEComponentTransferElement>("#components")!;
             
-            const setDarkMode = () => {
+    const setDarkMode = () => {
         fect.innerHTML = `
         <feFuncR type="table" tableValues="0 0   0 0   0"/>
         <feFuncG type="table" tableValues="0   0   0 0   0"/>
@@ -92,9 +126,9 @@ import Page from "@/comp/Page.astro";
         <feFuncB type="table" tableValues="1 1   1   1 1"/>`;
     };
     
-    if(matchMedia("(prefers-color-scheme: dark)").matches) setDarkMode();
-    matchMedia("(prefers-color-scheme: dark)").onchange = event =>
-        event.matches ? setDarkMode() : setLightMode();
+    const dmq = isDarkModeQuery();
+    if(isDarkMode(dmq)) setDarkMode();
+    dmq.onchange = event => isDarkMode(event) ? setDarkMode() : setLightMode();
 
     svg.classList.remove("opacity-0");
     
@@ -102,11 +136,13 @@ import Page from "@/comp/Page.astro";
     const circles = document.querySelector("#circles")!;
     const info = document.querySelector("#info")!;
 
-    const updateHeight = () => svg.setAttribute("height", `${document.body.scrollHeight}`);
+    const heightUpdateTargets = document.querySelectorAll("[auto-height]");
+
+    const updateHeight = () => heightUpdateTargets.forEach(el => el.setAttribute("height", `${document.body.scrollHeight}`));
     const obs = new ResizeObserver(updateHeight);
     obs.observe(document.body);
     updateHeight();
-    svg.classList.remove("h-full");
+    heightUpdateTargets.forEach(el => el.classList.remove("h-full"));
 
     // (onresize = () => {
     //     svg.setAttribute("viewBox", `${-document.body.clientWidth / 2 + 150} 0 ${document.body.clientWidth} ${document.body.scrollHeight}`);
