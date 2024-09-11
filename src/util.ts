@@ -1,5 +1,3 @@
-import { getCollection } from "astro:content";
-
 export const isLowPowerMode = () => {
     /*
     if (navigator.getBattery) {
@@ -25,13 +23,40 @@ export const SYMBOLS = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 export const generatePassword = (length: number, charset: string) => {
     if(charset === "") return "";
     
+    const buffer = new Uint32Array(length);
+    crypto.getRandomValues(buffer);
+
     let s = "";
-    while(length--)
-        s += charset[Math.floor(Math.random() * charset.length)];
+    for(const randomValue of buffer)
+        s += charset[Math.floor(randomValue / (0xFFFFFFFF + 1) * charset.length)];
     return s;
 };
 
 export const escapeRegExp = (text: string) => text.replaceAll(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
-export const getAllPosts = async () => (await getCollection("posts"))
-    .filter(e => import.meta.env.DEV || e.data.pubUnix !== undefined);
+
+const FORMAT_UNITS = [
+    ["year", 365 * 24 * 60 * 60],
+    ["month", 30 * 24 * 60 * 60],
+    ["day", 24 * 60 * 60],
+    ["hour", 60 * 60],
+    ["minute", 60],
+    ["second", 1],
+    ["microsecond", .001],
+    ["millisecond", 10 ** -6],
+    ["nanosecond", 10 ** -12],
+] as const;
+
+export const formatDuration = (seconds: number) => {
+    // Time of the universe
+    if(seconds > 365 * 24 * 60 * 60 * 100 * 10 ** 12)
+        return "longer than our universe"
+
+    for(const [name, s] of FORMAT_UNITS) {
+        if(seconds >= s) {
+            const x = Math.round(seconds / s * 10) / 10;
+            return `${x} ${name}${x === 1 ? "" : "s"}`
+        }
+    }
+    return "no time";
+}
