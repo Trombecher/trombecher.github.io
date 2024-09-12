@@ -8,6 +8,7 @@ export const collections = {
             pubUnix: z.coerce.date().optional(),
 		    updatedUnix: z.coerce.date().optional(),
             tags: z.array(z.string()).optional(),
+            description: z.string(),
             hero: image().refine(img => img.width * 9 === img.height * 16, {
                 message: "Hero image must be 16/9"
             }).optional(),

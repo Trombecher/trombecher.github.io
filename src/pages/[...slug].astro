@@ -16,10 +16,12 @@ const entry = await getEntry({collection: "posts", slug});
 if(!entry) throw 404;
 
 const {Content} = await entry.render();
-
 ---
 
-<Page title={`${entry.data.title} — Tobias' Blog`}>
+<Page
+    title={`${entry.data.title} — Tobias' Blog`}
+    description={entry.data.description}
+>
     <div class="mt-12"></div>
     {entry.data.hero && (
         <div class="sm:px-6 mb-6">
@@ -27,6 +29,7 @@ const {Content} = await entry.render();
                 src={entry.data.hero}
                 alt=""
                 id="hero"
+                loading="eager"
                 class="sm:rounded-2xl"
             />
         </div>
@@ -180,6 +183,15 @@ const {Content} = await entry.render();
     if(!isLowPowerMode()) {
         const dmq = isDarkModeQuery();
         dmq.onchange = calculateAvg;
-        if(isDarkMode(dmq)) calculateAvg();
+        
+        let scrolled = false;
+        
+        if(isDarkMode(dmq)) {
+            onscroll = () => {
+                if(scrolled) return;
+                scrolled = true;
+                calculateAvg();
+            }
+        }
     }
 </script>
