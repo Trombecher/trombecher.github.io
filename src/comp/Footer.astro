@@ -6,7 +6,10 @@ interface Props extends HTMLAttributes<'footer'> {}
 const {class: className, ...rest} = Astro.props;
 ---
 
-<footer {...rest} class={`mt-auto text-sm text-center ${className} select-none`}>
+<footer {...rest} class={`mt-auto text-sm text-center text-black/80 ${className} select-none`}>
+    <a href="/rss.xml" class="block mb-4">
+        <img src="/socials/rss.png" alt="RSS Feed"/>
+    </a>
     &copy; {new Date().getFullYear()} Tobias Hillemanns. All rights reserved.<br><br>
     Built with <a href="https://astro.build/" class="underline hover:text-black/70 transition">Astro</a> &
     <a href="https://tailwindcss.com/" class="underline hover:text-black/70 transition">TailwindCSS</a><br>

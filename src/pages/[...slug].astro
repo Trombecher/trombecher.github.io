@@ -1,197 +1,24 @@
 ---
 import type { GetStaticPaths } from "astro";
-import Page from "@/comp/Page.astro";
-import { getEntry } from "astro:content";
-import BlogImage from "@/comp/BlogImage.astro";
-import { getAllPosts } from "@/server-util";
+import { getAllPosts, TAGS } from "@/server-util";
+import ArticlePage from "@/comp/ArticlePage.astro";
+import PostGrid from "@/comp/PostGrid.astro";
 
 export const getStaticPaths: GetStaticPaths = async () => (await getAllPosts())
     .map(({slug}) => ({
-        params: {slug},
+        params: {slug: slug as string},
         props: {}
-    }));
+    })).concat(TAGS.map(tag => ({
+        params: {slug: tag},
+        props: {}
+    })));
 
 const slug = Astro.params.slug as string;
-const entry = await getEntry({collection: "posts", slug});
-if(!entry) throw 404;
 
-const {Content} = await entry.render();
+const res = (TAGS as readonly string[]).includes(slug) ? slug : undefined;
 ---
 
-<Page
-    title={`${entry.data.title} — Tobias' Blog`}
-    description={entry.data.description}
->
-    <div class="mt-12"></div>
-    {entry.data.hero && (
-        <div class="sm:px-6 mb-6">
-            <BlogImage
-                src={entry.data.hero}
-                alt=""
-                id="hero"
-                loading="eager"
-                class="sm:rounded-2xl"
-            />
-        </div>
-    )}
-    <article class="px-6 pb-6 text-lg dark:text-black/90 max-w-full">
-        <div class="text-black/70">
-            published <time>{entry.data.pubUnix?.toLocaleDateString("en-US", {
-                day: "2-digit",
-                month: "short",
-                year: "2-digit"
-            })}</time>
-        </div>
-        <h1 class="font-bold text-4xl expanded mb-12 text-black">{entry.data.title}</h1>
-        <Content/>
-    </article>
-    <section class="py-6 mx-6 mt-12 border-t border-black/10">Here (someday) there will be recommendations</section>
-</Page>
-
-<style is:global>
-    article h2 {
-        @apply text-black expanded font-semibold text-3xl mt-12 mb-10;
-    }
-
-    article h3 {
-        @apply text-black expanded font-semibold text-2xl my-8;
-    }
-
-    article h4 {
-        @apply dark:text-black/90 font-medium text-xl mt-8 expanded;
-    }
-
-    article h4 {
-        @apply text-black
-    }
-
-    article svg, ul, p, ol, blockquote, pre, img, h1, h5, h6 {
-        @apply mt-6;
-    }
-
-    article ul, ol {
-        @apply pl-8;
-    }
-
-    article ul {
-        @apply list-disc;
-    }
-
-    article ol {
-        @apply list-decimal;
-    }
-
-    article li {
-        @apply list-item;
-    }
-
-    article li > *:nth-child(1) {
-        @apply m-0;
-    }
-
-    article blockquote {
-        @apply relative pl-4 text-black/70;
-    }
-
-    article blockquote::before {
-        content: "";
-        @apply rounded-full block w-1 min-h-full bg-black/70 absolute left-0 top-0;
-    }
-
-    article code:not(pre code) {
-        @apply inline-block bg-black/10 text-base px-1 rounded-lg;
-    }
-
-    article pre {
-        @apply flex text-base rounded-2xl max-w-full;
-    }
-
-    article pre code {
-        @apply block;
-    }
-
-    article img, svg {
-        @apply rounded-2xl;
-    }
-
-    article a {
-        @apply underline text-blue hover:bg-black/10 px-2 -mx-2 py-1 -my-1 rounded-xl;
-    }
-</style>
-
-<script>
-    import {isDarkMode, isDarkModeQuery, isLowPowerMode} from "@/util";
-    import {toHSLFromRGB, toRGBFromHSL} from "allc";
-
-    const img = document.querySelector<HTMLImageElement>("#hero");
-    
-    let calculatedAvg = !img;
-
-    const calculateAvg = () => {
-        if(calculatedAvg || !img) return;
-
-        img.onload = async () => {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            if(!ctx) throw new Error("Failed to retrieve 2d canvas context");
-
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            ctx.drawImage(img, 0, 0, img.width, img.height);
-
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-
-            let totalRed = 0;
-            let totalGreen = 0;
-            let totalBlue = 0;
-            // let totalAlpha = 0;
-            const pixelCount = pixels.length / 4;
-
-            for (let i = 0; i < pixels.length; i += 4) {
-                totalRed += pixels[i]!;
-                totalGreen += pixels[i + 1]!;
-                totalBlue += pixels[i + 2]!;
-                // totalAlpha += pixels[i+3];
-            }
-
-            const {h, s} = toHSLFromRGB({
-                r: Math.floor(totalRed / pixelCount) / 255,
-                g: Math.floor(totalGreen / pixelCount) / 255,
-                b: Math.floor(totalBlue / pixelCount) / 255,
-            });
-
-            const rgb = toRGBFromHSL({
-                h,
-                s,
-                l: .04
-            });
-
-            // document.body.style.backgroundColor = ``;
-            const style = document.createElement("style");
-            style.textContent = `@media (prefers-color-scheme: dark) { body { --white: ${rgb.r * 255} ${rgb.g * 255} ${rgb.b * 255} !important; } }`;
-            document.head.append(style);
-        };
-
-        // To handle image loading
-        if(img.complete) img.onload(null as any);
-
-        calculatedAvg = true;
-    };
-
-    if(!isLowPowerMode()) {
-        const dmq = isDarkModeQuery();
-        dmq.onchange = calculateAvg;
-        
-        let scrolled = false;
-        
-        if(isDarkMode(dmq)) {
-            onscroll = () => {
-                if(scrolled) return;
-                scrolled = true;
-                calculateAvg();
-            }
-        }
-    }
-</script>
+{typeof res === "string"
+    ? <PostGrid onlyWithTag={res}/>
+    : <ArticlePage slug={slug}/>
+}

@@ -1,36 +1,5 @@
 ---
-import Page from "@/comp/Page.astro";
-import { getAllPosts } from "@/server-util";
-import { Image } from "astro:assets";
-
-const blogPosts = await getAllPosts();
-blogPosts.sort((a, b) => (a.data.pubUnix?.valueOf() || 0) - (b.data.pubUnix?.valueOf() || 0));
+import PostsGrid from "@/comp/PostGrid.astro";
 ---
 
-<Page title="Blog — Tobias Hillemanns" wide={true}>
-    <h1 class="px-6 pt-12 font-bold text-3xl expanded">Personal Blog</h1>
-    <div class="px-3 mt-6 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
-        {blogPosts.map(post => (
-            <a href={`/${post.slug}/`} class="p-3 pb-6 hover:bg-black/5 rounded-3xl transition active:bg-black/10">
-                {post.data.hero && (
-                    <Image
-                        src={post.data.hero}
-                        alt=""
-                        widths={[400 / 4, 400 / 2, 400, 400 * 2]}
-                        class={"rounded-2xl mb-3"}
-                    />
-                )}
-                <div class="text-black/50">
-                    {post.data.pubUnix?.toLocaleDateString()}
-                </div>
-                <div class="text-2xl expanded font-semibold">
-                    {post.data.title}
-                </div>
-            </a>
-        ))}
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-</Page>
+<PostsGrid/>

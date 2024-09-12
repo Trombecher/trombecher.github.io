@@ -1,4 +1,5 @@
 ---
+import { TAGS, toPascalCase } from '@/server-util';
 import Footer from './Footer.astro';
 import HeaderLink from './HeaderLink.astro';
 
@@ -25,21 +26,16 @@ const {
 
 <html lang="en">
     <head>
-        <!-- Global Metadata -->
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
-        <meta name="google-site-verification" content="8GlhjUIL8_h8hCmqFXeJgTTV5B6svTQo0SPkQX8iVA8" />
-
         <link rel="icon" type="image/webp" href="/favicon.webp" />
-
+        
         {imagePreloadList.map(href => (
             <link rel="preload" as="image" href={href}/>
         ))}
         
-        <!-- Canonical URL -->
         <link rel="canonical" href={canonicalURL} />
         
-        <!-- Primary Meta Tags -->
         <title>{title}</title>
         <meta name="title" content={title} />
         <meta name="description" content={description} />
@@ -47,14 +43,12 @@ const {
         <meta name="generator" content={Astro.generator} />
         <meta name="mobile-web-app-capable" content="yes">
 
-        <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website" />
         <meta property="og:url" content={Astro.url} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         {image && <meta property="og:image" content={new URL(image, Astro.url)} />}
 
-        <!-- Twitter -->
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content={Astro.url} />
         <meta property="twitter:title" content={title} />
@@ -80,11 +74,17 @@ const {
                 }
             }
         </style>
+
+        <link rel="alternate" type="application/rss+xml" title="Tobias Hillemanns Feed" href="/rss.xml" />
+        <meta name="google-site-verification" content="8GlhjUIL8_h8hCmqFXeJgTTV5B6svTQo0SPkQX8iVA8" />
     </head>
     <body class="text-black bg-white flex min-h-screen selection:bg-black selection:text-white transition-[background] duration-1000">
         <aside class="max-sm:contents w-60 flex flex-col sticky top-0 h-screen shrink-0">
             <header class="sm:block hidden max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:w-screen max-sm:h-screen p-6 pt-12 max-sm:bg-white/50 max-sm:backdrop-blur-2xl max-sm:backdrop-saturate-200 max-sm:text-3xl max-sm:*:mb-3 expanded text-xl z-40" id="menu">
                 <HeaderLink href="/">Home</HeaderLink>
+                {TAGS.map(tag => (
+                    <HeaderLink href={`/${tag}/`}>{toPascalCase(tag)}</HeaderLink>
+                ))}
                 <HeaderLink href="/posts/">All Posts</HeaderLink>
             </header>
             <Footer class="max-sm:hidden p-6"/>

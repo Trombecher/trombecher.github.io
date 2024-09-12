@@ -1,0 +1,48 @@
+---
+import { getAllPosts, toPascalCase } from "@/server-util";
+import Page from "./Page.astro";
+import {Image} from "astro:assets";
+
+interface Props {
+    onlyWithTag?: string
+}
+
+const onlyWithTag = Astro.props.onlyWithTag;
+const cas = onlyWithTag ? onlyWithTag[0]!.toUpperCase() + onlyWithTag.slice(1) : "All Posts";
+
+const posts = await getAllPosts(false, onlyWithTag);
+posts.sort((a, b) => (a.data.pubUnix?.valueOf() || 0) - (b.data.pubUnix?.valueOf() || 0));
+---
+
+<Page title={`${cas} — Tobias Hillemanns`} wide={true}>
+    <h1 class="px-6 pt-12 font-bold text-3xl expanded">
+        {cas}
+    </h1>
+    <div class="px-3 mt-6 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
+        {posts.map(post => (
+            <a href={`/${post.slug}/`} class="p-3 pb-6 hover:bg-black/5 rounded-3xl transition active:bg-black/10">
+                {post.data.hero && (
+                    <Image
+                        src={post.data.hero}
+                        alt=""
+                        widths={[400 / 4, 400 / 2, 400, 400 * 2]}
+                        class={"rounded-2xl mb-3"}
+                    />
+                )}
+                <div class="text-black/50">
+                    {post.data.pubUnix?.toLocaleDateString()}
+                    {post.data.tags.map(tag => (
+                        <span class="bg-black/10 px-2 rounded-full ml-2">{toPascalCase(tag)}</span>
+                    ))}
+                </div>
+                <div class="text-2xl expanded font-semibold">
+                    {post.data.title}
+                </div>
+            </a>
+        ))}
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</Page>
