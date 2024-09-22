@@ -10,7 +10,7 @@ interface Props {
 const onlyWithTag = Astro.props.onlyWithTag;
 const cas = onlyWithTag ? onlyWithTag[0]!.toUpperCase() + onlyWithTag.slice(1) : "All Posts";
 
-const posts = await getAllPosts(false, onlyWithTag);
+const posts = await getAllPosts(!import.meta.env.DEV, onlyWithTag);
 posts.sort((a, b) => (a.data.pubUnix?.valueOf() || 0) - (b.data.pubUnix?.valueOf() || 0));
 ---
 

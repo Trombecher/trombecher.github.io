@@ -73,7 +73,8 @@ const {Content} = await entry.render();
     article img,
     article h1,
     article h5,
-    article h6 {
+    article h6,
+    article table {
         @apply mt-6;
     }
 
@@ -111,7 +112,7 @@ const {Content} = await entry.render();
     }
 
     article pre {
-        @apply flex text-base rounded-2xl max-w-full;
+        @apply flex text-base rounded-2xl p-4;
     }
 
     article pre code {
@@ -123,7 +124,19 @@ const {Content} = await entry.render();
     }
 
     article a:not(.x) {
-        @apply underline text-blue hover:bg-black/10 px-2 -mx-2 py-1 -my-1 rounded-xl;
+        @apply inline-block underline text-blue hover:backdrop-blur-lg hover:bg-blue/10 active:bg-blue/20 px-2 -mx-2 py-1 -my-1 rounded-xl;
+    }
+
+    article table {
+        @apply block overflow-x-auto text-center border-collapse border-spacing-0;
+    }
+
+    article td, article th {
+        @apply px-2 py-1 border border-black/10;
+    }
+
+    article th {
+        @apply bg-black/10 text-black;
     }
 </style>
 

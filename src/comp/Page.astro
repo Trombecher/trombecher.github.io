@@ -94,7 +94,7 @@ const {
                 <path d="M6 9q-1 0-1-1t1-1h20q1 0 1 1t-1 1zM6 17q-1 0-1-1t1-1h20q1 0 1 1t-1 1zM6 25q-1 0-1-1t1-1h20q1 0 1 1t-1 1z"/>
             </svg>
         </button>
-        <main class={`w-full mx-auto flex flex-col ${wide ? "" : "max-w-screen-sm"}`}>
+        <main class={`min-w-0 grow mx-auto flex flex-col ${wide ? "" : "max-w-screen-sm"}`}>
             <slot/>
             <Footer class={"sm:hidden p-6"}/>
         </main>

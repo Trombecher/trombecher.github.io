@@ -1,0 +1,33 @@
+---
+import { SUPPORTED_TEXT_ENCODINGS } from "@/util";
+---
+
+<utf8-encoder class="block mt-6">
+    <div class="p-4 bg-black/10 rounded-3xl block">
+        <div class="text-xl font-semibold mb-4 text-black">Input</div>
+        <textarea
+            class="border border-black/20 p-4 w-full bg-white resize-none rounded-xl"
+            rows="3"
+            placeholder="Type something..."
+        ></textarea>
+    </div>
+    {SUPPORTED_TEXT_ENCODINGS.map(([title]) => (
+        <div class="mt-6 p-4 bg-black/10 rounded-3xl block">
+            <div class="text-xl font-semibold mb-4 text-black">{title}</div>
+            <div class="font-mono text-base" contenteditable="true" data-output={title}></div>
+        </div>
+    ))}
+</utf8-encoder>
+
+<script>
+    import { SUPPORTED_TEXT_ENCODINGS } from "@/util";
+
+    document.querySelectorAll("utf8-encoder").forEach(container => {
+        const input = container.querySelector<HTMLTextAreaElement>("textarea")!;
+        
+        SUPPORTED_TEXT_ENCODINGS.forEach(([title, encode]) => {
+            const output = container.querySelector<HTMLDivElement>(`[data-output=\"${title}\"]`)!;
+            input.addEventListener("input", () => output.textContent = encode(input.value).join(" "));
+        });
+    });
+</script>
