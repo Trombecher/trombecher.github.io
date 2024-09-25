@@ -1,17 +1,26 @@
 ---
-import { getAllPosts, toPascalCase } from "@/server-util";
+import {type Slug, SLUG_TO_TAG, TAG_TO_MULTIPLE} from "../server-util";
+import { getAllPosts } from "@/server-util";
 import Page from "./Page.astro";
 import {Image} from "astro:assets";
 
 interface Props {
-    onlyWithTag?: string
+    onlyWithTag?: Slug
 }
 
-const onlyWithTag = Astro.props.onlyWithTag;
-const cas = onlyWithTag ? onlyWithTag[0]!.toUpperCase() + onlyWithTag.slice(1) : "All Posts";
+const maybeSlug = Astro.props.onlyWithTag;
 
-const posts = await getAllPosts(!import.meta.env.DEV, onlyWithTag);
-posts.sort((a, b) => (a.data.pubUnix?.valueOf() || 0) - (b.data.pubUnix?.valueOf() || 0));
+const cas = maybeSlug
+    ? TAG_TO_MULTIPLE[SLUG_TO_TAG[maybeSlug]]
+    : "All Posts";
+
+const posts = await getAllPosts(
+    !import.meta.env.DEV,
+    maybeSlug && SLUG_TO_TAG[maybeSlug]
+);
+
+posts.sort((a, b) =>
+    (a.data.pubUnix?.valueOf() || 0) - (b.data.pubUnix?.valueOf() || 0));
 ---
 
 <Page title={`${cas} — Tobias Hillemanns`} wide={true}>
@@ -29,10 +38,10 @@ posts.sort((a, b) => (a.data.pubUnix?.valueOf() || 0) - (b.data.pubUnix?.valueOf
                         class={"rounded-2xl mb-3"}
                     />
                 )}
-                <div class="text-black/50">
+                <div class="text-black/70">
                     {post.data.pubUnix?.toLocaleDateString()}
                     {post.data.tags.map(tag => (
-                        <span class="bg-black/10 px-2 rounded-full ml-2">{toPascalCase(tag)}</span>
+                        <span class="bg-black/10 px-2 rounded-full ml-2">{tag}</span>
                     ))}
                 </div>
                 <div class="text-2xl expanded font-semibold">

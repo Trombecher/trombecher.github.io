@@ -3,19 +3,22 @@ import type { GetStaticPaths } from "astro";
 import { getAllPosts, TAGS } from "@/server-util";
 import ArticlePage from "@/comp/ArticlePage.astro";
 import PostGrid from "@/comp/PostGrid.astro";
+import {type Slug, TAG_TO_SLUG} from "../server-util";
 
 export const getStaticPaths: GetStaticPaths = async () => (await getAllPosts())
     .map(({slug}) => ({
         params: {slug: slug as string},
         props: {}
     })).concat(TAGS.map(tag => ({
-        params: {slug: tag},
+        params: {slug: TAG_TO_SLUG[tag]},
         props: {}
     })));
 
 const slug = Astro.params.slug as string;
 
-const res = (TAGS as readonly string[]).includes(slug) ? slug : undefined;
+const res = TAGS
+    .map(tag => TAG_TO_SLUG[tag] as string)
+    .includes(slug) && (slug as Slug);
 ---
 
 {typeof res === "string"

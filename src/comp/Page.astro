@@ -1,7 +1,8 @@
 ---
-import { TAGS, toPascalCase } from '@/server-util';
+import { TAGS } from '@/server-util';
 import Footer from './Footer.astro';
 import HeaderLink from './HeaderLink.astro';
+import {TAG_TO_MULTIPLE, TAG_TO_SLUG} from "../server-util";
 
 interface Props {
 	title?: string;
@@ -85,11 +86,11 @@ const {
     <body class="text-black bg-white flex min-h-screen selection:bg-black selection:text-white transition-[background] duration-1000">
         <aside class="max-sm:contents w-60 flex flex-col sticky top-0 h-screen shrink-0">
             <header class="sm:block hidden max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:w-screen max-sm:h-screen p-6 pt-12 max-sm:bg-white/50 max-sm:backdrop-blur-2xl max-sm:backdrop-saturate-200 max-sm:text-3xl max-sm:*:mb-3 expanded text-xl z-40" id="menu">
-                <HeaderLink href="/">Home</HeaderLink>
+                <HeaderLink href="/" class="mb-4">Home</HeaderLink>
                 {TAGS.map(tag => (
-                    <HeaderLink href={`/${tag}/`}>{toPascalCase(tag)}</HeaderLink>
+                    <HeaderLink href={`/${TAG_TO_SLUG[tag]}/`}>{TAG_TO_MULTIPLE[tag]}</HeaderLink>
                 ))}
-                <HeaderLink href="/posts/">All Posts</HeaderLink>
+                <HeaderLink href="/posts/" class="mt-4">All Posts</HeaderLink>
             </header>
             <Footer class="max-sm:hidden p-6"/>
         </aside>

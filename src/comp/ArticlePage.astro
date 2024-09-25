@@ -2,7 +2,7 @@
 import { getEntry } from 'astro:content';
 import BlogImage from './BlogImage.astro';
 import Page from './Page.astro';
-import { toPascalCase } from '@/server-util';
+import {TAG_TO_SLUG} from "../server-util";
 
 interface Props {
     slug: string,
@@ -12,6 +12,7 @@ const entry = await getEntry({
     collection: "posts",
     slug: Astro.props.slug
 });
+
 if(!entry) throw 404;
 
 const {Content} = await entry.render();
@@ -38,7 +39,7 @@ const {Content} = await entry.render();
                 year: "2-digit"
             })}</time>
             {entry.data.tags.map(tag => (
-                <a href={`/${tag}/`} class="x bg-black/10 px-3 rounded-full ml-4 hover:bg-black/20">{toPascalCase(tag)}</a>
+                <a href={`/${TAG_TO_SLUG[tag]}/`} class="x bg-black/10 px-3 rounded-full ml-4 hover:bg-black/20 underline">{tag}</a>
             ))}
         </div>
         <h1 class="font-bold text-4xl expanded mb-12 text-black">{entry.data.title}</h1>
@@ -99,12 +100,12 @@ const {Content} = await entry.render();
     }
 
     article blockquote {
-        @apply relative pl-4 text-black/70;
+        @apply relative pl-4 text-blue;
     }
 
     article blockquote::before {
         content: "";
-        @apply rounded-full block w-1 min-h-full bg-black/70 absolute left-0 top-0;
+        @apply rounded-full block w-1 min-h-full bg-blue absolute left-0 top-0;
     }
 
     article code:not(pre code) {
