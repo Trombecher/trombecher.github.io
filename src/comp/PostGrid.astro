@@ -12,7 +12,7 @@ const maybeSlug = Astro.props.onlyWithTag;
 
 const cas = maybeSlug
     ? TAG_TO_MULTIPLE[SLUG_TO_TAG[maybeSlug]]
-    : "All Posts";
+    : "Explore";
 
 const posts = await getAllPosts(
     !import.meta.env.DEV,

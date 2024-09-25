@@ -85,12 +85,12 @@ const {
     </head>
     <body class="text-black bg-white flex min-h-screen selection:bg-black selection:text-white transition-[background] duration-1000">
         <aside class="max-sm:contents w-60 flex flex-col sticky top-0 h-screen shrink-0">
-            <header class="sm:block hidden max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:w-screen max-sm:h-screen p-6 pt-12 max-sm:bg-white/50 max-sm:backdrop-blur-2xl max-sm:backdrop-saturate-200 max-sm:text-3xl max-sm:*:mb-3 expanded text-xl z-40" id="menu">
-                <HeaderLink href="/" class="mb-4">Home</HeaderLink>
+            <header class="sm:block hidden max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:w-screen max-sm:h-screen p-6 pt-12 max-sm:bg-white/50 max-sm:backdrop-blur-2xl max-sm:backdrop-saturate-200 max-sm:text-3xl expanded text-xl z-40" id="menu">
+                <HeaderLink href="/">Home</HeaderLink>
+                <HeaderLink href="/explore/" class="mb-4 max-sm:mb-8">Explore</HeaderLink>
                 {TAGS.map(tag => (
-                    <HeaderLink href={`/${TAG_TO_SLUG[tag]}/`}>{TAG_TO_MULTIPLE[tag]}</HeaderLink>
+                    <HeaderLink href={`/${TAG_TO_SLUG[tag]}/`} class="max-sm:mb-2">{TAG_TO_MULTIPLE[tag]}</HeaderLink>
                 ))}
-                <HeaderLink href="/posts/" class="mt-4">All Posts</HeaderLink>
             </header>
             <Footer class="max-sm:hidden p-6"/>
         </aside>

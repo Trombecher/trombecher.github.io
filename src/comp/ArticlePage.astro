@@ -33,11 +33,16 @@ const {Content} = await entry.render();
     )}
     <article class="px-6 pb-6 text-lg dark:text-black/90 max-w-full">
         <div class="text-black/70">
-            published <time>{entry.data.pubUnix?.toLocaleDateString("en-US", {
-                day: "2-digit",
-                month: "short",
-                year: "2-digit"
-            })}</time>
+            {entry.data.pubUnix
+                ? <>
+                    published <time>{entry.data.pubUnix.toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "2-digit"
+                    })}</time>
+                </>
+                : "Status: Still in development"
+            }
             {entry.data.tags.map(tag => (
                 <a href={`/${TAG_TO_SLUG[tag]}/`} class="x bg-black/10 px-3 rounded-full ml-4 hover:bg-black/20 underline">{tag}</a>
             ))}
@@ -79,6 +84,10 @@ const {Content} = await entry.render();
         @apply mt-6;
     }
 
+    article hr {
+        @apply my-12 border-black/20;
+    }
+
     article ul, ol {
         @apply pl-8;
     }
@@ -113,19 +122,19 @@ const {Content} = await entry.render();
     }
 
     article pre {
-        @apply flex text-base rounded-2xl p-4;
+        @apply rounded-2xl p-4 whitespace-pre text-base;
     }
 
     article pre code {
-        @apply block;
+        @apply contents;
     }
 
-    article img, svg {
+    article img, article svg {
         @apply rounded-2xl;
     }
 
     article a:not(.x) {
-        @apply inline-block underline text-blue hover:backdrop-blur-lg hover:bg-blue/10 active:bg-blue/20 px-2 -mx-2 py-1 -my-1 rounded-xl;
+        @apply underline text-blue hover:no-underline hover:text-blue/80 active:text-blue/60;
     }
 
     article table {

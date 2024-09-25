@@ -12,7 +12,7 @@ export default {
         },
 		fontFamily: {
             sans: ["system-ui", "sans-serif"],
-            mono: ["Jetbrains Mono", "Consolas", "monospace"]
+            mono: ["JetBrains Mono", "Consolas", "monospace"]
         }
 	},
     plugins: [
