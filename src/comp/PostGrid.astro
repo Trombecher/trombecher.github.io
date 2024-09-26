@@ -27,9 +27,9 @@ posts.sort((a, b) =>
     <h1 class="px-6 pt-12 font-bold text-3xl expanded">
         {cas}
     </h1>
-    <div class="px-3 mt-6 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
+    <div class="px-6 mt-6 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
         {posts.map(post => (
-            <a href={`/${post.slug}/`} class="p-3 pb-6 hover:bg-black/5 rounded-3xl transition active:bg-black/10">
+            <a href={`/${post.slug}/`} class="bg-black/5 block p-3 pb-6 hover:bg-black/10 rounded-3xl transition active:bg-black/20">
                 {post.data.hero && (
                     <Image
                         src={post.data.hero}
