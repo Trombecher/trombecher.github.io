@@ -1,7 +1,18 @@
 {
   "name": "new-new",
-  "type": "module",
   "version": "0.0.1",
+  "dependencies": {
+    "@astrojs/check": "0.9.4",
+    "@astrojs/mdx": "3.1.8",
+    "@astrojs/rss": "4.0.8",
+    "@astrojs/sitemap": "3.2.0",
+    "@astrojs/tailwind": "5.1.2",
+    "aena": "^0.15.6",
+    "allc": "^0.2.0",
+    "astro": "4.16.0",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.2"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -9,16 +20,5 @@
     "preview": "astro preview",
     "astro": "astro"
   },
-  "dependencies": {
-    "@astrojs/check": "^0.9.3",
-    "@astrojs/mdx": "^3.1.7",
-    "@astrojs/rss": "^4.0.7",
-    "@astrojs/sitemap": "^3.1.6",
-    "@astrojs/tailwind": "^5.1.1",
-    "aena": "^0.15.6",
-    "allc": "^0.0.2",
-    "astro": "^4.15.9",
-    "tailwindcss": "^3.4.13",
-    "typescript": "^5.6.2"
-  }
+  "type": "module"
 }

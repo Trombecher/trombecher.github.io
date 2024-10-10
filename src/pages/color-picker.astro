@@ -1,0 +1,12 @@
+---
+import Page from "../comp/Page.astro";
+---
+
+<Page title={"Color Picker — TH"} wide={true}></Page>
+
+<script>
+    import {mount} from "aena";
+    import ColorPicker from "@/comp/ColorPicker";
+
+    mount(document.body.querySelector("main")!, ColorPicker());
+</script>

@@ -84,15 +84,15 @@ const {
         <meta name="google-site-verification" content="8GlhjUIL8_h8hCmqFXeJgTTV5B6svTQo0SPkQX8iVA8" />
     </head>
     <body class="text-black bg-white flex min-h-screen selection:bg-black selection:text-white transition-[background] duration-1000">
-        <aside class="max-sm:contents w-60 flex flex-col sticky top-0 h-screen shrink-0">
-            <header class="sm:block hidden max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:w-screen max-sm:h-screen p-6 pt-12 max-sm:bg-white/50 max-sm:backdrop-blur-2xl max-sm:backdrop-saturate-200 max-sm:text-3xl expanded text-xl z-40" id="menu">
+        <aside id="menu" class="flex flex-col max-sm:hidden w-60 max-sm:fixed sticky max-sm:left-0 max-sm:w-screen top-0 h-screen shrink-0 max-sm:bg-white/50 max-sm:backdrop-blur-2xl max-sm:backdrop-saturate-200 z-40">
+            <header class="max-sm:top-0 p-6 pt-12 max-sm:text-3xl expanded text-xl">
                 <HeaderLink href="/">Home</HeaderLink>
                 <HeaderLink href="/explore/" class="mb-4 max-sm:mb-8">Explore</HeaderLink>
                 {TAGS.map(tag => (
                     <HeaderLink href={`/${TAG_TO_SLUG[tag]}/`} class="max-sm:mb-2">{TAG_TO_MULTIPLE[tag]}</HeaderLink>
                 ))}
             </header>
-            <Footer class="max-sm:hidden p-6"/>
+            <Footer class={`${wide ? "" : "max-sm:hidden"} p-6`}/>
         </aside>
         <button name="Toggle Menu" title="Toggle Menu" id="menu-toggle" class="fixed sm:hidden right-0 top-0 block p-1 m-4 bg-white/20 backdrop-blur-xl rounded-xl z-50">
             <svg viewBox="0 0 32 32" width="32" height="32" class="fill-black">
@@ -101,7 +101,7 @@ const {
         </button>
         <main class={`min-w-0 grow mx-auto flex flex-col ${wide ? "" : "max-w-screen-sm"}`}>
             <slot/>
-            <Footer class={"sm:hidden p-6"}/>
+            {!wide && <Footer class={"sm:hidden p-6"}/>}
         </main>
     </body>
 </html>
@@ -111,6 +111,6 @@ const {
     const menu = document.querySelector<HTMLDivElement>("#menu")!;
 
     menuButton.onclick = () => {
-        menu.classList.toggle("hidden");
+        menu.classList.toggle("max-sm:hidden");
     };
 </script>

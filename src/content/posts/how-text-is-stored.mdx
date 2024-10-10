@@ -1,16 +1,20 @@
 ---
 title: "How Text Is Stored"
-description: "Dive in the deep web of text encodings."
+description: "Take a deep dive into the web of text encodings."
+hero: "@/images/how-text-is-stored.svg"
+pubUnix: 1728579654810
 tags: ["Article"]
 ---
 
-Text is one of the most fundamental types of media and it has multiplied in traffic over the years. The internet played a big part in this. Millions of websites flooded the internet, containing text. But how do you even store text?
+Text remains as the most fundamental storage of speech for millennia and is intrinsic to human communication. When the digital age had begun, people tried to put text on computers and let them display it. In this article we will explore the storage of text in a practical way — and you'll even get to be part of it.
 
-Sure. In a text file, which you can open with any text editor, like _VS Code_ or _Sublime_ (_Microsoft Word_ does not count). But, since files are just bytes (at the core), somehow these bytes are interpreted as text. And in this article, we'll explore these interpretations.
+The article you are currently reading is written in text, a sensical sequence of characters. Somewhere, somehow this text is on your computer and rendered to your screen. But where and how is this text stored?
 
-## What Makes Text Text?
+Sure you might think: in a text file, which you can open with any text editor, like _VS Code_ or _Sublime_ (_Microsoft Word_ does not count). But, since files are just bytes (at the core), somehow these bytes are interpreted as text. And in this article, we'll explore these interpretations.
 
-A text file is usually distinguished from a different file type by an extension or some other method of tagging, like [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types). This needs to happen because even if the file might be validly interpretated as text, in actuality it might be some other kind of format.
+## What Makes Text _Text_?
+
+A text file is usually distinguished from a different file type by an extension or some other method of tagging, like [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types). This needs to happen because even if the file might be validly interpreted as text, in actuality it might be some other kind of format.
 
 Guessing file contents is hard, but there are some tools like the [_file_ command on Linux](https://en.wikipedia.org/wiki/File_(command)).
 
@@ -33,25 +37,25 @@ The first thing you might do is count the characters, which will be 95 + 1 (new 
 
 Now, if we map each character unambiguously to one integer, we can encode the characters into bytes. So, let's map the characters in order (the new line character is denoted by '\n'):
 
-Symbol / Character | Numeric Value
--------------------|--------------
-'A' | 0
-'B' | 1
-... | ...
-'Z' | 25
-'a' | 26
-'b' | 27
-... | ...
-'z' | 53
-'0' | 54
-'1' | 55
-... | ...
-'9' | 63
-' ' | 64
-'!' | 65
-... | ...
-'~' | 94
-'\n' | 95
+| Symbol / Character | Numeric Value |
+|--------------------|---------------|
+| 'A'                | 0             |
+| 'B'                | 1             |
+| ...                | ...           |
+| 'Z'                | 25            |
+| 'a'                | 26            |
+| 'b'                | 27            |
+| ...                | ...           |
+| 'z'                | 53            |
+| '0'                | 54            |
+| '1'                | 55            |
+| ...                | ...           |
+| '9'                | 63            |
+| ' '                | 64            |
+| '!'                | 65            |
+| ...                | ...           |
+| '~'                | 94            |
+| '\n'               | 95            |
 
 This simple look-up table encodes characters/text unambiguously.
 
@@ -59,16 +63,16 @@ This simple look-up table encodes characters/text unambiguously.
 
 Something similar did the Americans do in 1961 in part from telegraph code. They also mapped characters to symbols, but with a maximum numerical value of 127 = 2⁷ - 1, resulting in 128 = 2⁷ different characters. Here is their table:
 
-\ |0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F
---|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-
-0_|\<NUL>|\<SOH>|\<STX>|\<ETX>|\<EOT>|\<ENQ>|\<ACK>|\<BEL>|\<BS>|\<HT>|\<LF>|\<VT>|\<FF>|\<CR>|\<SO>|\<SI>
-1_|0|0|0|0'|'0'|'0'|'0'|'0'|'0'|'0'|'0'|'0'|'0'|'0'|'0'|'0'
-2_| |!|"|#|$|%|&|'|(|)|*|+|,|-|.|/
-3_|0|1|2|3|4|5|6|7|8|9|:|;|\<|=|>|?
-4_|@|A|B|C|D|E|F|G|H|I|J|K|L|M|N|O
-5_|P|Q|R|S|T|U|V|W|X|Y|Z|[|\\|]|^|_
-6_|\`|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o
-7_|p|q|r|s|t|u|v|w|x|y|z|\{|\||\}|~|\<DEL>
+| \  | 0      | 1      | 2      | 3      | 4      | 5      | 6      | 7      | 8     | 9     | A     | B     | C     | D     | E     | F      |
+|----|--------|--------|--------|--------|--------|--------|--------|--------|-------|-------|-------|-------|-------|-------|-------|--------|
+| 0_ | \<NUL> | \<SOH> | \<STX> | \<ETX> | \<EOT> | \<ENQ> | \<ACK> | \<BEL> | \<BS> | \<HT> | \<LF> | \<VT> | \<FF> | \<CR> | \<SO> | \<SI>  |
+| 1_ | 0      | 0      | 0      | 0'     | '0'    | '0'    | '0'    | '0'    | '0'   | '0'   | '0'   | '0'   | '0'   | '0'   | '0'   | '0'    |
+| 2_ |        | !      | "      | #      | $      | %      | &      | '      | (     | )     | *     | +     | ,     | -     | .     | /      |
+| 3_ | 0      | 1      | 2      | 3      | 4      | 5      | 6      | 7      | 8     | 9     | :     | ;     | \<    | =     | >     | ?      |
+| 4_ | @      | A      | B      | C      | D      | E      | F      | G      | H     | I     | J     | K     | L     | M     | N     | O      |
+| 5_ | P      | Q      | R      | S      | T      | U      | V      | W      | X     | Y     | Z     | [     | \\|]  | ^     | _     |        |
+| 6_ | \`     | a      | b      | c      | d      | e      | f      | g      | h     | i     | j     | k     | l     | m     | n     | o      |
+| 7_ | p      | q      | r      | s      | t      | u      | v      | w      | x     | y     | z     | \{    | \|    | \}    | ~     | \<DEL> |
 
 This text encoding is called ASCII (**A**merican **S**tandard **C**ode for **I**nformation **I**nterchange) and is very space efficient for the English language.
 
@@ -78,18 +82,18 @@ The other, non-control characters, are printable; there are only 95 of them in A
 
 ## But Where Are All My Cool Emojis 😎🤙?
 
-With ASCII, you have no chance of encoding more (advanced) characters 😭. This is the origin of [_ASCII Art_](https://en.wikipedia.org/wiki/ASCII_art), a whole branch of computer art derived from these 95 printable ASCII characters. These include smileys :-), angry smileys >:( and cute smileys :3. And of course tons of other things...
+With ASCII, you have no chance of encoding more (advanced) characters 😭. This is the origin of [_ASCII Art_](https://en.wikipedia.org/wiki/ASCII_art), a whole branch of computer art derived from these 95 printable ASCII characters. These include smileys :-), angry smileys >:( and cute smileys :3. And of course [tons of other things](https://www.asciiart.eu/)...
 
-To encode more characters, people strived to create more text encodings. But before we go any further, we'll have to define some things:
+To encode more characters, people created more text encodings. But before we go any further, we'll have to define some things:
 
-- A _character_ is a minimal unit of text that has a semantic value (taken [straight from Wikipedia](https://en.wikipedia.org/wiki/Character_encoding#Terminology), 🤭).
+- A _character_ is a minimal unit of text that has a semantic value ([taken straight from Wikipedia](https://en.wikipedia.org/wiki/Character_encoding#Terminology), 🤭).
 - To _code_ means to assign a numerical value.
 - A _code point_ is the value of a character in a coded character set.
 - A _code unit_ is a collection of bits that repesent one character.
 
 ## The Split Of Coding And Encoding
 
-If you payed close attention, you might have noticed that we actually made two steps in encoding text.
+If you paid close attention, you might have noticed that we actually made two steps in encoding text.
 
 First, we coded the characters and then, we encoded that numeric value into bytes. The second part was very easy, because we had less than 256 characters and therefore numeric values, so we could fit one character per byte.
 
@@ -107,7 +111,7 @@ Yes, the code points of the first 128 characters of Unicode are the same as ASCI
 
 Unicode is so advanced that some characters can combine with previous characters to form new ones. An example is the  ́ U+0301 _Combining Acute Accent_: Can you tell the difference between á and á? Probably not. While they may both map to the same _glyph_ (shape, that is rendered), they have different encodings.
 
-The first is just the á U+00E1 _Latin Small Letter a with Acute_. But the second one is a regular a, but with a  ́ U+0301 _Combining Acute Accent_ followed right after. They look like the same character, but they are not.
+The first is just the á U+00E1 _Latin Small Letter a with Acute_. But the second one is a regular 'a' but with a  ́ U+0301 _Combining Acute Accent_ followed right after. They look like the same character, but they are not.
 
 > Well... according to your "definition"... — 🤓
 
@@ -139,9 +143,9 @@ Done? Yes!
 
 These are encoded with two adjacent code units, a _surrogate pair_. But before we explore them, we need to talk about Unicode again...
 
-Suppose, you are the decoder, trying to decode a UTF-16 text stream into the corresponding Unicode code points. How do you know if the a character was encoded using one or two UTF-16 code units. This is impossible with our current knowledge, since all 2¹⁶ values of the single code unit are occupied with characters. There needs to be a range in the BMP that is invalid, a reserved range which no characters are mapped to, the [UTF-16 surrogate range](https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates).
+Suppose, you are the decoder, trying to decode a UTF-16 text stream into the corresponding Unicode code points. How do you know if the character 'a' was encoded using one or two UTF-16 code units. This is impossible with our current knowledge, since all 2¹⁶ values of the single code unit are occupied with characters. There needs to be a range in the BMP that is invalid, a reserved range which no characters are mapped to, the [UTF-16 surrogate range](https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates).
 
-There Is A Hole In Unicode. Specifically, this is the surrogate range: U+D800 (inclusive) to U+E000 (exclusive). No characters are ever associated with these code points.
+There is a hole in Unicode. Specifically, this is the surrogate range: U+D800 (inclusive) to U+E000 (exclusive). No characters are ever associated with these code points.
 
 The characters that do not fall into the BMP have to be encoded using a surrogate pair. This is a pair of one _high surrogate_ and one _low surrogate_ (aka. _leading_ or _trailing_ surrogates).
 
@@ -156,7 +160,7 @@ LS = 0xDC00 + xxxxxxxxxx = 110111xxxxxxxxxx
 
 The technique of encoding 2x 10 bits in adjacent surrogates limits the encoded bits to be 20 and therefore the largest code point to be 2²⁰ + 0x10000 - 1 = U+10FFFF.
 
-This UTF-16 design decision enforced Unicode to reserve the surrogate range and dictated the Unicode character set length to be 2²⁰ + 0x10000 - 0x800 = 1112064 characters.
+This UTF-16 design decision forced Unicode to reserve the surrogate range and restricted the Unicode to 2²⁰ + 0x10000 - 0x800 = 1112064 characters.
 
 #### Self-Synchronization
 
@@ -180,8 +184,30 @@ As of efficiency, UTF-16 is double the size most of the time, because the most f
 
 ### UTF-8
 
-UTF-8 is _the_ standard of text encoding. And it is very straightforward.
+Remember that ASCII's code unit length is 7 bits because it can encode 128 different symbols. But storage comes in 8 bits (bytes). So we actually have 128 free slots to put characters in. This approach is simple but does not account for storing 1112064 characters, since it only adds 128.
 
-import TextEncoderDecoder from "@/comp/TextEncoderDecoder.astro";
+The solution is a _variable length encoding_. Simply, a character may be encoded using one, two or more bytes. Then we can map the most frequently used characters to the smallest encodings, to maximize efficiency.
 
-<TextEncoderDecoder/>
+This is UTF-8.
+
+#### You, The Decoder
+
+To make the structure of UTF-8 more accessible, you will now have to decode Unicode code points from a UTF-8 stream. It is just reading bytes, comparing bits and reordering bits. Here is an abstract representation:
+
+```
+1st      (2nd)    (3rd)    (4th)      Code Point (binary)
+
+0yyyzzzz                            → 00000000 00000000 0yyyzzzz
+110xxxyy 10yyzzzz                   → 00000000 00000xxx yyyyzzzz
+1110wwww 10xxxxyy 10yyzzzz          → 00000000 wwwwxxxx yyyyzzzz
+11110uvv 10vvwwww 10xxxxyy 10yyzzzz → 000uvvvv wwwwxxxx yyyyzzzz
+```
+
+What it does, essentially, is it reads a byte from the input stream (1st byte) and matches (question marks denote irrelevant bits for pattern matching):
+
+- If it conforms to `0???????`, output the byte as a code point and start over.
+- If it conforms to `110?????`, read and **expect** a _continuation byte_ (byte that starts with 10-) and reorder the bits according to the table.
+- If it conforms to `1110????`, read and expect two continuation bytes and so on...
+- ...
+
+Now you know the decoding process, you can trivially implement an encoder.
