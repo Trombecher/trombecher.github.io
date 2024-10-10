@@ -63,16 +63,16 @@ This simple look-up table encodes characters/text unambiguously.
 
 Something similar did the Americans do in 1961 in part from telegraph code. They also mapped characters to symbols, but with a maximum numerical value of 127 = 2⁷ - 1, resulting in 128 = 2⁷ different characters. Here is their table:
 
-| \  | 0      | 1      | 2      | 3      | 4      | 5      | 6      | 7      | 8     | 9     | A     | B     | C     | D     | E     | F      |
-|----|--------|--------|--------|--------|--------|--------|--------|--------|-------|-------|-------|-------|-------|-------|-------|--------|
-| 0_ | \<NUL> | \<SOH> | \<STX> | \<ETX> | \<EOT> | \<ENQ> | \<ACK> | \<BEL> | \<BS> | \<HT> | \<LF> | \<VT> | \<FF> | \<CR> | \<SO> | \<SI>  |
-| 1_ | 0      | 0      | 0      | 0'     | '0'    | '0'    | '0'    | '0'    | '0'   | '0'   | '0'   | '0'   | '0'   | '0'   | '0'   | '0'    |
-| 2_ |        | !      | "      | #      | $      | %      | &      | '      | (     | )     | *     | +     | ,     | -     | .     | /      |
-| 3_ | 0      | 1      | 2      | 3      | 4      | 5      | 6      | 7      | 8     | 9     | :     | ;     | \<    | =     | >     | ?      |
-| 4_ | @      | A      | B      | C      | D      | E      | F      | G      | H     | I     | J     | K     | L     | M     | N     | O      |
-| 5_ | P      | Q      | R      | S      | T      | U      | V      | W      | X     | Y     | Z     | [     | \\|]  | ^     | _     |        |
-| 6_ | \`     | a      | b      | c      | d      | e      | f      | g      | h     | i     | j     | k     | l     | m     | n     | o      |
-| 7_ | p      | q      | r      | s      | t      | u      | v      | w      | x     | y     | z     | \{    | \|    | \}    | ~     | \<DEL> |
+| \  | 0      | 1      | 2      | 3      | 4      | 5      | 6      | 7      | 8      | 9     | A      | B      | C     | D     | E     | F      |
+|----|--------|--------|--------|--------|--------|--------|--------|--------|--------|-------|--------|--------|-------|-------|-------|--------|
+| 0_ | \<NUL> | \<SOH> | \<STX> | \<ETX> | \<EOT> | \<ENQ> | \<ACK> | \<BEL> | \<BS>  | \<HT> | \<LF>  | \<VT>  | \<FF> | \<CR> | \<SO> | \<SI>  |
+| 1_ | \<DLE> | \<DC1> | \<DC2> | \<DC3> | \<DC4> | \<NAK> | \<SYN> | \<ETB> | \<CAN> | \<EM> | \<SUB> | \<ESC> | \<FS> | \<GS> | \<RS> | \<US>  |
+| 2_ |        | !      | "      | #      | $      | %      | &      | '      | (      | )     | *      | +      | ,     | -     | .     | /      |
+| 3_ | 0      | 1      | 2      | 3      | 4      | 5      | 6      | 7      | 8      | 9     | :      | ;      | \<    | =     | >     | ?      |
+| 4_ | @      | A      | B      | C      | D      | E      | F      | G      | H      | I     | J      | K      | L     | M     | N     | O      |
+| 5_ | P      | Q      | R      | S      | T      | U      | V      | W      | X      | Y     | Z      | [      | \\|]  | ^     | _     |        |
+| 6_ | \`     | a      | b      | c      | d      | e      | f      | g      | h      | i     | j      | k      | l     | m     | n     | o      |
+| 7_ | p      | q      | r      | s      | t      | u      | v      | w      | x      | y     | z      | \{     | \|    | \}    | ~     | \<DEL> |
 
 This text encoding is called ASCII (**A**merican **S**tandard **C**ode for **I**nformation **I**nterchange) and is very space efficient for the English language.
 
@@ -170,11 +170,7 @@ UTF-16 is self-synchronizing on 16 bit words, meaning, you can determine whether
 
 This excerpt from Wikipedia explains it well:
 
-> The official Unicode standard says that no UTF forms, including UTF-16, can encode the surrogate code points. Since these will never be assigned a character, there should be no reason to encode them. However, Windows allows unpaired surrogates in filenames[19] and other places, which generally means they have to be supported by software in spite of their exclusion from the Unicode standard.
->
-> UCS-2, UTF-8, and UTF-32 can encode these code points in trivial and obvious ways, and a large amount of software does so, even though the standard states that such arrangements should be treated as encoding errors.
->
-> It is possible to unambiguously encode an unpaired surrogate (a high surrogate code point not followed by a low one, or a low one not preceded by a high one) in the format of UTF-16 by using a code unit equal to the code point. The result is not valid UTF-16, but the majority of UTF-16 encoder and decoder implementations do this when translating between encodings. — [Wikipedia](https://en.wikipedia.org/wiki/UTF-16)
+> The official Unicode standard says that no UTF forms, including UTF-16, can encode the surrogate code points. Since these will never be assigned a character, there should be no reason to encode them. However, Windows allows unpaired surrogates in filenames[19] and other places, which generally means they have to be supported by software in spite of their exclusion from the Unicode standard.UCS-2, UTF-8, and UTF-32 can encode these code points in trivial and obvious ways, and a large amount of software does so, even though the standard states that such arrangements should be treated as encoding errors.It is possible to unambiguously encode an unpaired surrogate (a high surrogate code point not followed by a low one, or a low one not preceded by a high one) in the format of UTF-16 by using a code unit equal to the code point. The result is not valid UTF-16, but the majority of UTF-16 encoder and decoder implementations do this when translating between encodings. — [Wikipedia](https://en.wikipedia.org/wiki/UTF-16)
 
 #### Drawbacks
 
