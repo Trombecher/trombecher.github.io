@@ -32,10 +32,11 @@ const {Content} = await entry.render();
         </div>
     )}
     <article class="px-6 pb-6 text-lg dark:text-black/90 max-w-full">
-        <div class="text-black/70">
+        <h1 class="font-bold text-4xl expanded mb-4 text-black">{entry.data.title}</h1>
+        <div class="text-black/70 mb-12">
             {entry.data.pubUnix
                 ? <>
-                    published <time>{entry.data.pubUnix.toLocaleDateString("en-US", {
+                    <time>{entry.data.pubUnix.toLocaleDateString("en-US", {
                         day: "2-digit",
                         month: "short",
                         year: "2-digit"
@@ -44,10 +45,9 @@ const {Content} = await entry.render();
                 : "Status: Still in development"
             }
             {entry.data.tags.map(tag => (
-                <a href={`/${TAG_TO_SLUG[tag]}/`} class="x bg-black/10 px-3 rounded-full ml-4 hover:bg-black/20 underline">{tag}</a>
+                <a href={`/${TAG_TO_SLUG[tag]}/`} class="x bg-black/10 px-3 rounded-full ml-4 hover:bg-black/20 underline">#{tag}</a>
             ))}
         </div>
-        <h1 class="font-bold text-4xl expanded mb-12 text-black">{entry.data.title}</h1>
         <Content/>
     </article>
     <section class="py-6 mx-6 mt-12 border-t border-black/10">Here (someday) there will be recommendations</section>

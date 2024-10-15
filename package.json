@@ -4,14 +4,14 @@
   "dependencies": {
     "@astrojs/check": "0.9.4",
     "@astrojs/mdx": "3.1.8",
-    "@astrojs/rss": "4.0.8",
-    "@astrojs/sitemap": "3.2.0",
+    "@astrojs/rss": "4.0.9",
+    "@astrojs/sitemap": "3.2.1",
     "@astrojs/tailwind": "5.1.2",
     "aena": "^0.15.6",
     "allc": "^0.2.0",
-    "astro": "4.16.0",
-    "tailwindcss": "^3.4.13",
-    "typescript": "^5.6.2"
+    "astro": "4.16.5",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3"
   },
   "scripts": {
     "dev": "astro dev",
