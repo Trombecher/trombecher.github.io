@@ -1,13 +1,13 @@
 ---
-import { TAGS } from '@/server-util';
-import Footer from './Footer.astro';
-import HeaderLink from './HeaderLink.astro';
+import {TAGS} from "@/server-util";
+import Footer from "./Footer.astro";
+import HeaderLink from "./HeaderLink.astro";
 import {TAG_TO_MULTIPLE, TAG_TO_SLUG} from "../server-util";
 
 interface Props {
-	title?: string;
-	description?: string;
-	image?: string;
+    title?: string;
+    description?: string;
+    image?: string;
     imagePreloadList?: string[],
     wide?: boolean,
 }
@@ -16,94 +16,103 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const {
     title = "Tobias Hillemanns",
-    description = "This is my personal portfolio website.",
+    description = "This is my personal website.",
     image,
     imagePreloadList = [],
     wide = false,
 } = Astro.props;
-
-// →
 ---
 
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
-        <link rel="icon" type="image/webp" href="/favicon.webp" />
-        
-        {imagePreloadList.map(href => (
-            <link rel="preload" as="image" href={href}/>
-        ))}
-        
-        <link rel="canonical" href={canonicalURL} />
-        
-        <title>{title}</title>
-        <meta name="title" content={title} />
-        <meta name="description" content={description} />
-        <meta name="color-scheme" content="dark light" />
-        <meta name="generator" content={Astro.generator} />
-        <meta name="mobile-web-app-capable" content="yes">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0"/>
 
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={Astro.url} />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        {image && <meta property="og:image" content={new URL(image, Astro.url)} />}
+    {imagePreloadList.map(href => (
+        <link rel="preload" as="image" href={href}/>
+    ))}
 
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content={Astro.url} />
-        <meta property="twitter:title" content={title} />
-        <meta property="twitter:description" content={description} />
-        {image && <meta property="twitter:image" content={new URL(image, Astro.url)} />}
-        
-        <style is:global>
-            button {
-                touch-action: manipulation;
-            }
+    <link rel="canonical" href={canonicalURL}/>
 
+    <title>{title}</title>
+    <meta name="title" content={title}/>
+    <meta name="description" content={description}/>
+    <meta name="color-scheme" content="dark light"/>
+    <meta name="generator" content={Astro.generator}/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/manifest.json"/>
+
+    <style is:global>
+        button {
+            touch-action: manipulation;
+        }
+
+        body {
+            --white: 255 255 255;
+            --black: 0 0 0;
+            --blue: 0 119 255;
+        }
+
+        @media (prefers-color-scheme: dark) {
             body {
-                --white: 255 255 255;
-                --black: 0 0 0;
-                --blue: 0 119 255;
+                --white: 0 0 0;
+                --black: 255 255 255;
+                --blue: 120 140 255;
             }
+        }
 
-            @media (prefers-color-scheme: dark) {
-                body {
-                    --white: 0 0 0;
-                    --black: 255 255 255;
-                    --blue: 120 140 255;
-                }
-            }
+        * {
+            @apply focus-visible:outline outline-blue outline-2;
+        }
+    </style>
 
-            * {
-                @apply focus-visible:outline outline-blue outline-2;
-            }
-        </style>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content={Astro.url}/>
+    <meta property="og:title" content={title}/>
+    <meta property="og:description" content={description}/>
+    {image &&
+        <meta property="og:image" content={new URL(image, Astro.url)}/>}
 
-        <link rel="alternate" type="application/rss+xml" title="Tobias Hillemanns Feed" href="/rss.xml" />
-        <meta name="google-site-verification" content="8GlhjUIL8_h8hCmqFXeJgTTV5B6svTQo0SPkQX8iVA8" />
-    </head>
-    <body class="text-black bg-white flex min-h-screen selection:bg-black selection:text-white transition-[background] duration-1000">
-        <aside id="menu" class="flex flex-col max-sm:hidden w-60 max-sm:fixed sticky max-sm:left-0 max-sm:w-screen top-0 h-screen shrink-0 max-sm:bg-white/50 max-sm:backdrop-blur-2xl max-sm:backdrop-saturate-200 z-40">
-            <header class="max-sm:top-0 p-6 pt-12 max-sm:text-3xl expanded text-xl">
-                <HeaderLink href="/">Home</HeaderLink>
-                <HeaderLink href="/explore/" class="mb-4 max-sm:mb-8">Explore</HeaderLink>
-                {TAGS.map(tag => (
-                    <HeaderLink href={`/${TAG_TO_SLUG[tag]}/`} class="max-sm:mb-2">{TAG_TO_MULTIPLE[tag]}</HeaderLink>
-                ))}
-            </header>
-            <Footer class={`${wide ? "" : "max-sm:hidden"} p-6`}/>
-        </aside>
-        <button name="Toggle Menu" title="Toggle Menu" id="menu-toggle" class="fixed sm:hidden right-0 top-0 block p-1 m-4 bg-white/20 backdrop-blur-xl rounded-xl z-50">
-            <svg viewBox="0 0 32 32" width="32" height="32" class="fill-black">
-                <path d="M6 9q-1 0-1-1t1-1h20q1 0 1 1t-1 1zM6 17q-1 0-1-1t1-1h20q1 0 1 1t-1 1zM6 25q-1 0-1-1t1-1h20q1 0 1 1t-1 1z"/>
-            </svg>
-        </button>
-        <main class={`min-w-0 grow mx-auto flex flex-col ${wide ? "" : "max-w-screen-sm"}`}>
-            <slot/>
-            {!wide && <Footer class={"sm:hidden p-6"}/>}
-        </main>
-    </body>
+    <meta property="twitter:card" content="summary_large_image"/>
+    <meta property="twitter:url" content={Astro.url}/>
+    <meta property="twitter:title" content={title}/>
+    <meta property="twitter:description" content={description}/>
+    {image &&
+        <meta property="twitter:image" content={new URL(image, Astro.url)}/>}
+
+    <link rel="icon" type="image/webp" href="/favicon.svg"/>
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="alternate" type="application/rss+xml" title="Tobias Hillemanns Feed" href="/rss.xml"/>
+    <meta name="google-site-verification" content="8GlhjUIL8_h8hCmqFXeJgTTV5B6svTQo0SPkQX8iVA8"/>
+</head>
+<body
+    class="text-black bg-white flex min-h-screen selection:bg-black selection:text-white transition-[background] duration-1000">
+<aside id="menu"
+       class="flex flex-col max-sm:hidden w-60 max-sm:fixed sticky max-sm:left-0 max-sm:w-screen top-0 h-screen shrink-0 max-sm:bg-white/50 max-sm:backdrop-blur-2xl max-sm:backdrop-saturate-200 z-40">
+    <header class="max-sm:top-0 p-6 pt-12 max-sm:text-3xl expanded text-xl">
+        <HeaderLink href="/">Home</HeaderLink>
+        <HeaderLink href="/explore/" class="mb-4 max-sm:mb-8">Explore</HeaderLink>
+        {TAGS.map(tag => (
+            <HeaderLink href={`/${TAG_TO_SLUG[tag]}/`} class="max-sm:mb-2">{TAG_TO_MULTIPLE[tag]}</HeaderLink>
+        ))}
+    </header>
+    <Footer class={`${wide ? "" : "max-sm:hidden"} p-6`}/>
+</aside>
+<button name="Toggle Menu" title="Toggle Menu" id="menu-toggle"
+        class="fixed sm:hidden right-0 top-0 block p-1 m-4 bg-white/20 backdrop-blur-xl rounded-xl z-50">
+    <svg viewBox="0 0 32 32" width="32" height="32" class="fill-black">
+        <path
+            d="M6 9q-1 0-1-1t1-1h20q1 0 1 1t-1 1zM6 17q-1 0-1-1t1-1h20q1 0 1 1t-1 1zM6 25q-1 0-1-1t1-1h20q1 0 1 1t-1 1z"/>
+    </svg>
+</button>
+<main class={`min-w-0 grow mx-auto flex flex-col ${wide ? "" : "max-w-screen-sm"}`}>
+    <slot/>
+    {!wide &&
+        <Footer class={"sm:hidden p-6"}/>}
+</main>
+</body>
 </html>
 
 <script>

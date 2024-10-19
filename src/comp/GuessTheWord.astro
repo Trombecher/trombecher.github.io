@@ -1,0 +1,17 @@
+<button id="play">Play Now!</button>
+<div id="game"></div>
+
+<script>
+    import GTWImpl from "@/comp/GTWImpl";
+    import {mount} from "aena";
+
+    const playButton = document.querySelector<HTMLButtonElement>("#play")!;
+    const game = document.querySelector<HTMLDivElement>("#game")!;
+
+    playButton.onclick = () => {
+        mount(game, GTWImpl());
+        // game.onfullscreenerror = () => game.webkitEnterFullscreen && ;
+        // game.requestFullscreen()
+        // game.webkitEnterFullscreen()
+    }
+</script>

@@ -1,14 +1,14 @@
 ---
-import { Image } from 'astro:assets';
+import {Image} from "astro:assets";
 
 // Accept src, alt, and other attributes passed from MDX
-const { src, alt, ...props } = Astro.props;
+const {src, alt, ...props} = Astro.props;
 ---
 
-<Image 
-  src={src} 
-  alt={alt}
-  {...props} 
-  format="webp" 
-  widths={[592 / 4, 592 / 2, 592, 592 * 2]} 
+<Image
+        src={src}
+        alt={alt}
+        {...props}
+        format="webp"
+        widths={[592 / 4, 592 / 2, 592, 592 * 2]}
 />

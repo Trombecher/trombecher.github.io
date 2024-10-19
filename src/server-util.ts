@@ -6,24 +6,27 @@ export const getAllPosts = async (
 ) => (await getCollection("posts")).filter(post => !(strip && post.data.pubUnix === undefined)
         && (!onlyWithTag || (post.data.tags as readonly string[]).includes(onlyWithTag)));
 
-export const TAGS = ["Tool", "Article", "Project"] as const;
+export const TAGS = ["Tool", "Article", "Project", "Game"] as const;
 
 export const SLUG_TO_TAG = {
     tools: "Tool",
     articles: "Article",
-    projects: "Project"
+    projects: "Project",
+    games: "Game"
 } as const;
 
 export const TAG_TO_SLUG = {
     Tool: "tools",
     Article: "articles",
-    Project: "projects"
+    Project: "projects",
+    Game: "games"
 } as const;
 
 export const TAG_TO_MULTIPLE = {
     Tool: "Tools",
     Article: "Articles",
-    Project: "Projects"
+    Project: "Projects",
+    Game: "Games"
 } as const;
 
 export type Tag = typeof TAGS[number];

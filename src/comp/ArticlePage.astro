@@ -1,8 +1,9 @@
 ---
-import { getEntry } from 'astro:content';
-import BlogImage from './BlogImage.astro';
-import Page from './Page.astro';
+import {getEntry} from "astro:content";
+import BlogImage from "./BlogImage.astro";
+import Page from "./Page.astro";
 import {TAG_TO_SLUG} from "../server-util";
+import DateTime from "./DateTime.astro";
 
 interface Props {
     slug: string,
@@ -10,7 +11,7 @@ interface Props {
 
 const entry = await getEntry({
     collection: "posts",
-    slug: Astro.props.slug
+    slug: Astro.props.slug,
 });
 
 if(!entry) throw 404;
@@ -18,36 +19,30 @@ if(!entry) throw 404;
 const {Content} = await entry.render();
 ---
 
-<Page title={`${entry.data.title} — TH`} description={entry.data.description}>
-    <div class="mt-12"></div>
-    {entry.data.hero && (
-        <div class="sm:px-6 mb-6">
-            <BlogImage
-                src={entry.data.hero}
-                alt=""
-                id="hero"
-                loading="eager"
-                class="sm:rounded-2xl"
-            />
-        </div>
-    )}
-    <article class="px-6 pb-6 text-lg dark:text-black/90 max-w-full">
-        <h1 class="font-bold text-4xl expanded mb-4 text-black">{entry.data.title}</h1>
-        <div class="text-black/70 mb-12">
+<Page title={entry.data.title} description={entry.data.description}>
+    <article class="px-6 pb-6 pt-12 text-lg dark:text-black/90 max-w-full">
+        <h1 class="font-bold text-4xl expanded mb-6 text-black">{entry.data.title}</h1>
+        <div class="text-black/70 mb-6">
             {entry.data.pubUnix
-                ? <>
-                    <time>{entry.data.pubUnix.toLocaleDateString("en-US", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "2-digit"
-                    })}</time>
-                </>
+                ? <DateTime date={entry.data.pubUnix}/>
                 : "Status: Still in development"
             }
             {entry.data.tags.map(tag => (
-                <a href={`/${TAG_TO_SLUG[tag]}/`} class="x bg-black/10 px-3 rounded-full ml-4 hover:bg-black/20 underline">#{tag}</a>
+                <a href={`/${TAG_TO_SLUG[tag]}/`}
+                   class="x bg-black/10 px-3 rounded-full ml-4 hover:bg-black/20 underline">#{tag}</a>
             ))}
         </div>
+        {entry.data.hero && (
+            <div class="max-sm:-mx-6">
+                <BlogImage
+                    src={entry.data.hero}
+                    alt=""
+                    id="hero"
+                    loading="eager"
+                    class="max-sm:rounded-none"
+                />
+            </div>
+        )}
         <Content/>
     </article>
     <section class="py-6 mx-6 mt-12 border-t border-black/10">Here (someday) there will be recommendations</section>
@@ -77,7 +72,6 @@ const {Content} = await entry.render();
     article blockquote,
     article pre,
     article img,
-    article h1,
     article h5,
     article h6,
     article table {
@@ -109,12 +103,12 @@ const {Content} = await entry.render();
     }
 
     article blockquote {
-        @apply relative pl-4 text-blue;
+        @apply relative pl-4 text-black/70;
     }
 
     article blockquote::before {
         content: "";
-        @apply rounded-full block w-1 min-h-full bg-blue absolute left-0 top-0;
+        @apply rounded-full block w-1 min-h-full bg-black/70 absolute left-0 top-0;
     }
 
     article code:not(pre code) {
@@ -156,13 +150,13 @@ const {Content} = await entry.render();
     import {toRGBFromHSL} from "allc/rgb";
 
     const img = document.querySelector<HTMLImageElement>("#hero");
-    
+
     let calculatedAvg = !img;
 
     const calculateAvg = () => {
         if(calculatedAvg || !img) return;
 
-        img.onload = async () => {
+        img.onload = async() => {
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
             if(!ctx) throw new Error("Failed to retrieve 2d canvas context");
@@ -181,7 +175,7 @@ const {Content} = await entry.render();
             // let totalAlpha = 0;
             const pixelCount = pixels.length / 4;
 
-            for (let i = 0; i < pixels.length; i += 4) {
+            for(let i = 0; i < pixels.length; i += 4) {
                 totalRed += pixels[i]!;
                 totalGreen += pixels[i + 1]!;
                 totalBlue += pixels[i + 2]!;
@@ -197,7 +191,7 @@ const {Content} = await entry.render();
             const rgb = toRGBFromHSL({
                 h,
                 s,
-                l: .04
+                l: .04,
             });
 
             const style = document.createElement("style");
@@ -214,12 +208,12 @@ const {Content} = await entry.render();
     if(!isLowPowerMode()) {
         const dmq = isDarkModeQuery();
         dmq.onchange = calculateAvg;
-                
+
         if(isDarkMode(dmq)) {
             onscroll = () => {
                 calculateAvg();
                 onscroll = null;
-            }
+            };
         }
     }
 </script>

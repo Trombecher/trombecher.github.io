@@ -1,0 +1,21 @@
+{
+    "name": "Tobias Hillemanns",
+    "short_name": "TH",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "type": "image/svg+xml",
+            "sizes": "any"
+        }
+    ],
+    "start_url": ".",
+    "theme_color": "#000000",
+    "display": "standalone",
+    "description": "This my personal website.",
+    "shortcuts": [
+        {
+            "name": "Password Generator",
+            "url": "/password-generator"
+        }
+    ]
+}
