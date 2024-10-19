@@ -8,10 +8,8 @@
     const playButton = document.querySelector<HTMLButtonElement>("#play")!;
     const game = document.querySelector<HTMLDivElement>("#game")!;
 
-    playButton.onclick = () => {
-        mount(game, GTWImpl());
-        // game.onfullscreenerror = () => game.webkitEnterFullscreen && ;
-        // game.requestFullscreen()
-        // game.webkitEnterFullscreen()
-    }
+    playButton.onclick = async () => {
+        mount(game, await GTWImpl());
+        await game.firstElementChild!.requestFullscreen();
+    };
 </script>

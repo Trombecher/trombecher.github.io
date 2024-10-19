@@ -2,6 +2,7 @@ import {defineConfig} from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
+import basicSsl from "@vitejs/plugin-basic-ssl";
 
 const modPlugin = () => tree => {
     for(const child of tree.children) {
@@ -48,6 +49,10 @@ export default defineConfig({
     vite: {
         esbuild: {
             jsxInject: "import {createElement, Fragment} from \"aena\"",
-        }
+        },
+        plugins: [basicSsl({
+            name: "dev",
+            "domains": ["localhost"],
+        })]
     }
 });
