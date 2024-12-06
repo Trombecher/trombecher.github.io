@@ -14,5 +14,12 @@ export default defineConfig({
     site: "https://trombecher.github.io",
     build: {
         inlineStylesheets: "always",
-    }
+    },
+    vite: {
+        resolve: {
+            alias: {
+                '@': '/src',
+            },
+        },
+    },
 });
