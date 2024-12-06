@@ -1,0 +1,68 @@
+---
+import Header from "./Header.tsx";
+import Footer from "./Footer.tsx";
+
+interface Props {
+    title?: string,
+    wide?: boolean,
+    description?: string,
+    preloadImageURLs?: string[]
+}
+
+const {
+    title = "Tobias Hillemanns",
+    wide = false,
+    description = "Anything is here, even nothing.",
+    preloadImageURLs = []
+} = Astro.props;
+---
+
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+    <meta name="viewport" content="width=device-width"/>
+    <meta name="generator" content={Astro.generator}/>
+
+    <link rel="preload" href="/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
+    <link rel="preload" href="/fonts/InterVariable-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
+    {preloadImageURLs.map(url => <link rel="preload" href={url} as="image" type="image/avif"/>)}
+
+    <style is:global>
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 100 900;
+            font-display: swap;
+            src: url("/fonts/InterVariable.woff2") format("woff2");
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: italic;
+            font-weight: 100 900;
+            font-display: swap;
+            src: url("/fonts/InterVariable-Italic.woff2") format("woff2");
+        }
+
+        * {
+            @apply focus-visible:outline outline-2 outline-blue outline-offset-2;
+        }
+
+        button {
+            touch-action: manipulation;
+            user-select: none;
+        }
+    </style>
+
+    <meta name="description" content={description}/>
+    <title>{title}</title>
+</head>
+<body class="bg-white text-black flex flex-col items-center min-h-screen selection:bg-blue selection:text-white">
+<Header pathname={Astro.url.pathname} client:load/>
+<main class={`${wide ? "" : "max-w-screen-sm"} w-full`}>
+    <slot/>
+</main>
+<Footer/>
+</body>
+</html>

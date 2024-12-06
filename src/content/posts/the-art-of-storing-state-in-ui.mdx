@@ -1,0 +1,83 @@
+---
+title: "The Art Of Storing State In UI"
+tags: ["Article"]
+description: ""
+---
+
+Forget React, forget Svelte; we're doin' it the ol' fashioned way. And it's suprisingly fast!
+
+> Disclaimer: do NOT do this in collaborative production code, especially NOT on big, infrastructure relevant projects. This is pure fun!
+
+## Storing State
+
+Where, how and when do you store state? Think about it for a minute. You are probably running a [T3](https://create.t3.gg) app, powered by [Next.JS](https://nextjs.org) but you never wondered where your state's at. Let's simplify!
+
+A classic React app would do it like this:
+
+```plaintext
+<button>Count: 1</button>
+               ↑
+               │ React Runtime synchronizes
+               │
+     REACT: [VALUE] ←─────── [Your component / client-side code]
+               │
+               │ React Runtime synchronizes
+               ↓
+         [LocalStorage or URL or other]
+```
+
+Here, `REACT` is the _primary data store_ and all others are _derived data stores_. It is like a hub for your data. In this case it provides the flexibility to add a new derived data store.
+
+### Removing The Primary Data Store
+
+But what if your state diagram could look like this?
+
+```plaintext
+<button>Count: 1</button>
+               ↑
+               │
+      [Your component / client-side code]
+               │
+               ↓
+         [LocalStorage or URL or other]
+```
+
+Now you need to provide explicit setters for your state. Yeah, no getters. You currently have no knowledge about the current value; meaning, you are only sending out messages, because your client-side code is only _using_ state, not directly _storing_ state. To _get_ the current state, you need find a place where the state is somehow stored ‒ and the DOM seems very appealing...
+
+Therefore, you could architect your app around extracting state from UI.
+
+```plaintext
+<button>Count: 14</button>
+               │↑
+           get ││ set
+               ↓│
+      [Your component / client-side code]
+                │
+                │ set
+                ↓
+         [LocalStorage or URL or other]
+```
+
+## The Classic Counter
+
+Let's look at the classics of classics, the _counter_. Here we can apply this technique.
+
+Personally, I'd like to use [Astro](https://astro.build) for my framework in combination with TailwindCSS (because they have a nice, native integration). Or you could just write plain HTML:
+
+```html
+<button id="counter">Count: 0</button>
+```
+
+This way the search engines know about your content on first load (because the crawlers do not execute JavaScript that may build your page). Even if your client has disabled JS, they'll still see the button (it just does not do anything).  
+This way, you won't need a framework/TSX that handles DOM creation as well as some (unnecessary) virtual DOM.
+
+```js
+const button = document.querySelector("#counter");
+button.onclick = () => button.textContent = "Count: " + (1 + +button.textContent.split(" ")[1])
+```
+
+Now look at that client side JS. Isn't it beautiful? Sure, if you change only a slight thing in the server side HTML, the whole thing falls apart. But isn't this freedom? Free from all client-side "bloat".
+
+You don't even need to manage state! You just extract the current state from the DOM, the rendered UI. Sure you'll eventually need to render some custom components, but for small interactive and SEO heavy applications this is a viable option.
+
+And because you are using Tailwind and Tailwind is smart, you can dynamically modify the `classList` property of any element and Tailwind is sure to add these classes as well (at least I never had any issues regarding that, maybe your experience is different).

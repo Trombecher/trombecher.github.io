@@ -1,0 +1,209 @@
+---
+title: "How Text Is Stored"
+description: "Take a deep dive into the web of text encodings."
+hero: "@/images/how-text-is-stored.svg"
+pubUnix: 1728579654810
+tags: ["Article"]
+---
+
+Text remains as the most fundamental storage of information for millennia and is intrinsic to human communication. When the digital age had begun, people tried to put text on computers and let them display it. In this article we will explore the storage of text in a practical way — and you'll even get to be part of it.
+
+The article you are currently reading is written in text, a sensical sequence of characters. Somewhere, somehow this text is on your computer and rendered to your screen. But where and how is this text stored?
+
+Sure you might think: in a text file, which you can open with any text editor, like _VS Code_ or _Sublime_ (_Microsoft Word_ does not count). But, since files are just bytes (at the core), somehow these bytes are interpreted as text. And in this article, we'll explore these interpretations.
+
+## What Makes Text _Text_?
+
+A text file is usually distinguished from a different file type by an extension or some other method of tagging, like [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types). This needs to happen because even if the file might be validly interpreted as text, in actuality it might be some other kind of format.
+
+Guessing file contents is hard, but there are some tools like the [_file_ command on Linux](https://en.wikipedia.org/wiki/File_(command)).
+
+Text is made of _symbols_, in fact it is a _list_ of symbols. E.g. _A_ is a symbol, such as _B_ or _C_. Even punctuation. Everything you can type on your keyboard really (and beyond). The tricky thing to do now is to _encode_ (meaning _embed_ into some other context) the symbols into bytes, so that we can store them in a file. Symbols (in this context) are also referred to as _characters_ and commonly put between single quotes, like this 'A'.
+
+## Mapping Characters To Bytes (Encoding)
+
+If you had to encode text into bytes to store in a file, how would you do it? Well, let's try! Consider these as our characters:
+
+```
+ABCDEFGHIKJLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+0123456789
+ !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+```
+
+...plus an added _new line character_, which represents a line break.
+
+The first thing you might do is count the characters, which will be 95 + 1 (new line) = 96. A byte has 256 different values, since it consists of eight bits, each either 0 or 1 (2⁸ = 256). This allows the storage of integers ranging from zero to 255 (both ends inclusive) in one byte.
+
+Now, if we map each character unambiguously to one integer, we can encode the characters into bytes. So, let's map the characters in order (the new line character is denoted by '\n'):
+
+| Symbol / Character | Numeric Value |
+|--------------------|---------------|
+| 'A'                | 0             |
+| 'B'                | 1             |
+| ...                | ...           |
+| 'Z'                | 25            |
+| 'a'                | 26            |
+| 'b'                | 27            |
+| ...                | ...           |
+| 'z'                | 53            |
+| '0'                | 54            |
+| '1'                | 55            |
+| ...                | ...           |
+| '9'                | 63            |
+| ' '                | 64            |
+| '!'                | 65            |
+| ...                | ...           |
+| '~'                | 94            |
+| '\n'               | 95            |
+
+This simple look-up table encodes characters/text unambiguously.
+
+### ASCII
+
+Something similar did the Americans do in 1961 in part from telegraph code. They also mapped characters to symbols, but with a maximum numerical value of 127 = 2⁷ - 1, resulting in 128 = 2⁷ different characters. Here is their table:
+
+| \  | 0      | 1      | 2      | 3      | 4      | 5      | 6      | 7      | 8      | 9     | A      | B      | C     | D     | E     | F      |
+|----|--------|--------|--------|--------|--------|--------|--------|--------|--------|-------|--------|--------|-------|-------|-------|--------|
+| 0_ | \<NUL> | \<SOH> | \<STX> | \<ETX> | \<EOT> | \<ENQ> | \<ACK> | \<BEL> | \<BS>  | \<HT> | \<LF>  | \<VT>  | \<FF> | \<CR> | \<SO> | \<SI>  |
+| 1_ | \<DLE> | \<DC1> | \<DC2> | \<DC3> | \<DC4> | \<NAK> | \<SYN> | \<ETB> | \<CAN> | \<EM> | \<SUB> | \<ESC> | \<FS> | \<GS> | \<RS> | \<US>  |
+| 2_ |        | !      | "      | #      | $      | %      | &      | '      | (      | )     | *      | +      | ,     | -     | .     | /      |
+| 3_ | 0      | 1      | 2      | 3      | 4      | 5      | 6      | 7      | 8      | 9     | :      | ;      | \<    | =     | >     | ?      |
+| 4_ | @      | A      | B      | C      | D      | E      | F      | G      | H      | I     | J      | K      | L     | M     | N     | O      |
+| 5_ | P      | Q      | R      | S      | T      | U      | V      | W      | X      | Y     | Z      | [      | \\|]  | ^     | _     |        |
+| 6_ | \`     | a      | b      | c      | d      | e      | f      | g      | h      | i     | j      | k      | l     | m     | n     | o      |
+| 7_ | p      | q      | r      | s      | t      | u      | v      | w      | x      | y     | z      | \{     | \|    | \}    | ~     | \<DEL> |
+
+This text encoding is called ASCII (**A**merican **S**tandard **C**ode for **I**nformation **I**nterchange) and is very space efficient for the English language.
+
+Some characters are not displayable, like the \<NUL> character with numerical value zero: . It appears like a boring box. These _control characters_ were used to instruct peripheral devices like printers and therefore have placeholder symbols. But some did stick, for example the line feed \<LF>, the carriage return \<CR> (both as line terminators in various operating systems) or the horizontal tab \<HT>.
+
+The other, non-control characters, are printable; there are only 95 of them in ASCII.
+
+## But Where Are All My Cool Emojis 😎🤙?
+
+With ASCII, you have no chance of encoding more (advanced) characters 😭. This is the origin of [_ASCII Art_](https://en.wikipedia.org/wiki/ASCII_art), a whole branch of computer art derived from these 95 printable ASCII characters. These include smileys :-), angry smileys >:( and cute smileys :3. And of course [tons of other things](https://www.asciiart.eu/)...
+
+To encode more characters, people created more text encodings. But before we go any further, we'll have to define some things:
+
+- A _character_ is a minimal unit of text that has a semantic value ([taken straight from Wikipedia](https://en.wikipedia.org/wiki/Character_encoding#Terminology), 🤭).
+- To _code_ means to assign a numerical value.
+- A _code point_ is the value of a character in a coded character set.
+- A _code unit_ is a collection of bits that repesent one character.
+
+## The Split Of Coding And Encoding
+
+If you paid close attention, you might have noticed that we actually made two steps in encoding text.
+
+First, we coded the characters and then, we encoded that numeric value into bytes. The second part was very easy, because we had less than 256 characters and therefore numeric values, so we could fit one character per byte.
+
+However once the character count exceeds that limit, we have to come up with a better solution than ASCII to encode values into bytes.
+
+## Unicode
+
+Unicode is _the_ standard for coding characters. All that it is, is a big table mapping of symbols to numerical values, called Unicode _code points_.
+
+For example, the character A has the code point U+0041. Or the character / has the code point U+002F. Is something familiar?
+
+Yes, the code points of the first 128 characters of Unicode are the same as ASCII. This was done for backwards compatibility and upcoming encodings took advantage of this.
+
+### Advanced Compositions
+
+Unicode is so advanced that some characters can combine with previous characters to form new ones. An example is the  ́ U+0301 _Combining Acute Accent_: Can you tell the difference between á and á? Probably not. While they may both map to the same _glyph_ (shape, that is rendered), they have different encodings.
+
+The first is just the á U+00E1 _Latin Small Letter a with Acute_. But the second one is a regular 'a' but with a  ́ U+0301 _Combining Acute Accent_ followed right after. They look like the same character, but they are not.
+
+> Well... according to your "definition"... — 🤓
+
+If you want to explore the looseness of the character more, I might [write an article about it](/this-is-eight-characters/).
+
+## Part Two: Encoding
+
+Now that we have a coded character set (really, Unicode), we have to transform the code points into bytes.
+
+### UTF-16
+
+The worst, the first I shall say. No but seriously who uses UTF-16 really? Windows??? The JVM??? JavaScript??? Nah... What even is UTF-16?
+
+_UTF-16_ (the 16-bit Unicode Transformation Format) is a variable-length character encoding capable of encoding all 1,112,064 valid code points of Unicode ([Wikipedia](https://en.wikipedia.org/wiki/UTF-16)). Its name includes 16, describing the code unit length: 16 bits.
+
+Every character of Unicode can be encoded using either one or two code units (meaning two or four bytes). We'll focus on the case where only one code unit is needed.
+
+#### One Code Unit For The Basic Multilingual Plane (BMP)
+
+...is the first section of Unicode, the first 2¹⁶ characters. Originally this range was the target for the previous UCS-2 encoding, which could encode this range only.
+
+**If the code point to be encoded is in the BMP** (= has a numerical value less than 2¹⁶), then the value is to be encoded using a one code unit (16 bits).
+
+Done? Yes!
+
+#### But What About The Other Characters 🤔?
+
+> Yes!!! What about my favourite emojis 🥳🤯😧???
+
+These are encoded with two adjacent code units, a _surrogate pair_. But before we explore them, we need to talk about Unicode again...
+
+Suppose, you are the decoder, trying to decode a UTF-16 text stream into the corresponding Unicode code points. How do you know if the character 'a' was encoded using one or two UTF-16 code units. This is impossible with our current knowledge, since all 2¹⁶ values of the single code unit are occupied with characters. There needs to be a range in the BMP that is invalid, a reserved range which no characters are mapped to, the [UTF-16 surrogate range](https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates).
+
+There is a hole in Unicode. Specifically, this is the surrogate range: U+D800 (inclusive) to U+E000 (exclusive). No characters are ever associated with these code points.
+
+The characters that do not fall into the BMP have to be encoded using a surrogate pair. This is a pair of one _high surrogate_ and one _low surrogate_ (aka. _leading_ or _trailing_ surrogates).
+
+Let the code point to be encoded (not part of the BMP) be _U_. _U_ is encoded by subtracting 0x10000 (the BMP) and splitting the bits of the result into two groups of ten bits. The _high_ ten bits are the low bits of the _high_ (or _leading_) surrogate _HS_ with the remaining six high bits being 110110. The _low_ ten bits are the low bits of the _low_ (or _trailing_) surrogate _LS_ with the remaining six high bits being 110111.
+
+```
+U = yyyyyyyyyyxxxxxxxxxxzzzzzzzzzzzzzzzz
+U' = U - 0x1000 = yyyyyyyyyyxxxxxxxxxx
+HS = 0xD800 + yyyyyyyyyy = 110110yyyyyyyyyy
+LS = 0xDC00 + xxxxxxxxxx = 110111xxxxxxxxxx
+```
+
+The technique of encoding 2x 10 bits in adjacent surrogates limits the encoded bits to be 20 and therefore the largest code point to be 2²⁰ + 0x10000 - 1 = U+10FFFF.
+
+This UTF-16 design decision forced Unicode to reserve the surrogate range and restricted the Unicode to 2²⁰ + 0x10000 - 0x800 = 1112064 characters.
+
+#### Self-Synchronization
+
+UTF-16 is self-synchronizing on 16 bit words, meaning, you can determine whether a code unit starts a character without examining earlier code units. You can tell just by the code unit itself, if it is a BMP code unit or a high or low surrogate.
+
+#### Lone Surrogates
+
+This excerpt from Wikipedia explains it well:
+
+> The official Unicode standard says that no UTF forms, including UTF-16, can encode the surrogate code points. Since these will never be assigned a character, there should be no reason to encode them. However, Windows allows unpaired surrogates in filenames[19] and other places, which generally means they have to be supported by software in spite of their exclusion from the Unicode standard.UCS-2, UTF-8, and UTF-32 can encode these code points in trivial and obvious ways, and a large amount of software does so, even though the standard states that such arrangements should be treated as encoding errors.It is possible to unambiguously encode an unpaired surrogate (a high surrogate code point not followed by a low one, or a low one not preceded by a high one) in the format of UTF-16 by using a code unit equal to the code point. The result is not valid UTF-16, but the majority of UTF-16 encoder and decoder implementations do this when translating between encodings. — [Wikipedia](https://en.wikipedia.org/wiki/UTF-16)
+
+#### Drawbacks
+
+UTF-16 is used in Windows or the JVM, but the truth is that as of September 2024, UTF-8 has been the most popular text encoding on the internet with 98.3% of surveyed websites (source: [Wikipedia](https://en.wikipedia.org/wiki/Popularity_of_text_encodings#Popularity_on_the_World_Wide_Web)).
+
+As of efficiency, UTF-16 is double the size most of the time, because the most frequent symbols encountered are part of the english language, which does not require two bytes per symbol, but rather one (see the [ASCII section](#ascii)). But ASCII only supports 128 symbols; if only there was similar encoding capable of encoding all of Unicode...
+
+### UTF-8
+
+Remember that ASCII's code unit length is 7 bits because it can encode 128 different symbols. But storage comes in 8 bits (bytes). So we actually have 128 free slots to put characters in. This approach is simple but does not account for storing 1112064 characters, since it only adds 128.
+
+The solution is a _variable length encoding_. Simply, a character may be encoded using one, two or more bytes. Then we can map the most frequently used characters to the smallest encodings, to maximize efficiency.
+
+This is UTF-8.
+
+#### You, The Decoder
+
+To make the structure of UTF-8 more accessible, you will now have to decode Unicode code points from a UTF-8 stream. It is just reading bytes, comparing bits and reordering bits. Here is an abstract representation:
+
+```
+1st      (2nd)    (3rd)    (4th)      Code Point (binary)
+
+0yyyzzzz                            → 00000000 00000000 0yyyzzzz
+110xxxyy 10yyzzzz                   → 00000000 00000xxx yyyyzzzz
+1110wwww 10xxxxyy 10yyzzzz          → 00000000 wwwwxxxx yyyyzzzz
+11110uvv 10vvwwww 10xxxxyy 10yyzzzz → 000uvvvv wwwwxxxx yyyyzzzz
+```
+
+What it does, essentially, is it reads a byte from the input stream (1st byte) and matches (question marks denote irrelevant bits for pattern matching):
+
+- If it conforms to `0???????`, output the byte as a code point and start over.
+- If it conforms to `110?????`, read and **expect** a _continuation byte_ (byte that starts with 10-) and reorder the bits according to the table.
+- If it conforms to `1110????`, read and expect two continuation bytes and so on...
+- ...
+
+Now you know the decoding process, you can trivially implement an encoder.

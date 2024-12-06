@@ -1,0 +1,221 @@
+---
+import {getEntry} from "astro:content";
+import BlogImage from "./BlogImage.astro";
+import Page from "./Page.astro";
+import {TAG_TO_SLUG} from "@/global";
+import DateTime from "./DateTime.astro";
+
+interface Props {
+    slug: string,
+}
+
+const entry = await getEntry("posts", Astro.props.slug);
+
+if(!entry) throw 404;
+
+const {Content} = await entry.render();
+---
+
+<Page title={entry.data.title} description={entry.data.description}>
+    <article class="px-6 pb-6 text-xl max-w-full leading-relaxed">
+        {entry.data.hero && (
+            <div class="max-sm:-mx-6">
+                <BlogImage
+                    src={entry.data.hero}
+                    alt=""
+                    id="hero"
+                    loading="eager"
+                    class="max-sm:rounded-none"
+                />
+            </div>
+        )}
+        <h1 class="font-bold text-5xl expanded tracking-tight mt-12 mb-6 text-black break-words">{entry.data.title}</h1>
+        <div class="text-black/70 mb-12 text-base">
+            {entry.data.pubUnix
+                ?
+                <DateTime date={entry.data.pubUnix}/>
+                : "Status: Still in development"
+            }
+            <span class="w-4 inline-block"></span>
+            {entry.data.tags.map(tag => (
+                <a href={`/${TAG_TO_SLUG[tag]}/`} class="!text-white bg-blue !no-underline rounded-full px-3 inline-block mr-2">#{tag}</a>
+            ))}
+        </div>
+        <Content/>
+    </article>
+    <section class="py-6 mx-6 mt-12 border-t border-black/10">Here (someday) there will be recommendations</section>
+</Page>
+
+<style is:global>
+    article h2 {
+        @apply text-black expanded font-semibold text-3xl mt-12 mb-10;
+    }
+
+    article h3 {
+        @apply text-black expanded font-semibold text-2xl my-8;
+    }
+
+    article h4 {
+        @apply dark:text-black/90 font-medium text-xl mt-8 expanded;
+    }
+
+    article h4 {
+        @apply text-black
+    }
+
+    article svg,
+    article ul,
+    article p,
+    article ol,
+    article blockquote,
+    article pre,
+    article img,
+    article h5,
+    article h6,
+    article table {
+        @apply mt-6;
+    }
+
+    article hr {
+        @apply my-12 border-black/20;
+    }
+
+    article ul, ol {
+        @apply pl-12;
+    }
+
+    article ul {
+        @apply list-disc;
+    }
+
+    article ol {
+        @apply list-decimal;
+    }
+
+    article li {
+        @apply list-item;
+    }
+
+    article li > *:nth-child(1) {
+        @apply m-0;
+    }
+
+    article blockquote {
+        @apply relative pl-4 text-black/70;
+    }
+
+    article blockquote::before {
+        content: "";
+        @apply rounded-full block w-1 min-h-full bg-black/70 absolute left-0 top-0;
+    }
+
+    article code:not(pre code) {
+        @apply inline-block bg-black/10 text-lg px-1 rounded-md;
+    }
+
+    article pre {
+        @apply rounded-2xl p-4 whitespace-pre text-lg;
+    }
+
+    article pre code {
+        @apply contents;
+    }
+
+    article img, article svg {
+        @apply rounded-[32px];
+    }
+
+    article a:not(.x) {
+        @apply underline text-blue hover:no-underline hover:text-blue/80 active:text-blue/60;
+    }
+
+    article table {
+        @apply block overflow-x-auto text-center border-collapse border-spacing-0;
+    }
+
+    article td, article th {
+        @apply px-3 py-1 border border-[color-mix(in_srgb,theme(colors.white),theme(colors.black)_20%)];
+    }
+
+    article th {
+        @apply bg-black/10 text-black;
+    }
+
+    .astro-code {
+        @apply !bg-black/5 !text-black/90;
+    }
+</style>
+
+<script>
+    import {isDarkMode, isDarkModeQuery, isLowPowerMode} from "../client";
+    import {toHSLFromRGB} from "allc/hsl";
+    import {toRGBFromHSL} from "allc/rgb";
+
+    const img = document.querySelector<HTMLImageElement>("#hero");
+
+    let calculatedAvg = !img;
+
+    const calculateAvg = () => {
+        if(calculatedAvg || !img) return;
+
+        img.onload = async() => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            if(!ctx) throw new Error("Failed to retrieve 2d canvas context");
+
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const pixels = imageData.data;
+
+            let totalRed = 0;
+            let totalGreen = 0;
+            let totalBlue = 0;
+            // let totalAlpha = 0;
+            const pixelCount = pixels.length / 4;
+
+            for(let i = 0; i < pixels.length; i += 4) {
+                totalRed += pixels[i]!;
+                totalGreen += pixels[i + 1]!;
+                totalBlue += pixels[i + 2]!;
+                // totalAlpha += pixels[i+3];
+            }
+
+            const {h, s} = toHSLFromRGB({
+                r: Math.floor(totalRed / pixelCount) / 255,
+                g: Math.floor(totalGreen / pixelCount) / 255,
+                b: Math.floor(totalBlue / pixelCount) / 255,
+            });
+
+            const rgb = toRGBFromHSL({
+                h,
+                s,
+                l: .04,
+            });
+
+            const style = document.createElement("style");
+            style.textContent = `@media (prefers-color-scheme: dark) { body { --white: ${rgb.r * 255} ${rgb.g * 255} ${rgb.b * 255} !important; } }`;
+            document.head.append(style);
+        };
+
+        // To handle image loading
+        if(img.complete) img.onload(null as any);
+
+        calculatedAvg = true;
+    };
+
+    if(!isLowPowerMode()) {
+        const dmq = isDarkModeQuery();
+        dmq.onchange = calculateAvg;
+
+        if(isDarkMode(dmq)) {
+            onscroll = () => {
+                calculateAvg();
+                onscroll = null;
+            };
+        }
+    }
+</script>

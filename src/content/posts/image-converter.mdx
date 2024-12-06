@@ -1,0 +1,22 @@
+---
+title: "Image Converter"
+tags: ["Tool"]
+description: "Convert images to different formats for free!"
+pubUnix: 1733461825287
+---
+
+import ImageConverter from "@/comp/ImageConverter";
+
+Convert images for free!
+
+<ImageConverter client:load="solid"/>
+
+_How does this work and how is it free?_ Well, because I am providing this code for free and **the images are not sent to any server for processing**, this service is free. The website is using _your_ browser locally to convert the images.
+
+Due to advancements in WebAssembly support, you can compile your systems-level language (like C or Rust) to WebAssembly and have it work in any browser.
+
+I am using the [image](https://docs.rs/image/latest/image/) Rust library to convert images and then using [wasm-pack](https://rustwasm.github.io/wasm-pack/) to crosscompile my Rust code to WebAssembly.
+
+## Security
+
+Your images **stay on your device only**. They are not stored, not even in LocalStorage or IndexedDB. The website does not send them to any server (you can validate this by checking out the Network tab in the dev tools of your browser). Once you reload the page, they are gone.

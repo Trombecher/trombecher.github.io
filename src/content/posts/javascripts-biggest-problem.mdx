@@ -1,0 +1,19 @@
+---
+title: "JavaScript's Biggest Problem"
+tags: ["Article"]
+description: ""
+---
+
+JavaScript bundlers are dumb, and it's not their fault. It's the language's fault. Let's talk about it.
+
+...
+
+Bundlers are not able to minify property keys of objects because they might be accessed dynamically during runtime (e.g. by bracket + string indexing).
+
+Bundlers are not able to turn classes into functions.
+
+Bundlers are not able to turn functions into arrow functions because they cannot ensure that no one uses them to create an object with `new`.
+
+Because JavaScript relies on so much runtime complexity, bundlers are limited in the way they can modify the source code.
+
+The solution? Make a different language that has Rust-like compile time complexity and optimized JavaScript output.

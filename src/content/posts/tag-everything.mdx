@@ -1,0 +1,60 @@
+---
+title: "Tag Everything"
+tags: ["Article"]
+description: ""
+---
+
+You just took a photo of your plant in your living room; and you transferred it onto your computer. How would you describe that photo/file. How does it differ from other files on your drive. Sure, it...
+
+- ...is a photo; it has the file type `.png`.
+- ...displays a plant.
+- ...was taken in your living room.
+
+Now try to organize your disk structure to reflect these properties. A common pattern for the home folder is `~/Images/Plants/IMG_4562.png`. This considers the plant property and the image (.png) property. But it fails to consider the living room.
+
+You _could_ name a file `plant-in-my-living-room.png` but querying all images that show a plants would require the program to iterate over _all_ of your images (you may have a few thousand) and yield the images that have "plant" in their file names.
+
+What if your file was described by what it contains rather than what it _was named_? What if you could query all your images for "living room" and "plant" and get the file(s) you're looking for? It is like putting your files into multiple folders at once.
+
+## Problem → Solution
+
+Still not convinced? Imagine a few sound files:
+
+```
+bd1lng.wav
+hi23ld.wav
+sd9_producer-gems.wav
+```
+
+What _are_ they? You can barely tell by their file name. You have to listen to them to know. Now you'd like to produce some music using these samples. To work efficiently you'll eventually have to do some sort of folder organization; but here a similar problem arises: you can't put a file in multiple folders at once. You have to choose one.
+
+You'd like to put `bd1lng.wav` into the `Drums/Kicks/Long` folder, but also in the `Favourites` folder and in the `IDownloadedThisFreePackAlongWithSomeViruses` folder. But just imagine you could do that. Then what would even be the point of the file name anymore? Just because your file system requires it?
+
+At this point the file could be called `234325.wav` and share the same properties, no one cares.
+
+This problem arises in every regular file system, and it hurts productivity. A solution would be a database and a program querying. But this has some other problems:
+
+* You have to maintain a database.
+* You have to interact with a program to access your files.
+* Speed is not great since the database operates _on top_ of the file system, although most of the time it has a good cache. With this setup you'd have two caches, one for the file system and one for the database.
+
+## I Propose
+
+A new file system that describes files according to tags.
+
+### Properties of Tags
+
+A tag...
+
+* ...is a universal property, that can be applied to any number of files.
+* ...can require any combination of "parent" tags, that are automatically applied, if this tag is applied. This scopes the tag in question.
+* ...can be unique, meaning that if a file has this tag there cannot be a different file that has the same tags as the target.
+### Caveats
+
+* When a process wants to read/write to a file, it needs some kind of handle/reference. But because tags do not always uniquely identify a file, the file may need to have a numerical ID.
+
+### Examples
+
+```
+ff
+```

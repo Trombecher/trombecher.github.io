@@ -1,0 +1,65 @@
+---
+title: "About Units"
+tags: ["Article"]
+description: ""
+---
+
+Units are a special piece of math and I find them fascinating. Let me show you a new way to see and work with units.
+
+## The SI-Units
+
+Physics tells us there are seven fundamental and independent units, which describe the universe as specified by the [Internation System of Units](https://en.wikipedia.org/wiki/International_System_of_Units). These are:
+
+- Seconds _s_, measure of time
+- Meters _m_, measure of distance
+- Kilograms _kg_, measure of mass
+- Ampere _A_, measure of electric current
+- Kelvin _K_, measure of thermodynamic temperature
+- Mole _mol_, amount of substance
+- Candela _cd_, lumious intensity
+
+With these units you can build _derived units_, which are products of integer powers of base units, like the Newton.
+
+The Newton _N_ is _defined_ to be the force needed to accelerate one kilogram of mass at the rate of one meter per second in the direction of the applied force. Therefore _N_ equals _kg_ * _m_ / _s_ / _s_.
+
+## Dimensionless / Scalar Units
+
+[According to Wikipedia](https://en.wikipedia.org/wiki/Dimensionless_quantity), radians _rad_ is a dimensionless unit, a unit whose value is 1.
+
+Let's take a look at angular velocity _ω_ (small greek omega). Its unit is `1/s`... This is nonsense. Clearly it describes radians (angle) per second, so why isn't the unit `rad/s`? But you don't see that in physics, do you?
+
+Now the unit is descriptive to the value. It provides context which is lost by removing it from the unit stack. What does `1/s` even mean? [???] per second?
+
+## Prefixes
+
+The SI-System doesn't only come with the seven base units, but also provides 24 metric prefixes which can be used to systematically construct different magnitudes of the base units. Here are some:
+
+- mega _M_ = 1 000 000
+- kilo _k_ = 1000
+- hecto _h_ = 100
+- deca _da_ = 10
+
+- deci _d_ = 0.1
+- centi _c_ = 0.01
+- milli _m_ = 0.001
+- micro _μ_ = 0. 000 001
+
+### Examples
+
+To describe one million watts ([Watt](https://en.wikipedia.org/wiki/Watt) _W_, derived unit of power consumption) it is handy to work with `MW` (megawatts) than to have a trailing 10⁶ all the time.
+
+### DIY Units
+
+Maths does not prevent you from constructing expressions like `k$` (kilodollars) or `Mlaps` (megalaps, one million laps).
+
+### Unix Prefixes Are Units
+
+What does `km` actually mean? It's meters, but times a thousand. So it would be reasonable to assume the _k_ behaves like a quantifier, a scalar with value 1000. Why can't we just treat a unit prefix as a dimensionless unit, a mathematical symbol? What we are really doing is juxstaposed multiplication, with _k_ and _m_.
+
+How hear me out! `kkm` may not look like a valid expression, but it is! It is the product of two 1000's and the meter unit. So `kkm = Mm`. And `1=km`, right?
+
+Wait... _m_ is meter, right? Well, _m_ could also mean _milli_. So `1000 * 0.001 = 1` is right, but only if _m_ is _milli_. But, **since no one writes `km` meaning _multiply 1000 with 0.001_**, `km` means kilometers and not 1; and that brings us to...
+
+### The Unfortunate Power(s) 
+
+Conventionally, square kilometers are written as `km²`.

@@ -1,0 +1,86 @@
+---
+title: "(Not) Everything About Color"
+description: ""
+tags: ["Article"]
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" height="90" class="w-full">
+    <rect width="100%" height="100%" fill="#f00"/>
+    <text x="30" y="40" class="font-semibold text-2xl" fill="#fff">WHAT DO YOU SEE? RED?</text>
+</svg>
+
+You probably will. But why? Because light emitted from your screen with a wavelength of about 700nm is travelling through the air, hitting your eye in just the right way to produce signals, which your brain interprets as red.
+
+That was a whole lot of things, so let's break it up into steps. Assume there is light hitting your eye, but...
+
+## What Is Light?
+
+A physicist might tell you it is a wave... but also a particle...  
+Ok let's just skip this part. For this application **light is a (continuos) _wave_ travelling through the air**.
+
+Light has a frequency `f` because it is a wave, just like water. Frequency just means: how many bumps are there in the wave in one second (unit: `1/s`, bump is not really a unit...).
+
+But we don't like to work in frequencies, do we? We know that the speed of light `c` is about `300,000,000m/s`. With that information we can calculate the _wavelength_ `λ` (small greek letter _lambda_) of the light, which just means: what is the distance between two bumps in the wave; or — if we have the wavelength — we can calulate the frequency.
+
+For example, we can calculate the frequency of our 700nm light as follows:
+
+```
+    λ = c / f
+<=> f = c / λ
+<=> f ≈ 300,000,000m/s / 700nm
+<=> f ≈ 4.2857 * 10^-14 /s                    (watch your units; frequency has the unit 1/s)
+```
+
+Next, the juicy 700nm light wave is hitting your eye. After being focused by your eye lens, the wave is bundled onto a spot on your retina. There, some photoreactive cells are emitting signals which travel through "cables" into your brain. Your brain knows how to interpret these signals as a color as seen by your eye.
+
+But...
+
+## What _Is_ Color?
+
+You have probably heard that color is an illusion. And they were probably right. See, when you were a kid and you saw _something_, your parents told you "That's the color _red_". And when you saw _something else_, they repeated that.
+
+Your brain figured out that, what these objects have in common, was, that they produced similar signals from your eye; a color, called "red". Now you knew what "red" looks like.
+
+We just sort of agreed that _this_ is red. I mean, these are just tags or words to describe your surroundings. We agreed on red for this one. This made it easier to standardize certain things.
+
+### The Subconcious Reaction
+
+In my opinion I am not qualified to talk about the effects of color, but for what I know is that _red_ is commonly associated with love (heart), danger (blood, anger) or heat (glowing hot metal). These things played essential roles in our primal life, that they are basically baked in into our brains.
+
+As a consequence of that, there has been almost no issues regarding standardization of colors or things related to color, for example street signs.
+
+## How The Light Is Made
+
+This topic is worth another man's many hours of work's blog post, but I'll keep it short here.
+
+Somehow _you_ tell your computer >display red, and it does that with great accuracy.
+
+In essence, you are running a program that has been compiled (built) by you or someone else. They built this program for your operating system (OS), running your hardware and abstracting certain things for the benefit of your program (like handling the GPU and CPU interrupts; architecture dependent).
+
+Your OS then scheduled your program, enabeling it to run on the raw CPU. When the program wants to draw things to the display, it asks the OS using syscalls (commonly Linux) or DLL-exported methods (Windows style). All of that does not matter, since the the display's _pixels_ need to turn on.
+
+A display is just a (2D) collection of _pixels_ and a _pixel_ is just a collection of commonly three _sub-pixels_: red, green and blue (RGB). You can even see them if you look close enough.
+
+TODO: Insert image of subpixels
+
+ANY combination of these subpixels will result in a different color for the pixel. Since your display has millions of pixels, you can display many, MANY different images (and don't forget the time axis! (video)).
+
+Conveniently, programmers hated (and still hate) complexity and just stored three values for each pixel in memory. This made it easy to modify (draw) stuff on the screen.
+
+### Color Spaces
+
+Technically we have to cover color spaces in this post, but I don't want to. Instead I am just going to declare sRGB to be the color space for this article. If you want to learn more, check out Wikipedia or someday I might write about it.
+
+sRGB just declares each color channel to be an unsigned eight bit (one byte) integer (`u8` for my Rust folks), an integer ranging from zero (inclusive) to 256 (exclusive). This makes it efficient to store in memory, even large amounts. The sRGB color space defines mappings from these channel integer values to wave lengths from your monitor (more or less, depending on your monitor's calibration).
+
+### Hex
+
+Oh boy, hexadecimal. I'll just assume you know what this advanced (/j) numbering system is all about. In case you don't, read this article.
+
+Since bytes and hexadecimal play together nicely, it is no wonder why you see hex codes describing color all across the internet. One digit of a hexadecimal number is one of 16 symbols, which means that with two symbols you can combine to 256 (`= 16 * 16`) symbols, which is ideal for a channel which has 256 distinctly different values. 
+
+Therefore, the value of the channel can be represented using a two digit hexadecimal number, three channels using three (concatenated) hexadecimal numbers. Now put a hash `#` at the front and you can describe colors the _hex_ way, like red: `#ff0000` (255 red, 0 green, 0 blue).
+
+## But What About Alpha?
+
+Your monitor cannot display alpha. It is like an opacity value, indicating how stacked colors should be mixed. For example a green layer

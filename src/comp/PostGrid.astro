@@ -1,0 +1,67 @@
+---
+import Page from "./Page.astro";
+import {type Slug, SLUG_TO_TAG, TAG_TO_DESCRIPTION, TAG_TO_MULTIPLE} from "../global";
+import {Image} from "astro:assets";
+import DateTime from "@/comp/DateTime.astro";
+import {getAllPosts} from "../server";
+import LinkFollow from "./LinkFollow.astro";
+
+interface Props {
+    onlyWithTag?: Slug
+}
+
+const maybeSlug = Astro.props.onlyWithTag;
+
+const cas = maybeSlug
+    ? TAG_TO_MULTIPLE[SLUG_TO_TAG[maybeSlug]]
+    : "All Posts";
+
+const description = maybeSlug
+    ? TAG_TO_DESCRIPTION[SLUG_TO_TAG[maybeSlug]]
+    : "Anything is here, even nothing.";
+
+const posts = await getAllPosts(
+    !import.meta.env.DEV,
+    maybeSlug && SLUG_TO_TAG[maybeSlug]
+);
+
+posts.sort((a, b) =>
+    (a.data.pubUnix?.valueOf() || 0) - (b.data.pubUnix?.valueOf() || 0));
+---
+
+<Page title={cas} wide={true} description={description}>
+    <h1 class="mt-6 text-center font-bold text-3xl expanded px-6">{cas}</h1>
+    <h2 class="text-center mt-2 text-black text-xl mb-12 px-6">{description}</h2>
+    <div class="px-6 grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(256px,1fr))]">
+        {posts.map(post => (
+            <a href={`/${post.slug}/`} class="relative group block p-4 bg-black/5 hover:bg-black/10 rounded-3xl transition active:bg-black/20">
+                {post.data.hero && (
+                    <Image
+                        src={post.data.hero}
+                        alt=""
+                        widths={[400 / 4, 400 / 2, 400, 400 * 2]}
+                        class={"rounded-2xl mb-3"}
+                        format="avif"
+                    />
+                )}
+                <div class="text-2xl expanded font-semibold">
+                    {post.data.title}
+                </div>
+                <div class="text-black/80">
+                    {post.data.pubUnix && <DateTime date={post.data.pubUnix}/>}
+                    {post.data.tags.map(tag => (
+                        <span class="italic">#{tag}{" "}</span>
+                    ))}
+                </div>
+
+                <LinkFollow/>
+            </a>
+        ))}
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</Page>
