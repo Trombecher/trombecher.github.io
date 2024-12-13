@@ -2,6 +2,7 @@ import {type Accessor, createMemo, createSignal, type JSX, type Signal} from "so
 import {effect} from "solid-js/web";
 import {generatePassword, LOWER_CASE, NUMBERS, SYMBOLS, UPPER_CASE} from "@/client.ts";
 import Toggle from "@/comp/Toggle.tsx";
+import {rockyou} from "@/rockyou.ts";
 
 const OPTIONS = [UPPER_CASE, LOWER_CASE, NUMBERS, SYMBOLS] as const;
 
@@ -172,7 +173,13 @@ export default () => {
                 </>}
                 bg={() => strengthIndex()}
             >
-                {strength().info}
+                {(() => strength().info) as any}
+
+                {rockyou.has(password()) && (
+                    <div class={"bg-red text-white mt-4 p-4 rounded-2xl font-bold"}>
+                        Your password is in the top 10,000 most common passwords.
+                    </div>
+                )}
             </Section>
         </>
     );

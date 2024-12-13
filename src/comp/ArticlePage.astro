@@ -126,7 +126,7 @@ const {Content} = await entry.render();
     }
 
     article a:not(.x) {
-        @apply underline text-blue hover:no-underline hover:text-blue/80 active:text-blue/60;
+        @apply underline text-blue hover:text-blue/80 active:text-blue/60;
     }
 
     article table {
@@ -145,77 +145,3 @@ const {Content} = await entry.render();
         @apply !bg-black/5 !text-black/90;
     }
 </style>
-
-<script>
-    import {isDarkMode, isDarkModeQuery, isLowPowerMode} from "../client";
-    import {toHSLFromRGB} from "allc/hsl";
-    import {toRGBFromHSL} from "allc/rgb";
-
-    const img = document.querySelector<HTMLImageElement>("#hero");
-
-    let calculatedAvg = !img;
-
-    const calculateAvg = () => {
-        if(calculatedAvg || !img) return;
-
-        img.onload = async() => {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            if(!ctx) throw new Error("Failed to retrieve 2d canvas context");
-
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            ctx.drawImage(img, 0, 0, img.width, img.height);
-
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-
-            let totalRed = 0;
-            let totalGreen = 0;
-            let totalBlue = 0;
-            // let totalAlpha = 0;
-            const pixelCount = pixels.length / 4;
-
-            for(let i = 0; i < pixels.length; i += 4) {
-                totalRed += pixels[i]!;
-                totalGreen += pixels[i + 1]!;
-                totalBlue += pixels[i + 2]!;
-                // totalAlpha += pixels[i+3];
-            }
-
-            const {h, s} = toHSLFromRGB({
-                r: Math.floor(totalRed / pixelCount) / 255,
-                g: Math.floor(totalGreen / pixelCount) / 255,
-                b: Math.floor(totalBlue / pixelCount) / 255,
-            });
-
-            const rgb = toRGBFromHSL({
-                h,
-                s,
-                l: .04,
-            });
-
-            const style = document.createElement("style");
-            style.textContent = `@media (prefers-color-scheme: dark) { body { --white: ${rgb.r * 255} ${rgb.g * 255} ${rgb.b * 255} !important; } }`;
-            document.head.append(style);
-        };
-
-        // To handle image loading
-        if(img.complete) img.onload(null as any);
-
-        calculatedAvg = true;
-    };
-
-    if(!isLowPowerMode()) {
-        const dmq = isDarkModeQuery();
-        dmq.onchange = calculateAvg;
-
-        if(isDarkMode(dmq)) {
-            onscroll = () => {
-                calculateAvg();
-                onscroll = null;
-            };
-        }
-    }
-</script>
