@@ -25,7 +25,7 @@ export default ({pathname = location.pathname}: {pathname: string}) => {
             />
 
             <nav
-                class={`${menuIsElevated() ? "shadow-lg" : "shadow-none"} m-4 ${menuOpen() ? "bg-white/80 gap-y-2" : "bg-white/60 gap-0"} p-2 rounded-[24px] duration-300 transition-all backdrop-blur-3xl z-[100] flex flex-wrap justify-center`}>
+                class={`${menuIsElevated() ? "bg-[color-mix(in_oklch,color-mix(in_oklch,theme(colors.white),theme(colors.black)_20%)_50%,transparent)] shadow-2xl shadow-black/5" : "shadow-none"} m-4 ${menuOpen() ? "!bg-white gap-y-2" : "gap-0"} p-2 rounded-[24px] duration-300 transition-all backdrop-blur-3xl z-[100] flex flex-wrap justify-center`}>
                 <a
                     rel="prefetch"
                     href={"/"}

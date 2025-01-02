@@ -21,6 +21,7 @@ export default () => {
                 onclick={() => {
                     if(timeout) return;
 
+                    // @ts-ignore
                     timeout = setTimeout(() => {
                         setCount(0);
                         alert("yay");
