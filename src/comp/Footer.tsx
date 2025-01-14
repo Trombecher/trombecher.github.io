@@ -13,12 +13,12 @@ export default () => (
             <path d="M48 0v16h16V0Z" class="fill-black"/>
         </svg>
         <p class="my-4">&copy; {new Date().getFullYear()} Tobias Hillemanns. All rights reserved.</p>
-        <p>
-            Built with <Link href="https://astro.build/">Astro</Link> + <Link href="https://docs.solidjs.com/">Solid</Link> + <Link href="https://tailwindcss.com/">TailwindCSS</Link>
+        <p class={"text-center"}>
+            Built with <Link href="https://astro.build/">Astro</Link> + <Link href="https://docs.solidjs.com/">Solid</Link> + <Link href="https://tailwindcss.com/">TailwindCSS</Link><br/>
+            Hosted by <Link href="https://pages.github.com/">GitHub Pages</Link> ❤️
         </p>
-        <p>
-            Hosted by <Link href="https://pages.github.com/">GitHub
-            Pages</Link> ❤️
+        <p class={"mt-4"}>
+            <Link href={"/privacy-policy/"}>Privacy Policy</Link> · <Link href={"/imprint/"}>Imprint</Link>
         </p>
     </footer>
 );

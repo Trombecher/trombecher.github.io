@@ -12,6 +12,11 @@ export default defineConfig({
     integrations: [solidJs(), tailwind(), mdx()],
     trailingSlash: "always",
     site: "https://trombecher.github.io",
+    markdown: {
+        shikiConfig: {
+            theme: "github-light-default"
+        }
+    },
     build: {
         inlineStylesheets: "always",
     }

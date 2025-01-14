@@ -1,0 +1,239 @@
+---
+title: "A Complete Guide To JavaScript Objects"
+description: ""
+tags: ["Article"]
+---
+
+This article is a collection of concepts and facts that I believe _every_ JavaScript developer should know. It really helps with familiarizing yourself with the language.
+
+This document is necessary because of bad language design. If you want to know more about JavaScript's issues, I might write an article about it.
+
+This article may skip on a few facts (because this is not a documentation). If you want to read the docs, go to [MDN](https://developer.mozilla.org/en-US/).
+
+---
+
+We'll start with the basics.
+
+## Values
+
+Working in a programming language, you'll always have to ask yourself: _what do I have?_ And the JavaScript answer to this question is: you have _values_.
+
+If you have _something_ in JavaScript (labelled by property or a variable), it is a value, meaning an _object_ or a _primitive_. A value has a type (and associated data according to that type). You can test for that type, but the associated data is what we're modifying implicitly through operations.
+
+### Primitives
+
+JavaScript has seven types of primitives:
+
+- `string`
+- `number`
+- `bigint`
+- `boolean`
+- `undefined`
+- `symbol`
+- `null`
+
+Primitives are immutable, meaning they do not share mutable memory. Trying to mutate a primitive will result in that value being _replaced_ by a new one instead of mutating in another kind of way that could affect other values.
+
+This includes adding numbers: `x += 1`, or concatenating strings: `"a" + "b"`. Variables or properties of objects are sheer semantic labels for the storage location of the value.
+
+### Objects
+
+_Objects_ are JavaScript values that are not primitives.
+
+Objects can be thought of as _pointers_ (in like a low-level language such as C) as values. The value that lives in your storage location is a _reference_ (a _pointer_) to a **shared** storage location somewhere in your program's memory, meaning **multiple pointers can point to a single object**.
+
+This last statement is very important because it is the source of many side effect bugs in JavaScript code.
+
+So in a sense objects are _mutable_, while primitives are not.
+
+---
+
+The second big thing to know about objects is their interface (how can you mutate that object?).
+
+Objects are like maps: **they map a value to another value**. And you can change this mapping whenever you want.
+
+## Checking Types
+
+Now that we have values, we would like to check the type of an arbitrary value.
+
+JavaScript is a dynamically typed language. Meaning only values have types and nothing else. You _cannot_ restrict a variable or a property to a type, only my convention.
+
+Sometimes JavaScript hates you and does unwanted _type coercion_. This just means that, although JavaScripts expects a value of a different type (for example in an operation), JavaScript just _coerces_ (converts) that value into the desired type. Sometimes this is handy, but other times not. This is why you should **never** use `==`. PLEASE use `===` (we'll get to that later).
+
+To check the type of a value (or assert that the value has the given type), you can and should use the `typeof` keyword/operator, like:
+
+```js
+console.log(typeof {}); // logs "object"
+console.log(typeof "10"); // logs "string"
+console.log(typeof 10); // logs "number"
+console.log(typeof 10n); // logs "bigint"
+console.log(typeof true); // logs "boolean"
+console.log(typeof undefined); // logs "undefined"
+console.log(typeof Symbol()); // logs "symbol"
+console.log(typeof null); // logs "object", wait...
+```
+
+...what was that? An innocent `null`, disguised as an object? Yeah, so `null` has the type `object`. Why?
+
+As Tony Hoare himself said at a software conference in 2009:
+
+> I call it my billion-dollar mistake. It was the invention of the null reference in 1965.
+
+`null` should represent a missing _object_, a _null reference_. This is why it has the type `object`. But `undefined` should indicate an absence of a value.
+
+To check for `null` you should use `===`:
+
+```js
+console.log(variable === null);
+```
+
+## Properties
+
+Although fields can be accessed on primitive values, first we are going to look at properties on objects.
+
+An object maps strings or symbols (keys) to values (values, in map terms). Objects can be seen as a collection of properties, each being such a mapping.
+
+There are two types of properties: data properties and accessor properties.
+
+### Data Properties
+
+Data properties are described using those "properties":
+
+- `value`: the value retrieved by a get access of the property. Can be any JavaScript value.
+- `writable`: a boolean value indicating if the property can be changed with an assignment.
+- `enumerable`: a boolean value indicating if the property can be enumerated by a for...in loop. See also Enumerability and ownership of properties for how enumerability interacts with other functions and syntaxes.
+- `configurable`: a boolean value indicating if the property can be deleted, can be changed to an accessor property, and can have its attributes changed.
+
+### Accessor Properties
+
+An accessor property is the JavaScript's equivalent of Java's (horrendous) getter and setter model (it's horrendous because if you have many properties you want to expose, you'll have to implement getter and setters for _all_ the properties). They are described by the following "properties":
+
+- `get`: a function called with an empty argument list to retrieve the property value whenever a get access to the value is performed. See also getters. May be undefined.
+
+- `set`: a function called with an argument that contains the assigned value. Executed whenever a specified property is attempted to be changed. See also setters. May be undefined.
+
+- `enumerable`: a boolean value indicating if the property can be enumerated by a for...in loop. See also Enumerability and ownership of properties for how enumerability interacts with other functions and syntaxes.
+
+- `configurable`: a boolean value indicating if the property can be deleted, can be changed to a data property, and can have its attributes changed.
+
+### Accessing Properties
+
+You can access a property of a value like:
+
+```js
+// Get
+object.property
+object["property"] // "array" syntax
+
+// Set
+object.property = "Some value"
+object["property"] = 4354353 // "array" syntax
+```
+
+If you are using the "array" syntax to get or set properties, the value is coerced into a string or a symbol.
+
+### Special Properties
+
+Every object has a special, hidden _prototype property_. Its value is of type `object` (meaning `null` or an object).
+
+If a property does not exist on an object, then the prototype object (if available) is searched for this property and so on. That is called traversing the _prototype chain_ and is how JavaScript implements inheritance.
+
+---
+
+If you want to use objects as maps, please just use the built-in `Map`. Objects perform bad as key-value stores for _random and dynamic_ data.
+
+### Properties On Primitives And Special Objects
+
+If a property is accessed on a primitive, the corresponding wrapper function is used to create a new (special) object with that prototype and the property is then accessed on the object.
+
+### Indexed Collections
+
+...
+
+## Functions
+
+...
+
+### Constructor Functions
+
+...
+
+## Classes
+
+
+The one that I'm most mad about is the one that is the most standard in any programming language: _sum_ types. The ability to group other types in JavaScript is implemented with classes. Classes classically have polymorphic semantics, and they also in JS.
+
+A JS class looks like this:
+
+```js
+class MyClass {
+    property = initialValue;
+    #privateProperty;
+
+    constructor() {
+        // Constructor code...
+    }
+
+    associatedFunction() {
+        // ...
+    }
+
+    static staticFunction() {
+        // ...
+    }
+}
+```
+
+_How to use this class?_ Like this:
+
+```js
+MyClass.staticFunction();
+
+const instance = new MyClass();
+console.log(instance.property);
+instance.associatedFunction();
+
+console.log(instance.#privateProperty); // DOES NOT WORK! SYNTAX ERROR!
+```
+
+But what are we actually doing? First access the field `staticFunction` on `MyClass` and then calling it. Then we create a new object by calling `new MyClass()` (and implicitly invoking the constructor) and then doing things with `instance`, most notably accessing the `associatedFunction` property.
+
+This (last) property is like Schrödinger's cat. Let's try to check its existence:
+
+```js
+console.log("associatedFunction" in instance); // logs "true"
+console.log(Object.keys(instance).includes("associatedFunction")); // logs "false"
+```
+
+_What the heck is going on here?_ See, the property does not actually exist. _But_ **every object in JavaScript has a hidden prototype "field"**. You _can_ access it via the `__proto__` property, but that's deprecated (it might still work tho); instead it is recommended to use [`Object.getPrototypeOf(...)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getPrototypeOf) which is widely supported.
+
+This property holds the _prototype object_ encountered earlier. In short, if a property is not found in the target object, JavaScript looks into the prototype object and continues the search.
+
+(Of course prototype objects may have prototypes themselves and so on; this is how inheritance works in JS at a fundamental level. The root prototype is the object in `Object.prototype`, which makes "every" _object_ inherit from `Object`.)
+
+Now that we have understood the _prototype chain_ (that's how it's called), I'll have to elaborate on another functionality.
+
+#### There Was A Time Without Classes In JavaScript
+
+But the prototype chain already existed back then. So how did they create objects with prototypes without cumbersome manual prototype setting?
+
+There is this feature in JavaScript where when you **[call a function with `new`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new#description), it behaves like a class.** In this context, the target function is called a _constructor function_ and is (basically) the constructor of the instance. Because functions are also objects, one can specify the prototype object by setting the `prototype` property on the function. Static functions are invoked _on_ the function object, so they are just properties of the function object.
+
+The above code can effectively be rewritten in terms of:
+
+```js
+function MyClass() {
+    // Constructor code...
+}
+
+MyClass.prototype = {
+    property: initialValue,
+    associatedFunction() {
+        // ...
+    }
+};
+
+MyClass.staticFunction = function() {
+    // ...
+}
+```

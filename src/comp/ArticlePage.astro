@@ -16,7 +16,7 @@ if(!entry) throw 404;
 const {Content} = await entry.render();
 ---
 
-<Page title={entry.data.title} description={entry.data.description}>
+<Page title={`${entry.data.title} | Tobias Hillemanns Blog`} description={entry.data.description}>
     <article class="px-6 pb-6 text-xl max-w-full leading-relaxed">
         {entry.data.hero && (
             <div class="max-sm:-mx-6">
