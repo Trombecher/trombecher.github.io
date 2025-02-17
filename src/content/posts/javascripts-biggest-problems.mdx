@@ -1,0 +1,361 @@
+---
+title: "JavaScript's Biggest Problems"
+tags: ["Article"]
+description: "JavaScript bundlers are dumb, and it's not their fault. It's the language's fault. Let's talk about it."
+pubUnix: 1739764899563
+---
+
+The world runs on JavaScript; there is no denying of that. It is the language of the web and powers every modern website out there. You cannot replace it, that's why you'll have to work with it.
+
+What's so interesting about JS is, that it is not (ahead-of-time) compiled. This means that every website is shipping "source code" to its users.
+
+This article is supposed to be a selection of obstacles I've encountered when coding in TypeScript that made me question the language itself. Enjoy :)
+
+## Adapt And Adapt?
+
+History let people figure out that it is not smart to send the actual source code to the user. It has many drawbacks, including allowing reverse-engineering of your product, compiler requirement and local compilation errors.
+
+In the case of JavaScript however it is increased payload size, decreased performance or missing static typing (just to name a few). So, like every proper language, people started writing "compilers" for JS. _Why the quotes?_ Now, there were (and are) some kinds:
+
+- Minifiers, e.g. [UglifyJS](https://www.uglifyjs.net/), ...
+- Bundlers, e.g. Webpack, Rollup, Snowpack, ...
+- Transpilers, e.g. TypeScript, Kotlin Multiplatform, [Gleam](https://gleam.run/) (yes Gleam can compile to JS), ...
+- Frameworks, e.g. NextJS, Remix, Angular, Svelte, ...
+
+All of these fall into the category of JS compilers. Because they take in some source code and emit JavaScript. A more accurate term would be _Tools_.
+
+## Romantic Semantics
+
+Now let's talk about the semantics of JS. Why were all these tools necessary to create [_moderate_](https://stateofjs.com/en-US) DX? This all comes down to the questionable language design of JS (I don't blame the creators; they did not know better).
+
+First of all: there is no _JavaScript_ (specification). In fact the language does not even exist. [EMCAScript](https://ecma-international.org/publications-and-standards/standards/ecma-262/) exists and is (by now at least) the de-facto standard. But it confuses me because there is thing called CommonJS, and somehow it tries its hardest to leave.
+
+(Why do I have to name my tailwind config file `tailwind.config.cjs`??? We're in ~~2023~~ ~~2024~~ 2025!)
+
+Besides that there is not even a reference implementation by the creators. Instead, we have (incredibly great!) runtimes and package managers, like [Bun](https://bun.sh/), [Deno](https://deno.com/), [Node](https://nodejs.org/en) (NPM), [V8](https://v8.dev/) (Chromium Browser), [JavaScriptCore](https://developer.apple.com/documentation/javascriptcore), etc. Fortunately their discrepancies are marginal.
+
+### The Language Itself
+
+Being a script language, JS offers the flexibility everybody wanted but no one needed. So the developers had to limit themselves to enable the ES module "architecture". It does not make sense to import a function from another module and have the _import_ cause (unexpected) side effects.
+
+But that's how it is. We figured out how to turn JS in a reasonably _buildable_ language by agreeing on programming conventions. **This is bad language design.** Relying on the programmer to do things the right way should be the last resort.
+
+This agreement has enabled bundlers to efficiently bundle your code into a big JS file. Modern bundlers minify the output JS along with the code concatenation. They also figured out how to do _name resolution_ to enable tree shaking and minification across functions, although _const eval_, _function inlining_ and many standard features of a reasonable programming language (by 2025's means at least) are irrevocably missing.
+
+JavaScript, being a dynamic language, does not have types. But as we saw with PHP, you cannot build stable, maintainable, durable software that scales with a language that does not support types. So in 2012, Microsoft stepped in and released _TypeScript_ to (hopefully) solve all kinds of type-related issues.
+
+And it worked. It made building maintainable apps in JavaScript way easier. Nowadays, it is the industry standard, being used in the leading full stack framework, NextJS.
+
+### Specific Disadvantages
+
+TypeScript is not the whole solution, it "only" introduced a compile step before the bundler, a preprocessor that resolved names, items and does type checking (most importantly). They even added JSX transformation, a new language dialect.
+
+_But_ it only described JavaScript, nothing more. There are a issues in JavaScript, TypeScript and any of their dialects that are unsolvable (by the nature of the language itself); even tools cannot do anything without risking the stability of the output code.
+
+And this brings me to this list of issues that hold back advancements in JavaScript tooling:
+
+#### 1. Bundlers are not able to minify property keys of objects.
+
+If you declare an object in TypeScript in a Vite app (awesome tool btw), then properties on this object cannot be minified. Let's look at an example:
+
+```ts
+export type MyType = {someLongPropertyName: 42};
+
+export const operate = (x: MyType) => {
+    console.log(x.someLongPropertyName);
+}
+```
+
+In theory, this should minify to something like:
+
+```js
+const o=x=>console.log(x.a)
+```
+
+But it does not. Vite is smart enough to resolve the `operate` function and minify that name, but not the property. This is what Vite yields:
+
+```js
+const o=x=>console.log(x.someLongPropertyName)
+```
+
+I think this has to do with JavaScript interop and therefore is an artifact of isolated tooling. TypeScript is run as the preprocessor for Vite, type-checks and removes the types (it can do a lot more but that's basically it); and then Vite runs, takes the stripped JavaScript source files and bundles them (before minifying).
+
+The reason why the bundler is not able to minify that property is that it may be accessed dynamically at runtime, like: `x["some" + "LongPropertyName"]` would work in JS, but not after compilation because this property would not exist.
+
+**No programmer ever would do that**, and it is this bad language design that leads to bundlers to do no minification.
+
+Minification and bundling is done in the same tool (context), but TypeScript does not "talk" to Vite. That is the problem. Running tools in isolation prevents advancements in JavaScript tooling. This is partially why [Void0](https://voidzero.dev/) formed (the goal of a unified JavaScript toolchain).
+
+This architecture is something that is only present in JavaScript. Every other processed/compiled language usually employs one single tool (context) to process the input. In the standard TypeScript toolchain, we first convert from TS to JS and then from JS to processed JS. Those are two isolated contexts which just does not feel right, because the developer sees the process as: TypeScript -> processed (and minified) JS.
+
+I don't believe there is a future in which this property gets minified in TypeScript. It is a fact that if a TS/JS dev is given source code, they can produce smaller and more efficient JS production builds that the bundler itself (which is crazy!!). Again a phenomenon that is exclusive to TypeScript.
+
+#### 2. Bundlers are not able to minify classes.
+
+Classes are overrated. The smallest and the most performant alternative is borrowing methods from C++ or Rust: namespaces.
+
+This example class
+
+```js
+class Example {
+    // a; <- Does not do anything
+    // b;
+
+    constructor(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    sum() {
+        return this.a + this.b;
+    }
+}
+```
+
+can be written/used more efficiently like this:
+
+```js
+function Example(a, b) {
+    this.a = a;
+    this.b = b;
+}
+
+Example.prototype = {sum() { return this.a + this.b }};
+```
+
+This code behaves EXACTLY like the class and it is smaller. And for this use case it is even more efficient to do this:
+
+```js
+const Example__sum = example => example.a + example.b,
+    Example__construct = (a, b) => ({a, b});
+```
+
+This only works if you code like you code in C, Java or any other statically typed language. You'd simply replace any call to `new Example(a, b)` by `Example__construct(a, b)`.
+
+This works and is efficient because the bundler resolves the function name and minifies it, leaving you with:
+
+```js
+const S=e=>e.a+e.b,C=(a,b)=>({a,b})
+```
+
+instead of (this minified version of the class):
+
+```js
+class E{constructor(a,b){this.a=a;this.b=b}sum(){return this.a+this.b}}
+```
+
+This is the minified function version:
+
+```js
+function E(a,b){this.a=a;this.b=b}E.prototype={sum(){return this.a+this.b}}
+```
+
+In this case the size is bigger, but only because we have methods on the prototype. And the size of the `prototype` property is O(1) and vanishes with more properties on the object.
+
+But comparing the efficient version to the class version: we successfully cut the code size in half. Bundlers cannot do this. And JavaScript itself is the problem, it allows to do things that no reasonable programmer would do and the bundler respects it to try to not break anything with minification.
+
+---
+
+This is why when I wrote [Aena](/aena/), my little SPA framework/library project, I discovered all of these quirks. Because it was a small library, I ended up NOT writing any TypeScript, but write readable, optimized (for bundling) JavaScript ES6 modules and manual type descriptions for them (-> [GitHub](https://github.com/Trombecher/aena/tree/main/src)).
+
+This is not how it should be!
+
+## Tagging: We Don't Have It Where We Need It
+
+_Tagging_ (in a programming sense) refers to applying a small piece of metadata to a type union. It is so that we can _distinguish_ between _variants_ of an _enumeration_. Rust has great enums.
+
+JS is working against you while implementing tagged unions and is giving you tags when you don't need them.
+
+Every object in JavaScript has a _tag_. This is the prototype. It allows the user to distinguish between object "types". For example, although instances of `A` and `B` are type-level identical (to `{}`) in TypeScript, they have different prototypes:
+
+```js
+class A {}
+
+class B {}
+```
+
+So the user can check at runtime if an object comes from `A` or `B` using the [`instanceof` operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof).
+
+### How Classes Are Used
+
+But most of the time, classes are simply used to encapsulate functionality. Check out this `BankAccount` class, that encapsulates a bank account:
+
+```js
+class BankAccount {
+    constructor(accountNumber, balance) {
+        this.accountNumber = accountNumber;
+        this.#balance = balance;
+    }
+
+    get balance() {
+        return this.#balance;
+    }
+
+    deposit(amount) {
+        if(amount > 0) this.#balance += amount;
+        else throw new Error("Deposite amount must be positive.");
+    }
+
+    /* ... */
+}
+```
+
+The way you would use that is simple: just instantiate the `BankAccount` and use it maybe in array or some. But you generally would not need the ability to check on some random object at runtime weather it is an instance of `BankAccount`.
+
+In other words: **you don't need the tag**. In this case the class is used to abstract functionality, not to distinguish between other object "types".
+
+JS is nice that it gives you this tag that you don't use, but in the following case you are desperate for such a gift.
+
+### Implementing Tagged Unions / Enums
+
+To illustrate the point consider the following example, an expression tree:
+
+* An expression can be:
+  * A number
+  * An add operation on two expressions
+  * A multiplication operation on two expressions
+  * A negation of an expression
+
+How would you implement such a data-structure (it is a tree)? The idiomatic Rust way would look something like this (_couldn't it be more beautiful?_):
+
+```rust
+pub enum Expression {
+    Number(f64),
+    Add(Box<Expression>, Box<Expression>),
+    Multiply(Box<Expression>, Box<Expression>),
+    Negate(Box<Expression>),
+}
+```
+
+In TypeScript you will always do this:
+
+```ts
+export type Expression = number
+    | {type: "+", left: Expression, right: Expression}
+    | {type: "*", left: Expression, right: Expression}
+    | {type: "-", expression: Expression};
+```
+
+But, perhaps unknowingly, you are utilizing two different tagging techniques in JS.
+
+The primary discriminant is the value type: `number` vs `object`. You can do this with the `typeof` operator. But there is no value-level discriminant to distinguish between the objects.
+
+To distinguish between objects, you have the `type` property on every object with a constant expression. TypeScript realizes this and assists you with matching against the objects using this property (in a switch-statement, for example).
+
+Evaluating such an expression would look like:
+
+```ts
+export const evalExpression = (expression: Expression) => {
+    if(typeof expression === "number") return expression;
+
+    //                "Smart cast", since `expression` cannot be a number
+    //                ↓
+    switch(expression.type) {
+        case "+": return evalExpression(expression.left) + evalExpression(expression.right);
+        case "*": return evalExpression(expression.left) * evalExpression(expression.right);
+        case "-": return -evalExpression(expression.expression);
+    }
+}
+```
+
+See? Implementing this requires two levels of pattern matching **and** it relies on the type-checker (TypeScript here) doing _smart casts_ on constant values. Rust only needs one level of pattern matching:
+
+```rs
+pub fn eval_expression(expression: &Expression) -> f64 {
+    match expression {
+        Expression::Number(x) => *x,
+        Expression::Add(left, right) => eval_expression(left) + eval_expression(right),
+        Expression::Multiply(left, right) => eval_expression(left) * eval_expression(right),
+        Expression::Negate(expression) => -eval_expression(expression),
+    }
+}
+```
+
+You _could_ adjust your TypeScript type to this:
+
+```ts
+export type Expression = {type: "number", value: number}
+    | {type: "+", left: Expression, right: Expression}
+    | {type: "*", left: Expression, right: Expression}
+    | {type: "-", expression: Expression};
+```
+
+...but no one does this (presumably because it is allocating more).
+
+---
+
+My point is: you don't get no tag for free. You have to come up with your own discriminant. This is a place in JavaScript where free tags would benefit UX and actually be used.
+
+(You could make four different classes four each enum variant and then union them in the type, but actually NO ONE DOES THIS.)
+
+## Namespaces
+
+_I wish namespaces existed in TypeScript. Like, namespaces. Compile-time namespaces._
+
+TypeScript does have namespaces. Let's look at one:
+
+```ts
+export namespace banking {
+    export function sendMoney() {
+        throw new Error("You have no money");
+    }
+
+    export function doNothing() {}
+
+    /* ... */
+}
+```
+
+Ok. Now what does TypeScript compile it to?
+
+```js
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.banking = void 0;
+var banking;
+(function (banking) {
+    function sendMoney() {
+        throw new Error("You have no money");
+    }
+    banking.sendMoney = sendMoney;
+    function doNothing() { }
+    banking.doNothing = doNothing;
+    /* ... */
+})(banking || (exports.banking = banking = {}));
+```
+
+Would you look at that.
+
+Besides all that module export junk inserted probably because I compiled that single file, the namespace gets compiled to an **object**.
+
+And you know what happens when you minify object properties? Right. Absolutely nothing. I am disappointed. This is why I never use namespaces.
+
+The sole purpose of namespaces is ["to organize your code"](https://www.typescriptlang.org/docs/handbook/namespaces.html), instead of doing type mangling like:
+
+```ts
+export function banking__sendMoney() { /* ... */ }
+export function banking__doNothing() {}
+/* ... */
+```
+
+The goal of namespaces was to solve this exact problem. But because TypeScript and your bundler do not work together, namespaces get compiled to objects and suffer the same fait as [earlier examples](#1-bundlers-are-not-able-to-minify-property-keys-of-objects).
+
+---
+
+This **should not happen**. It is like two modern PCs communicating over punch cards, because "there might be some 80 year old feeding the second machine with hand-coded punch cards".
+
+## Compilers Vs. Humans
+
+There was a time when compilers were dumb. This was a long time ago. And then C happened and less assembly code was written. Simply because at some time the compiler had the necessary computational power, size requirements and time to do complex (static) program analysis to output a highly specialized and/or optimized binary executable of your program.
+
+Assembly still has massive impact on software dev, especially in SIMD, so manually being able to read it is a good trait. But since there are code bases with millions of lines of C code, I think no one would be pleased to write a better assembly output that the compiler (it is also not maintainable).
+
+So it is shocking to see that when "compiling" (transpiling and minifying) JS, a human can optimize the output even more?
+
+## Conclusion
+
+The key takeaway of this article is that building tools is _hard_. We didn't choose this architecture, nor the semantics. It's what we have now and we need to work with it.
+
+TypeScript and your bundler do as much as they can to assist you developing with JavaScript for the web. It is the isolated build-stack that hinders potential performance optimizations and bundling possebilities. It is the language that enforces certain characteristics, the tools cannot fix.
+
+Maybe it is time to leave that language behind and use a new language for the source code.

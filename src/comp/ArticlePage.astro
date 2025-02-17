@@ -41,6 +41,9 @@ const {Content} = await entry.render();
                 <a href={`/${TAG_TO_SLUG[tag]}/`} class="!text-white bg-blue !no-underline rounded-full px-3 inline-block mr-2">#{tag}</a>
             ))}
         </div>
+        <p>
+            <i class="text-2xl">{entry.data.description}</i>
+        </p>
         <Content/>
     </article>
     <section class="py-6 mx-6 mt-12 border-t border-black/10">Here (someday) there will be recommendations</section>
