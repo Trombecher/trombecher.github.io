@@ -1,0 +1,37 @@
+---
+title: "The Art Of Volume Control"
+tags: ["Article"]
+description: ""
+---
+
+import {Image} from "astro:assets";
+
+Over the years I interacted with many media player controls, including the controls on YouTube, VLC, Windows and my phone. And I wondered if how the design effects the user experience on those controls.
+
+So in the following sections I will analyse UX and (especially) muting on these controls.
+
+## How Windows Does It
+
+Basically everyone uses (or has used) the Windows volume controls. Here's a picture:
+
+import windowsVC from "@/images/windows-volume-control.webp";
+
+<Image src={windowsVC} alt=""/>
+
+The scale is bounded between 0 and 100, but the interesting part ist the _mute button_. On Windows the mute button is separate state. You can mute the volume by toggling this button.
+
+When you click on the button, the button state changes and a mute icon is displayed, but the scale does not change. If you click on the scale while the volume is muted, then it automatically unmutes the volume.
+
+Also, if you turn down the volume all the way via the scale, it automatically enables the mute button. Clicking on the mute button with the scale at zero toggles the button state (it shows a different icon), but nothing happens.
+
+**This last observation is an interesting point of disparity among products.**
+
+## How YouTube Does It
+
+import youTubeVC from "@/images/youtube-volume-control.webp";
+
+<Image src={youTubeVC} alt={""}/>
+
+The YouTube volume controls are similar to Windows, but with a key difference:
+
+When dragging the volume to zero on the scale and then toggle the mute button (so it unmutes), the scale **snaps back to the last position**.
