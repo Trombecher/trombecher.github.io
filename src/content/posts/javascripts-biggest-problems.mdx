@@ -28,7 +28,7 @@ All of these fall into the category of JS compilers. Because they take in some s
 
 Now let's talk about the semantics of JS. Why were all these tools necessary to create [_moderate_](https://stateofjs.com/en-US) DX? This all comes down to the questionable language design of JS (I don't blame the creators; they did not know better).
 
-First of all: there is no _JavaScript_ (specification). In fact the language does not even exist. [EMCAScript](https://ecma-international.org/publications-and-standards/standards/ecma-262/) exists and is (by now at least) the de-facto standard. But it confuses me because there is thing called CommonJS, and somehow it tries its hardest to leave.
+First of all: there is no _JavaScript_ (specification). In fact the language does not even exist. [EMCAScript](https://ecma-international.org/publications-and-standards/standards/ecma-262/) exists and is (by now at least) the de-facto standard. But it confuses me because there is thing a called CommonJS, and somehow it tries its hardest to leave.
 
 (Why do I have to name my tailwind config file `tailwind.config.cjs`??? We're in ~~2023~~ ~~2024~~ 2025!)
 
@@ -36,7 +36,7 @@ Besides that there is not even a reference implementation by the creators. Inste
 
 ### The Language Itself
 
-Being a script language, JS offers the flexibility everybody wanted but no one needed. So the developers had to limit themselves to enable the ES module "architecture". It does not make sense to import a function from another module and have the _import_ cause (unexpected) side effects.
+Being a scripting language, JS offers the flexibility everybody wanted but no one needed. So the developers had to limit themselves to enable the ES module "architecture". It does not make sense to import a function from another module and have the _import_ cause (unexpected) side effects.
 
 But that's how it is. We figured out how to turn JS in a reasonably _buildable_ language by agreeing on programming conventions. **This is bad language design.** Relying on the programmer to do things the right way should be the last resort.
 
