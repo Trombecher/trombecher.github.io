@@ -6,6 +6,7 @@ tags: ["Article"]
 ---
 
 import BlogImage from "@/comp/BlogImage.astro";
+import Button from "@/comp/Button";
 
 # This Is A Heading Level 1
 
@@ -62,3 +63,30 @@ Just don't ask me anymore.
 ---
 
 <BlogImage src={import("@/images/abstract.webp")} alt=""/>
+
+<div class="h-96 flex mt-6">
+    <div class={"flex flex-col w-full h-full *:h-full *:w-full"}>
+        <div class="bg-white"></div>
+        <div class="bg-shade-50"></div>
+        <div class="bg-shade-100"></div>
+        <div class="bg-shade-200"></div>
+        <div class="bg-shade-300"></div>
+        <div class="bg-shade-400"></div>
+        <div class="bg-shade-500"></div>
+        <div class="bg-shade-600"></div>
+        <div class="bg-shade-700"></div>
+        <div class="bg-shade-800"></div>
+        <div class="bg-shade-900"></div>
+        <div class="bg-shade-950"></div>
+        <div class="bg-black"></div>
+    </div>
+    <div class={"w-full h-full bg-blue"}></div>
+    <div class={"w-full h-full bg-red"}></div>
+    <div class={"w-full h-full bg-yellow"}></div>
+</div>
+
+---
+
+## UI Components
+
+<Button client:load>This is a button</Button>

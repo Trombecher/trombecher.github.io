@@ -3,8 +3,21 @@
 @theme {
     --color-*: initial;
 
-    --color-white: #FFF4E6;
-    --color-black: #292626;
+    --color-shade-50: color-mix(in oklch, var(--color-white) 95%, var(--color-black) 5%);
+    --color-shade-100: color-mix(in oklch, var(--color-white) 90%, var(--color-black) 10%);
+    --color-shade-200: color-mix(in oklch, var(--color-white) 80%, var(--color-black) 20%);
+    --color-shade-300: color-mix(in oklch, var(--color-white) 70%, var(--color-black) 30%);
+    --color-shade-400: color-mix(in oklch, var(--color-white) 60%, var(--color-black) 40%);
+    --color-shade-500: color-mix(in oklch, var(--color-white) 50%, var(--color-black) 50%);
+    --color-shade-600: color-mix(in oklch, var(--color-white) 40%, var(--color-black) 60%);
+    --color-shade-700: color-mix(in oklch, var(--color-white) 30%, var(--color-black) 70%);
+    --color-shade-800: color-mix(in oklch, var(--color-white) 20%, var(--color-black) 80%);
+    --color-shade-900: color-mix(in oklch, var(--color-white) 10%, var(--color-black) 90%);
+    --color-shade-950: color-mix(in oklch, var(--color-white) 5%, var(--color-black) 95%);
+
+    --color-white: oklch(0.9767 0.022 74.1);
+    --color-black: oklch(0.256 0 89.876);
+
     --color-red: #FF5D41;
     --color-yellow: #FFDB5B;
     --color-blue: #2141c1;
@@ -22,6 +35,8 @@
     }
 
     * {
+        -webkit-tap-highlight-color: transparent; /* for removing the highlight */
+
         @apply focus-visible:outline-2 outline-blue  outline-offset-2;
     }
 
@@ -31,7 +46,7 @@
     }
 
     select {
-        @apply bg-black/10;
+        @apply bg-shade-100;
     }
 
     article h2 {
@@ -43,7 +58,7 @@
     }
 
     article h4 {
-        @apply dark:text-black/90 font-medium text-xl mt-8 expanded;
+        @apply dark:text-shade-900 font-medium text-xl mt-8 expanded;
     }
 
     article h4 {
@@ -64,7 +79,7 @@
     }
 
     article hr {
-        @apply my-12 border-black/20;
+        @apply my-12 border-shade-200;
     }
 
     article ul, ol {
@@ -88,16 +103,16 @@
     }
 
     article blockquote {
-        @apply relative pl-4 text-black/70;
+        @apply relative pl-4 text-shade-700;
     }
 
     article blockquote::before {
         content: "";
-        @apply rounded-full block w-1 min-h-full bg-black/70 absolute left-0 top-0;
+        @apply rounded-full block w-1 min-h-full bg-shade-700 absolute left-0 top-0;
     }
 
     article code:not(pre code) {
-        @apply inline-block bg-black/10 text-lg px-1 rounded-md;
+        @apply inline-block bg-shade-100 text-lg px-1 rounded-md;
     }
 
     article pre {
@@ -125,11 +140,11 @@
     }
 
     article th {
-        @apply bg-black/10 text-black;
+        @apply bg-shade-100 text-black;
     }
 
     .astro-code {
-        @apply !bg-black/5 !text-black/90;
+        @apply !bg-shade-50 !text-shade-900;
     }
 }
 

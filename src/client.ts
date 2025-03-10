@@ -19,7 +19,8 @@ export const isDarkMode = (q: { matches: boolean } = isDarkModeQuery()) =>
 export const UPPER_CASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 export const LOWER_CASE = "abcdefghijklmnopqrstuvwxyz";
 export const NUMBERS = "0123456789";
-export const SYMBOLS = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+export const LEGACY_SYMBOLS = "@#$%_-.";
+export const EX_SYMBOLS = " !\"&'()*+,/:;<=>?[\\]^`{|}~";
 
 export const generatePassword = (length: number, charset: string) => {
   if (charset === "") return "";

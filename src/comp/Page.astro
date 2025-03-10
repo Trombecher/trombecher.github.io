@@ -1,6 +1,6 @@
 ---
-import Header from "./Header.tsx";
 import Footer from "./Footer.tsx";
+import Menu from "./Menu.tsx";
 import "../theme.css";
 
 interface Props {
@@ -33,8 +33,9 @@ const {
     <title>{title}</title>
 </head>
 <body class="bg-white text-black flex flex-col items-center min-h-screen selection:bg-blue selection:text-white">
-<Header pathname={Astro.url.pathname} client:load/>
-<main class={`${wide ? "" : "max-w-screen-sm"} w-full`}>
+<!-- <Header pathname={Astro.url.pathname} client:load/> -->
+<Menu client:load/>
+<main class={`${wide ? "" : "max-w-screen-sm"} w-full mt-12`}>
     <slot/>
 </main>
 <Footer/>

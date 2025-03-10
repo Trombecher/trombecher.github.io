@@ -19,18 +19,15 @@ const {Content} = await entry.render();
 <Page title={`${entry.data.title} | Tobias Hillemanns Blog`} description={entry.data.description}>
     <article class="px-6 pb-6 text-xl max-w-full leading-relaxed">
         {entry.data.hero && (
-            <div class="max-sm:-mx-6">
-                <BlogImage
-                    src={entry.data.hero}
-                    alt=""
-                    id="hero"
-                    loading="eager"
-                    class="max-sm:rounded-none"
-                />
-            </div>
+            <BlogImage
+                src={entry.data.hero}
+                alt=""
+                id="hero"
+                loading="eager"
+            />
         )}
         <h1 class="font-bold text-5xl expanded tracking-tight mt-12 mb-6 text-black break-words">{entry.data.title}</h1>
-        <div class="text-black/70 mb-12 text-base">
+        <div class="text-shade-700 mb-12 text-base">
             {entry.data.pubUnix
                 ?
                 <DateTime date={entry.data.pubUnix}/>
@@ -46,5 +43,5 @@ const {Content} = await entry.render();
         </p>
         <Content/>
     </article>
-    <section class="py-6 mx-6 mt-12 border-t border-black/10">Here (someday) there will be recommendations</section>
+    <section class="py-6 mx-6 mt-12 border-t border-shade-100">Here (someday) there will be recommendations</section>
 </Page>

@@ -5,17 +5,15 @@ export default () => {
     const [text, setText] = createSignal("https://youtube.com");
     const [ecl, setECL] = createSignal<"L" | "M" | "Q" | "H">("L");
 
-    // create()
-
     return (
         <>
-            <section class={"p-6 mt-12 border-y-2 sm:border-x-2 max-sm:-mx-6 sm:rounded-3xl border-black/10"}>
+            <section class={"p-6 mt-12 border-y-2 sm:border-x-2 max-sm:-mx-6 sm:rounded-3xl border-shade-100"}>
                 <h2 class={"mt-0"}>Settings</h2>
                 <label class={"flex gap-4 items-center mb-4"}>
                     <span class={"shrink-0"}>Text / URL:</span>
                     <input
                         type="text"
-                        class={"w-full bg-black/10 px-4 py-1 rounded-xl"}
+                        class={"w-full bg-shade-100 px-4 py-1 rounded-xl"}
                         value={text()}
                         oninput={e => {
                             setText(e.currentTarget.value);

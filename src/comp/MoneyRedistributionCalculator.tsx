@@ -2,6 +2,7 @@ import {createEffect, createMemo, For, onMount} from "solid-js";
 import {createStore} from "solid-js/store";
 import {z} from "zod";
 import Bin from "@/icons/Bin";
+import Button from "@/comp/Button.tsx";
 
 type Person = {
     name: string,
@@ -186,9 +187,9 @@ export default () => {
 
     return (
         <>
-            <section class={"p-6 mt-12 border-2 rounded-3xl border-black/10"}>
+            <section class={"p-6 mt-12 border-2 rounded-3xl border-shade-100"}>
                 <h2 class={"mt-0 mb-6"}>People ({people.length})</h2>
-                <div class={""}>
+                <div>
                     <For each={people}>
                         {({name, id}, i) => (
                             <div class={"flex gap-3 mb-4"}>
@@ -227,7 +228,7 @@ export default () => {
                                             e.currentTarget.parentElement.nextElementSibling.firstElementChild.focus();
                                         }
                                     }}
-                                    class={"px-4 py-1 bg-black/10 rounded-xl"}
+                                    class={"px-4 py-1 bg-shade-100 rounded-xl"}
                                 >{name}</div>
                                 <button
                                     class={"block"}
@@ -249,18 +250,18 @@ export default () => {
                             </div>
                         )}
                     </For>
-                    <button
-                        class={"block bg-blue px-4 py-1 rounded-xl text-white font-semibold"}
+                    <Button
                         onclick={e => {
                             setPeople(people.length, {name: ""});
                             // @ts-ignore
                             e.currentTarget.previousElementSibling?.firstElementChild?.focus();
                         }}
-                    >+ Add Person
-                    </button>
+                    >
+                        + Add Person
+                    </Button>
                 </div>
             </section>
-            <section class={"p-6 mt-6 border-2 rounded-3xl border-black/10"}>
+            <section class={"p-6 mt-6 border-2 rounded-3xl border-shade-100"}>
                 <h2 class={"mt-0"}>Expenses ({expenses.length})</h2>
                 <For each={expenses}>
                     {({who, description, spent}, i) => (
@@ -268,7 +269,7 @@ export default () => {
                             <input
                                 type="text"
                                 placeholder={"Name of the expense"}
-                                class={"mb-4 block px-4 bg-black/10 py-1 rounded-xl placeholder:text-black/50 w-full placeholder:italic"}
+                                class={"mb-4 block px-4 bg-shade-100 py-1 rounded-xl placeholder:text-shade-500 w-full placeholder:italic"}
                                 value={description}
                                 onInput={e => {
                                     setExpenses(i(), "description", e.currentTarget.value);
@@ -292,7 +293,7 @@ export default () => {
                                 </select>
                                 <input
                                     type="number"
-                                    class={"grow w-0 block px-4 bg-black/10 text-right py-1 rounded-xl"}
+                                    class={"grow w-0 block px-4 bg-shade-100 text-right py-1 rounded-xl"}
                                     value={spent}
                                     onInput={e => {
                                         setExpenses(i(), "spent", +e.target.value);
@@ -310,8 +311,7 @@ export default () => {
                         </div>
                     )}
                 </For>
-                <button
-                    class={"block bg-blue px-4 py-1 rounded-xl text-white font-semibold"}
+                <Button
                     onClick={() => {
                         if(!people.length) return;
 
@@ -321,8 +321,9 @@ export default () => {
                             spent: 0,
                         });
                     }}
-                >+ Add Expense
-                </button>
+                >
+                    + Add Expense
+                </Button>
                 <hr/>
                 <div class={"text-2xl font-semibold"}>
                     Total: {expenses.reduce((total, expense) => total + expense.spent, 0)}€
@@ -331,7 +332,7 @@ export default () => {
                     (mean): {Math.round(expenses.reduce((total, expense) => total + expense.spent, 0) / people.length * 100) / 100}€
                 </div>
             </section>
-            <section class={"p-6 mt-6 border-2 rounded-3xl border-black/10"}>
+            <section class={"p-6 mt-6 border-2 rounded-3xl border-shade-100"}>
                 <h2 class={"mt-0"}>Needed Transactions ({neededTransactions().length})</h2>
                 <For each={neededTransactions()}>
                     {({from, to, amount}) => (

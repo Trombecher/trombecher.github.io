@@ -6,18 +6,6 @@ import {Image} from "astro:assets";
 import ytIcon from "@/images/yt.png";
 import igIcon from "@/images/ig.png";
 import meImage from "@/images/me.jpg";
-import KotlinLogo from "@/comp/KotlinLogo.astro";
-import WASMLogo from "../comp/WASMLogo.astro";
-import TailwindCSSLogo from "../comp/TailwindCSSLogo.astro";
-import CLogo from "../comp/CLogo.astro";
-import TypeScriptLogo from "../comp/TypeScriptLogo.astro";
-import ViteLogo from "../comp/ViteLogo.astro";
-import ReactLogo from "../comp/ReactLogo.astro";
-import AstroLogo from "../comp/AstroLogo.astro";
-import NextJSLogo from "../comp/NextJSLogo.astro";
-import RustLogo from "../comp/RustLogo.astro";
-import PythonLogo from "../comp/PythonLogo.astro";
-import SolidJSLogo from "../comp/SolidJSLogo.astro";
 import LinkFollow from "../comp/LinkFollow.astro";
 import TreesPicture from "../images/trees.webp";
 ---
@@ -48,7 +36,7 @@ import TreesPicture from "../images/trees.webp";
             <div class="mt-6 flex select-none px-6 max-sm:justify-center">
                 <a
                     href="/rss.xml/"
-                    class="w-9 h-9 hover:bg-black/10 flex items-center justify-center trasition rounded-xl"
+                    class="w-9 h-9 hover:bg-shade-100 flex items-center justify-center trasition rounded-xl"
                     title="RSS Feed"
                 >
                     <svg viewBox="0 0 24 24" width="24" height="24">
@@ -57,7 +45,7 @@ import TreesPicture from "../images/trees.webp";
                               d="M6 20A1 1 0 006 16 1 1 0 006 20M14 20A10 10 0 004 10V13A7 7 0 0111 20ZM20 20A16 16 0 004 4V7A13 13 0 0117 20"/>
                     </svg>
                 </a>
-                <a class="w-9 h-9 hover:bg-black/10 flex items-center justify-center trasition rounded-xl"
+                <a class="w-9 h-9 hover:bg-shade-100 flex items-center justify-center trasition rounded-xl"
                    href="https://www.youtube.com/@Trombecher" title="YouTube">
                     <Image
                         src={ytIcon}
@@ -68,7 +56,7 @@ import TreesPicture from "../images/trees.webp";
                         densities={[1, 2, 3, 4, 5]}
                     />
                 </a>
-                <a class="w-9 h-9 hover:bg-black/10 flex items-center justify-center trasition rounded-xl"
+                <a class="w-9 h-9 hover:bg-shade-100 flex items-center justify-center trasition rounded-xl"
                    href="https://github.com/trombecher" title="GitHub">
                     <svg viewBox="0 0 98 96" width="24" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -76,7 +64,7 @@ import TreesPicture from "../images/trees.webp";
                               fill="rgb(var(--black))"/>
                     </svg>
                 </a>
-                <a class="w-9 h-9 hover:bg-black/10 flex items-center justify-center trasition rounded-xl"
+                <a class="w-9 h-9 hover:bg-shade-100 flex items-center justify-center trasition rounded-xl"
                    href="https://www.instagram.com/Trombecher" title="Instagram">
                     <Image
                         src={igIcon}
@@ -87,7 +75,7 @@ import TreesPicture from "../images/trees.webp";
                         densities={[1, 2, 3, 4, 5]}
                     />
                 </a>
-                <a class="w-9 h-9 hover:bg-black/10 flex items-center justify-center trasition rounded-xl"
+                <a class="w-9 h-9 hover:bg-shade-100 flex items-center justify-center trasition rounded-xl"
                    href="https://x.com/trombecher" title="𝕏">
                     <svg width="24" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -96,7 +84,7 @@ import TreesPicture from "../images/trees.webp";
                     </svg>
                 </a>
                 <a
-                    class="w-9 h-9 hover:bg-black/10 flex items-center justify-center trasition rounded-xl"
+                    class="w-9 h-9 hover:bg-shade-100 flex items-center justify-center trasition rounded-xl"
                     href="https://bsky.app/profile/trombecher.bsky.social"
                     title="Bluesky"
                 >
@@ -111,7 +99,7 @@ import TreesPicture from "../images/trees.webp";
     <section class="mt-24 p-6 gap-6 grid max-xs:grid-cols-2 grid-cols-4 auto-rows-[5rem] *:rounded-3xl">
         <a
             href="/projects/"
-            class="p-6 group transition hover:bg-black/10 relative block col-span-2 bg-black/5 font-semibold text-2xl"
+            class="p-6 group transition hover:bg-shade-100 relative block col-span-2 bg-shade-50 font-semibold text-2xl"
         >
             Projects
             <LinkFollow/>
@@ -121,7 +109,7 @@ import TreesPicture from "../images/trees.webp";
             class="p-6 group relative bg-[#111d1d] col-span-2 row-span-2 text-white"
         >
             <h3 class="font-bold text-4xl mb-2 text-white">Vine</h3>
-            <p class="text-white/80 text-lg">A general purpose programming language</p>
+            <p class="text-shade-200 text-lg">A general purpose programming language</p>
             <LinkFollow/>
         </a>
         <a
@@ -129,12 +117,12 @@ import TreesPicture from "../images/trees.webp";
             href="/aena/"
         >
             <h3 class="font-bold text-4xl mb-2 text-white">Aena</h3>
-            <p class="text-white/80 text-lg">A TypeScript framework for Single Page Applications</p>
+            <p class="text-shade-200 text-lg">A TypeScript framework for Single Page Applications</p>
             <LinkFollow/>
         </a>
         <a
             href="/tools/"
-            class="p-6 group transition hover:bg-black/10 group col-span-2 bg-black/5 relative block text-2xl font-semibold"
+            class="p-6 group transition hover:bg-shade-100 group col-span-2 bg-shade-50 relative block text-2xl font-semibold"
         >
             Tools
             <LinkFollow/>
@@ -152,7 +140,7 @@ import TreesPicture from "../images/trees.webp";
             href="/password-generator/"
         >
             <h3 class="font-bold text-4xl mb-2 text-white">Password Generator</h3>
-            <p class="text-white/80 text-lg">You need a password?</p>
+            <p class="text-shade-200 text-lg">You need a password?</p>
             <LinkFollow/>
         </a>
         <a
@@ -168,25 +156,5 @@ import TreesPicture from "../images/trees.webp";
                 class={"h-full object-cover w-full"}
             />
         </a>
-    </section>
-    <section class="p-6 mt-10">
-        <h2 class="font-semibold text-3xl">What I'm familiar with</h2>
-        <div class="mt-12 flex gap-4 flex-wrap">
-            <PythonLogo/>
-            <ReactLogo/>
-            <TailwindCSSLogo/>
-            <TypeScriptLogo/>
-            <SolidJSLogo/>
-            <CLogo/>
-            <WASMLogo/>
-            <KotlinLogo/>
-            <ViteLogo/>
-            <div class="bg-black rounded-2xl">
-                <AstroLogo/>
-            </div>
-            <NextJSLogo/>
-            <RustLogo/>
-            <div class="w-16 h-16 italic flex items-center justify-center">[Java]</div>
-        </div>
     </section>
 </Page>

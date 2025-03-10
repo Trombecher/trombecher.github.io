@@ -85,7 +85,7 @@ export default () => {
                 <For each={images()}>
                     {image => (
                         <div
-                            class={"rounded-3xl flex flex-col h-80 mt-6 p-6 border border-black/10 overflow-hidden"}>
+                            class={"rounded-3xl flex flex-col h-80 mt-6 p-6 border border-shade-100 overflow-hidden"}>
                             {(() => {
                                 const progress = image.progressOrContent();
 

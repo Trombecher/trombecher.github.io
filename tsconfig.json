@@ -5,6 +5,7 @@
         "jsxImportSource": "solid-js",
         "baseUrl": "./",
         "allowJs": true,
+        "types": ["@webgpu/types"],
         "paths": {
             "@/*": ["./src/*"]
         }

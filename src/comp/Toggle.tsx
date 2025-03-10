@@ -3,7 +3,7 @@ import type {Accessor, Setter} from "solid-js";
 export default ({state, setState}: {state: Accessor<boolean>, setState: Setter<boolean>}) => {
     return (
         <button
-            class={`h-8 w-14 ${state() ? "bg-blue" : "bg-black/30"} rounded-full flex p-1 transition-all`}
+            class={`h-8 w-14 ${state() ? "bg-blue" : "bg-shade-300"} cursor-pointer shrink-0 rounded-full flex p-1 transition-all`}
             role={"switch"}
             onclick={setState}
         >

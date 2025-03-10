@@ -1,16 +1,18 @@
 import {type Accessor, createMemo, createSignal, type JSX, type Signal} from "solid-js";
 import {effect} from "solid-js/web";
-import {generatePassword, LOWER_CASE, NUMBERS, SYMBOLS, UPPER_CASE} from "@/client.ts";
+import {generatePassword, LOWER_CASE, NUMBERS, LEGACY_SYMBOLS, EX_SYMBOLS, UPPER_CASE} from "@/client.ts";
 import Toggle from "@/comp/Toggle.tsx";
 import {rockyou} from "@/rockyou.ts";
+import Button from "@/comp/Button.tsx";
 
-const OPTIONS = [UPPER_CASE, LOWER_CASE, NUMBERS, SYMBOLS] as const;
+const OPTIONS = [UPPER_CASE, LOWER_CASE, NUMBERS, LEGACY_SYMBOLS, EX_SYMBOLS] as const;
 
 const OPTION_TO_NAME: { [Key in typeof OPTIONS[number]]: string } = {
     [UPPER_CASE]: "Uppercase",
     [LOWER_CASE]: "Lowercase",
     [NUMBERS]: "Numbers",
-    [SYMBOLS]: "Symbols",
+    [LEGACY_SYMBOLS]: "Legacy Symbols",
+    [EX_SYMBOLS]: "Other Symbols (may not be supported)",
 };
 
 const enum SectionBackgroundColor {
@@ -22,16 +24,16 @@ const enum SectionBackgroundColor {
 }
 
 const Section = ({name, add, children, bg = () => SectionBackgroundColor.Black}: {name: JSX.Element, add?: JSX.Element, children?: JSX.Element, bg?: Accessor<SectionBackgroundColor>}) => (
-    <section class={`mt-6 -mx-6 p-6 sm:rounded-3xl bg-black/5 ${(() => {
+    <section class={`mt-6 p-6 rounded-3xl border-2 border-shade-100 ${(() => {
         switch(bg()) {
             case SectionBackgroundColor.DarkRed: return "bg-red/70";
             case SectionBackgroundColor.Red: return "bg-red/50";
             case SectionBackgroundColor.Yellow: return "bg-yellow/50";
             case SectionBackgroundColor.Blue: return "bg-blue/10";
-            case SectionBackgroundColor.Black: return "bg-black/5";
+            case SectionBackgroundColor.Black: return "";
         }
     })()}`}>
-        <div class={"mb-4 flex"}>
+        <div class={"mb-6 flex"}>
             <h2 class={"mt-0 mb-0 flex"}>{name}</h2>
             {add}
         </div>
@@ -47,6 +49,8 @@ export default () => {
 
     const optionSelected: { [Key in typeof OPTIONS[number]]: Signal<boolean> } = Object.fromEntries(OPTIONS.map(option =>
         [option, createSignal(true)])) as unknown as typeof optionSelected;
+
+    optionSelected[EX_SYMBOLS][1](false);
 
     const charset = createMemo(() => Object.entries(optionSelected).reduce((acc, [option, [selected]]) => selected() ? acc + option : acc, ""));
 
@@ -72,7 +76,7 @@ export default () => {
             <Section name={"Character Set"}>
                 {OPTIONS.map(option => (
                     <label
-                        class={"flex gap-3 cursor-pointer mt-2 h-8 select-none"}
+                        class={"flex gap-3 cursor-pointer mt-2 select-none"}
                     >
                         <Toggle
                             setState={() => {
@@ -100,43 +104,15 @@ export default () => {
             </Section>
             <Section
                 name={"Output"}
-                add={(
-                    <button
-                        class={"ml-auto bg-blue rounded-xl px-3 text-white text-lg shadow-button active:shadow-none active:translate-y-1 shrink-0"}
+            >
+                <div class={"flex gap-4"}>
+                    <Button
                         onMouseDown={() => {
                             customPassword = false;
                             setRegenerate(Math.random());
                         }}
-                    >🔄 Regenerate</button>
-                )}
-            >
-                <div class={"flex gap-4 h-10"}>
-                    <button
-                        class={"flex items-center bg-blue px-1 rounded-xl shadow-button active:shadow-none active:translate-y-1 mb-1"}
-                        onMouseDown={() => {
-                            customPassword = false;
-                            setShowPassword(!showPassword());
-                        }}
-                    >
-                        <svg xmlns={"https://www.w3.org/2000/svg"} viewBox={"0 0 32 32"} width={32} height={32}
-                             class={"fill-none m-0 stroke-2 stroke-white"}>
-                            <path
-                                d={"M16 23C11 23 5 20 5 16S11 9 16 9 27 12 27 16 21 23 16 23M16 20A1 1 0 0016 12 1 1 0 0016 20"}
-                            />
-                            <path d={"M4 28 28 4"} class={showPassword() ? "opacity-0" : ""}/>
-                        </svg>
-                    </button>
-                    <input
-                        type={showPassword() ? "text" : "password"}
-                        class={"tracking-tight min-w-0 overflow-x-auto bg-black/10 rounded-xl block px-3 font-mono grow"}
-                        value={password()}
-                        oninput={e => {
-                            customPassword = true;
-                            setPassword(e.target.value);
-                        }}
-                    />
-                    <button
-                        class={"bg-blue rounded-xl px-3 text-white shadow-button text-lg mb-1 active:translate-y-1 active:shadow-none shrink-0"}
+                    >🔄 Regenerate</Button>
+                    <Button
                         onclick={() => {
                             setCopyText("📋 Copied 🗸");
                             navigator.clipboard.writeText(password())
@@ -157,8 +133,33 @@ export default () => {
                         }}
                     >
                         {copyText()}
-                    </button>
-
+                    </Button>
+                </div>
+                <div class={"flex gap-4 mt-6"}>
+                    <Button
+                        title={"Show / hide password"}
+                        onclick={() => {
+                            customPassword = false;
+                            setShowPassword(!showPassword());
+                        }}
+                    >
+                        <svg xmlns={"https://www.w3.org/2000/svg"} viewBox={"0 0 32 32"} width={32} height={32}
+                             class={"fill-none m-0 stroke-2 stroke-white"}>
+                            <path
+                                d={"M16 23C11 23 5 20 5 16S11 9 16 9 27 12 27 16 21 23 16 23M16 20A1 1 0 0016 12 1 1 0 0016 20"}
+                            />
+                            <path d={"M4 28 28 4"} class={showPassword() ? "opacity-0" : ""}/>
+                        </svg>
+                    </Button>
+                    <input
+                        type={showPassword() ? "text" : "password"}
+                        class={"tracking-tight min-w-0 overflow-x-auto bg-shade-100 rounded-xl block px-3 font-mono grow"}
+                        value={password()}
+                        oninput={e => {
+                            customPassword = true;
+                            setPassword(e.target.value);
+                        }}
+                    />
                 </div>
                 {clearClipboardProgressBar() > 0 && (
                     <div class={"text-sm text-red mt-4 mb-2"}>

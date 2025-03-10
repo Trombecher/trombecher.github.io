@@ -34,7 +34,7 @@ posts.sort((a, b) =>
     <h2 class="text-center mt-2 text-black text-xl mb-12 px-6">{description}</h2>
     <div class="px-6 grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(256px,1fr))]">
         {posts.map(post => (
-            <a href={`/${post.slug}/`} class="relative group block p-4 bg-black/5 hover:bg-black/10 rounded-3xl transition active:bg-black/20">
+            <a href={`/${post.slug}/`} class="relative group block p-4 bg-shade-50 hover:bg-shade-100 rounded-3xl transition active:bg-shade-200">
                 {post.data.hero && (
                     <Image
                         src={post.data.hero}
@@ -47,7 +47,7 @@ posts.sort((a, b) =>
                 <div class="text-2xl expanded font-semibold">
                     {post.data.title}
                 </div>
-                <div class="text-black/80">
+                <div class="text-shade-800">
                     {post.data.pubUnix && <DateTime date={post.data.pubUnix}/>}
                     {post.data.tags.map(tag => (
                         <span class="italic">#{tag}{" "}</span>
