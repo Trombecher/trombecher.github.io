@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+    --color-*: initial;
+
+    --color-white: #fff;
+
+    --hue: 160; /* 277.117 */
+
+    --color-shade-50: oklch(0.962 0.018 calc(var(--hue) - 4.803));
+    --color-shade-100: oklch(0.93 0.034 calc(var(--hue) - 4.329));
+    --color-shade-200: oklch(0.87 0.065 calc(var(--hue) - 3.078));
+    --color-shade-300: oklch(0.785 0.115 calc(var(--hue) - 2.404));
+    --color-shade-400: oklch(0.673 0.182 calc(var(--hue) - 0.182));
+    --color-shade-500: oklch(0.585 0.233 var(--hue));
+    --color-shade-600: oklch(0.511 0.262 calc(var(--hue) - 0.151));
+    --color-shade-700: oklch(0.457 0.24 calc(var(--hue) + 0.094));
+    --color-shade-800: oklch(0.398 0.195 calc(var(--hue) + 0.249));
+    --color-shade-900: oklch(0.359 0.144 calc(var(--hue) + 1.580));
+    --color-shade-950: oklch(0.257 0.09 calc(var(--hue) + 4.178));
+
+    --color-accent-50: oklch(0.987 0.026 102.212);
+    --color-accent-100: oklch(0.973 0.071 103.193);
+    --color-accent-200: oklch(0.945 0.129 101.54);
+    --color-accent-300: oklch(0.905 0.182 98.111);
+    --color-accent-400: oklch(0.852 0.199 91.936);
+    --color-accent-500: oklch(0.795 0.184 86.047);
+    --color-accent-600: oklch(0.681 0.162 75.834);
+    --color-accent-700: oklch(0.554 0.135 66.442);
+    --color-accent-800: oklch(0.476 0.114 61.907);
+    --color-accent-900: oklch(0.421 0.095 57.708);
+    --color-accent-950: oklch(0.286 0.066 53.813);
+}
