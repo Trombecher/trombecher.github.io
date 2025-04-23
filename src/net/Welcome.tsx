@@ -1,17 +1,25 @@
+import {A, useNavigate} from "@solidjs/router";
+import {currentProfile} from "@/net/profiles.ts";
+
+let initialRedirect = true;
+
 export default () => {
+    if(initialRedirect) {
+        initialRedirect = false;
+
+        if(currentProfile())
+            useNavigate()("/feed");
+    }
+
     return (
         <main class={"w-full max-w-xl p-6"}>
             <h1 class={"text-4xl font-bold mb-4 text-center tracking-tighter"}>Welcome to Link Net</h1>
-            <p class={"text-xl text-shade-200 text-center"}>A decentralized link sharing network</p>
+            <p class={"text-xl text-shade-100 text-center"}>A decentralized link sharing network</p>
             <div>
-                <button
+                <A
+                    href={"/get-started"}
                     class={"select-none bg-accent-600 font-semibold px-3 py-1 rounded-xl hover:bg-accent-700 active:bg-accent-800 transition"}
-                >New Local Profile</button>
-                <button
-                    class={"select-none bg-shade-800 font-semibold px-3 py-1 rounded-xl hover:bg-shade-900 active:bg-shade-1000 transition ml-4"}
-                >
-                    Add Cloud Profile
-                </button>
+                >Get Started</A>
             </div>
 
             <h2 class={"mt-12 font-semibold text-2xl"}>Tldr;</h2>

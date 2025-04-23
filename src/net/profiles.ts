@@ -1,74 +1,64 @@
 import {z} from "zod";
-import {type Accessor, createSignal, type Setter} from "solid-js";
+import {type Accessor, createEffect, createSignal} from "solid-js";
+import {createStore} from "solid-js/store";
 
 const PROFILE_SCHEMA = z.object({
     links: z.array(z.string()),
     privateCloud: z.ostring(),
     publicCloud: z.ostring(),
-}).transform(profile => new Profile(
-    profile.links
-));
-
-const LS_SCHEMA = z.object({
-    defaultProfile: z.ostring(),
-    profiles: z.record(PROFILE_SCHEMA),
+    hue: z.onumber(),
 });
 
-export class ProfileManager {
-    private _currentProfile: string | undefined = undefined;
-    profiles = new Map<string, Profile>();
+export type Profile = z.infer<typeof PROFILE_SCHEMA>;
 
-    constructor() {
-    }
+const [internalCurrentProfile, setInternalCurrentProfile] = createSignal<string | undefined>();
 
-    get currentProfile(): Profile | undefined {
-        if(!this._currentProfile) return undefined;
-        return this.profiles.get(this._currentProfile);
-    }
-
-    set currentProfile(profile: string) {
-        if(!this.profiles.has(profile)) return;
-        this._currentProfile = profile;
-    }
-
-    init() {
-        const {profiles, defaultProfile} = LS_SCHEMA.parse(JSON.parse(localStorage["/net/profiles"] || "[]"))
-
-        this._currentProfile = defaultProfile;
-
-        this.profiles = new Map(Object.entries(profiles))
-    }
+export const currentProfile: Accessor<[string, Profile] | undefined> = () => {
+    console.log(`Internal current profile: ${internalCurrentProfile()}`);
+    return internalCurrentProfile() === undefined
+        ? undefined
+        : [internalCurrentProfile()!, internalProfiles[internalCurrentProfile()!]!];
 }
 
-export class Profile {
-    readonly links: Accessor<string[]>;
+export const setCurrentProfile = (profile: string | undefined) => {
+    if(profile !== undefined && !internalProfiles[profile]) return;
+    setInternalCurrentProfile(profile);
+};
 
-    _privateCloud: string | undefined = undefined;
-    _publicCloud: string | undefined = undefined;
+const [internalProfiles, setInternalProfiles] = createStore<Record<string, Profile>>({});
 
-    private readonly setLinks: Setter<string[]>;
+export const profiles = internalProfiles;
 
-    constructor(links: string[]) {
-        const [getLinks, setLinks] = createSignal(links);
-        this.links = getLinks;
-        this.setLinks = setLinks;
-    }
-
-    refresh() {
-        if(!this._publicCloud || !this._privateCloud) return;
-
-        // TODO: network
-    }
-
-    addLink(link: string) {
-        this.setLinks(links => [...links, link]);
-
-        // TODO: network
-    }
-
-    removeLink(link: string) {
-        this.setLinks(links => links.filter(l => l !== link));
-
-        // TODO: network
-    }
+export const setHueForCurrentProfile = (hue: number) => {
+    if(currentProfile() === undefined) return;
+    setInternalProfiles(currentProfile()![0], "hue", hue);
 }
+
+let hasInit = false;
+
+export const loadProfiles = () => {
+    if(hasInit) return;
+    hasInit = true;
+
+    const profiles = z.record(PROFILE_SCHEMA).parse(JSON.parse(localStorage["/net/profiles"] || `{}`));
+    const defaultProfile = z.ostring().parse(localStorage["/net/defaultProfile"]);
+
+    setInternalProfiles(profiles);
+    setCurrentProfile(defaultProfile);
+
+    createEffect(() => {
+        // Update Hue
+        const profile = currentProfile();
+
+        const hue = profile?.[1].hue || 230;
+        document.documentElement.style.setProperty("--hue", `${hue}`);
+    });
+
+    createEffect(() => {
+        localStorage["/net/defaultProfile"] = internalCurrentProfile();
+    });
+
+    createEffect(() => {
+        localStorage["/net/profiles"] = JSON.stringify(internalProfiles);
+    });
+};

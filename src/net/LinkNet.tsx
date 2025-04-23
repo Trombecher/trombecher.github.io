@@ -1,49 +1,72 @@
-import Welcome from "@/net/Welcome.tsx";
-import {type Profile, ProfileManager} from "@/net/profiles.ts";
-import {createStore} from "solid-js/store";
-import {createEffect, createSignal, onMount} from "solid-js";
+import Welcome from "@/net/Welcome";
+import Explore from "@/net/Explore";
+import Settings from "@/net/Settings";
+import GetStarted from "@/net/GetStarted";
+import Feed from "@/net/Feed";
 
-type Tab = typeof TABS[number];
+import {A, HashRouter, Route, useMatch} from "@solidjs/router";
+import {type Component, type JSX, Show} from "solid-js";
+import {currentProfile, loadProfiles, setHueForCurrentProfile} from "@/net/profiles";
 
-const TABS = ["Home", "Feed", "Links", "Settings"] as const;
+const HEADER_LINKS = [
+    ["/", "Home"],
+    ["/feed", "Feed"],
+    ["/explore", "Explore"],
+    ["/settings", "Settings"],
+] as const;
 
-const updateParams = (params: URLSearchParams) => {
-    history.replaceState(null, "", `${location.pathname}${params.size ? `?${params.toString()}` : ""}`);
-}
-
-export default () => {
-    const [profiles, setProfiles] = createStore<ProfileManager>([]);
-    const [tab, setTab] = createSignal<Tab>(TABS[0]);
-
-    onMount(() => {
-        const params = new URLSearchParams(location.search);
-        const searchTab = params.get("tab");
-
-        if(TABS.includes(searchTab as Tab)) {
-            setTab(searchTab as Tab);
-        } else {
-            params.delete("tab");
-
-            history.replaceState(null, "", `${location.pathname}?${params.toString()}`);
-        }
-
-        createEffect(() => {
-            const params = new URLSearchParams(location.search);
-
-            if(tab() === "Home") {
-                // Default state
-                params.delete("tab");
-            } else {
-                params.set("tab", tab());
-            }
-
-            updateParams(params);
-        })
-    })
-
+const Layout: Component<{children?: JSX.Element}> = (props) => {
     return (
         <>
-            <Welcome/>
+            <header class={"p-6 flex"}>
+                {HEADER_LINKS.map(([href, text]) => {
+                    const path = useMatch(() => href);
+
+                    return (
+                        <A
+                            href={href}
+                            class={`${path() ? "font-semibold text-white" : "text-white/70"} block hover:bg-shade-900 px-3 rounded-full py-1 transition active:bg-shade-800`}
+                        >{text}</A>
+                    )
+                })}
+            </header>
+            {props?.children}
+
+            <footer class={"mt-auto"}>
+                <Show when={currentProfile()}>
+                    {c => (
+                        <>
+                            Hue: <input
+                                type={"range"}
+                                min={0}
+                                max={360}
+                                step={1}
+                                value={c()[1].hue}
+                                onInput={e => {
+                                    setHueForCurrentProfile(+e.currentTarget.value);
+                                }}
+                            />
+                        </>
+                    )}
+                </Show>
+            </footer>
         </>
+    );
+};
+
+export default () => {
+    loadProfiles();
+
+    return (
+        <HashRouter root={Layout}>
+            <Route path={"/"} component={Welcome}/>
+            <Route path={"/explore"} component={Explore}/>
+            <Route path={"/settings"} component={Settings}/>
+            <Route path={"/get-started"} component={GetStarted}/>
+            <Route path={"/feed"} component={Feed}/>
+            <Route path={"/*"} component={() => (
+                <div>404</div>
+            )}/>
+        </HashRouter>
     );
 }
