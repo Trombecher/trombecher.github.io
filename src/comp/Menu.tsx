@@ -18,15 +18,15 @@ export default () => {
                     >
                         {([
                             ["/", "Home"],
-                            ["/posts/", "Posts"],
-                            ["/projects/", "Projects"],
-                            ["/tools/", "Tools"],
                             ["/articles/", "Articles"],
+                            ["/tools/", "Tools"],
+                            ["/projects/", "Projects"],
                             ["/games/", "Games"],
+                            ["/posts/", "Posts"],
                         ] as const).map(([href, title]) => (
                             <a
                                 href={href}
-                                class={"py-3 px-8 block font-bold text-4xl hover:text-shade-500 transition"}
+                                class={"py-3 px-8 block font-bold text-4xl text-black/50 hover:text-black transition"}
                             >{title}</a>
                         ))}
                     </div>
@@ -34,12 +34,12 @@ export default () => {
                 </div>
             </header>
         </>
-    )
+    );
 }
 
 const MenuButton = ({
-    setIsOpen,
-    isOpen
+                        setIsOpen,
+                        isOpen,
                     }: {
     isOpen: Accessor<boolean>,
     setIsOpen: Setter<boolean>
