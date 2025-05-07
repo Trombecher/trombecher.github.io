@@ -1,8 +1,8 @@
+import Button from "@/comp/system/Button.tsx";
+import Bin from "@/icons/Bin";
 import {createEffect, createMemo, For, onMount} from "solid-js";
 import {createStore} from "solid-js/store";
 import {z} from "zod";
-import Bin from "@/icons/Bin";
-import Button from "@/comp/Button.tsx";
 
 type Person = {
     name: string,
@@ -10,29 +10,29 @@ type Person = {
 };
 
 /*
-const FIELD_DELIMITER = "~";
-const PERSON_DELIMITER = "_";
-const serializeState = (people: Person[]): string => {
-    return people.map(p => `${p.name
-        .replaceAll("\\", "\\\\")
-        .replaceAll(FIELD_DELIMITER, `\\${FIELD_DELIMITER}`)
-        .replaceAll(PERSON_DELIMITER, `\\${PERSON_DELIMITER}`)}${FIELD_DELIMITER}${p.paid}`)
-        .join(PERSON_DELIMITER);
-};
+ const FIELD_DELIMITER = "~";
+ const PERSON_DELIMITER = "_";
+ const serializeState = (people: Person[]): string => {
+ return people.map(p => `${p.name
+ .replaceAll("\\", "\\\\")
+ .replaceAll(FIELD_DELIMITER, `\\${FIELD_DELIMITER}`)
+ .replaceAll(PERSON_DELIMITER, `\\${PERSON_DELIMITER}`)}${FIELD_DELIMITER}${p.paid}`)
+ .join(PERSON_DELIMITER);
+ };
 
-const parseState = (state: string): Person[] => {
-    return state.split(PERSON_DELIMITER)
-        .map(personString => {
-            const [name, paid] = personString.split(FIELD_DELIMITER);
-            return {
-                name: (name || "")
-                    .replaceAll("\\\\", "\\")
-                    .replaceAll(`\\${FIELD_DELIMITER}`, FIELD_DELIMITER)
-                    .replaceAll(`\\${PERSON_DELIMITER}`, PERSON_DELIMITER),
-                paid: +(paid || "0"),
-            };
-        });
-};
+ const parseState = (state: string): Person[] => {
+ return state.split(PERSON_DELIMITER)
+ .map(personString => {
+ const [name, paid] = personString.split(FIELD_DELIMITER);
+ return {
+ name: (name || "")
+ .replaceAll("\\\\", "\\")
+ .replaceAll(`\\${FIELD_DELIMITER}`, FIELD_DELIMITER)
+ .replaceAll(`\\${PERSON_DELIMITER}`, PERSON_DELIMITER),
+ paid: +(paid || "0"),
+ };
+ });
+ };
  */
 
 type Action = {from: number, to: number, amount: number};
@@ -75,22 +75,22 @@ function* generateActions(spendings: number[]): Generator<Action, void, unknown>
 };
 
 /*
-const setDivSelection = (div: HTMLDivElement, start: number, end: number = start) => {
-    const range = document.createRange();
-    const selection = window.getSelection();
+ const setDivSelection = (div: HTMLDivElement, start: number, end: number = start) => {
+ const range = document.createRange();
+ const selection = window.getSelection();
 
-    if(!selection) return;
+ if(!selection) return;
 
-    // Remove any existing selections
-    if(selection.rangeCount > 0) selection.removeAllRanges();
+ // Remove any existing selections
+ if(selection.rangeCount > 0) selection.removeAllRanges();
 
-    // Set the start and end positions
-    range.setStart(div.childNodes[0]!, start);
-    range.setEnd(div.childNodes[0]!, end);
+ // Set the start and end positions
+ range.setStart(div.childNodes[0]!, start);
+ range.setEnd(div.childNodes[0]!, end);
 
-    // Add the range to the selection
-    selection.addRange(range);
-};
+ // Add the range to the selection
+ selection.addRange(range);
+ };
  */
 
 type Expense = {
@@ -109,23 +109,23 @@ const EXPENSES_STORE_SCHEMA = z.array(z.object({
 
 export default () => {
     /*
-    onMount(() => {
-        const params = new URLSearchParams(location.search);
-        const s = params.get("people");
-        if(s) setPeople(() => parseState(decodeURIComponent(s)));
-    });
+     onMount(() => {
+     const params = new URLSearchParams(location.search);
+     const s = params.get("people");
+     if(s) setPeople(() => parseState(decodeURIComponent(s)));
+     });
 
-    createEffect(() => {
-        history.replaceState(
-            null,
-            "",
-            `/money-redistribution-planner/${people.length
-                ? `?people=${encodeURIComponent(serializeState(people))}`
-                : ""}`,
-        );
-    });
+     createEffect(() => {
+     history.replaceState(
+     null,
+     "",
+     `/money-redistribution-planner/${people.length
+     ? `?people=${encodeURIComponent(serializeState(people))}`
+     : ""}`,
+     );
+     });
 
-    const sum = createMemo(() => people.reduce((sum, person) => sum + person.paid, 0));
+     const sum = createMemo(() => people.reduce((sum, person) => sum + person.paid, 0));
      */
 
     const [people, setPeople] = createStore<Person[]>([]);
@@ -209,15 +209,15 @@ export default () => {
                                     }}
                                     onkeydown={e => {
                                         /*
-                                        if(e.currentTarget.textContent === "" && e.code === "Backspace") {
-                                            e.preventDefault();
-                                            const prev: HTMLDivElement | null = e.currentTarget.previousElementSibling as any;
+                                         if(e.currentTarget.textContent === "" && e.code === "Backspace") {
+                                         e.preventDefault();
+                                         const prev: HTMLDivElement | null = e.currentTarget.previousElementSibling as any;
 
-                                            setPeople(people => people.filter((_, index) => index !== i()));
+                                         setPeople(people => people.filter((_, index) => index !== i()));
 
-                                            prev?.focus();
-                                            if(prev) setDivSelection(prev, (prev.textContent || "").length);
-                                        }
+                                         prev?.focus();
+                                         if(prev) setDivSelection(prev, (prev.textContent || "").length);
+                                         }
                                          */
 
                                         if(e.code === "Enter") {

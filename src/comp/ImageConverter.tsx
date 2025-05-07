@@ -1,6 +1,6 @@
 import {convert_image, initSync} from "@/gen/image-converter/image_converter";
-import {type Accessor, createSignal, For, onMount, type Signal} from "solid-js";
 import wm from "@/gen/image-converter/image_converter_bg.wasm?url";
+import {type Accessor, createSignal, For, onMount, type Signal} from "solid-js";
 
 type InputFile = {
     fileName: string;
@@ -111,7 +111,8 @@ export default () => {
                                     }}
                                 >
                                     {SUPPORTED_OUTPUT_FORMATS.toSorted().map(format => (
-                                        <option selected={format === "webp"} value={format}>{format.toUpperCase()}</option>
+                                        <option selected={format === "webp"}
+                                                value={format}>{format.toUpperCase()}</option>
                                     ))}
                                 </select>
                                 <button

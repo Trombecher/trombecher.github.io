@@ -1,9 +1,9 @@
+import {EX_SYMBOLS, generatePassword, LEGACY_SYMBOLS, LOWER_CASE, NUMBERS, UPPER_CASE} from "@/client.ts";
+import Button from "@/comp/system/Button";
+import Toggle from "@/comp/system/Toggle";
+import {rockyou} from "@/rockyou";
 import {type Accessor, createMemo, createSignal, type JSX, type Signal} from "solid-js";
 import {effect} from "solid-js/web";
-import {generatePassword, LOWER_CASE, NUMBERS, LEGACY_SYMBOLS, EX_SYMBOLS, UPPER_CASE} from "@/client.ts";
-import Toggle from "@/comp/Toggle.tsx";
-import {rockyou} from "@/rockyou.ts";
-import Button from "@/comp/Button.tsx";
 
 const OPTIONS = [UPPER_CASE, LOWER_CASE, NUMBERS, LEGACY_SYMBOLS, EX_SYMBOLS] as const;
 
@@ -23,14 +23,29 @@ const enum SectionBackgroundColor {
     Blue = 4,
 }
 
-const Section = ({name, add, children, bg = () => SectionBackgroundColor.Black}: {name: JSX.Element, add?: JSX.Element, children?: JSX.Element, bg?: Accessor<SectionBackgroundColor>}) => (
+const Section = ({
+    name,
+    add,
+    children,
+    bg = () => SectionBackgroundColor.Black,
+}: {
+    name: JSX.Element,
+    add?: JSX.Element,
+    children?: JSX.Element,
+    bg?: Accessor<SectionBackgroundColor>
+}) => (
     <section class={`mt-6 p-6 rounded-3xl border-2 border-shade-100 ${(() => {
         switch(bg()) {
-            case SectionBackgroundColor.DarkRed: return "bg-red/70";
-            case SectionBackgroundColor.Red: return "bg-red/50";
-            case SectionBackgroundColor.Yellow: return "bg-yellow/50";
-            case SectionBackgroundColor.Blue: return "bg-blue/10";
-            case SectionBackgroundColor.Black: return "";
+            case SectionBackgroundColor.DarkRed:
+                return "bg-red/70";
+            case SectionBackgroundColor.Red:
+                return "bg-red/50";
+            case SectionBackgroundColor.Yellow:
+                return "bg-yellow/50";
+            case SectionBackgroundColor.Blue:
+                return "bg-blue/10";
+            case SectionBackgroundColor.Black:
+                return "";
         }
     })()}`}>
         <div class={"mb-6 flex"}>
@@ -66,10 +81,8 @@ export default () => {
     const [copyText, setCopyText] = createSignal("📋 Copy");
 
     const entropy = () => Math.round(length() * Math.log2(charset().length) * 100) / 100;
-    const strengthIndex = createMemo(() => ENTROPY_BOUNDARIES.findIndex(({max}) => !max || max >= entropy())!)
+    const strengthIndex = createMemo(() => ENTROPY_BOUNDARIES.findIndex(({max}) => !max || max >= entropy())!);
     const strength = () => ENTROPY_BOUNDARIES[strengthIndex()]!;
-
-    const [clearClipboardProgressBar, setClearClipboardProgressBar] = createSignal(0);
 
     return (
         <>
@@ -79,7 +92,7 @@ export default () => {
                         class={"flex gap-3 cursor-pointer mt-2 select-none"}
                     >
                         <Toggle
-                            setState={() => {
+                            onToggle={() => {
                                 const [selected, setSelected] = optionSelected[option];
 
                                 customPassword = false;
@@ -119,17 +132,6 @@ export default () => {
                                 .then(() => {
                                     setTimeout(() => setCopyText("📋 Copy"), 1000);
                                 });
-
-                            setClearClipboardProgressBar(10);
-
-                            let i = setInterval(() => {
-                                setClearClipboardProgressBar(clearClipboardProgressBar() - 1);
-
-                                if(clearClipboardProgressBar() != 0) return;
-
-                                clearInterval(i);
-                                navigator.clipboard.writeText("");
-                            }, 1000);
                         }}
                     >
                         {copyText()}
@@ -161,12 +163,6 @@ export default () => {
                         }}
                     />
                 </div>
-                {clearClipboardProgressBar() > 0 && (
-                    <div class={"text-sm text-red mt-4 mb-2"}>
-                        Clipboard will be cleared in {clearClipboardProgressBar()}s
-                    </div>
-                )}
-                <div class={`rounded-full bg-red ${clearClipboardProgressBar() > 0 ? "h-1 w-[calc-size(auto,size)] duration-[10s]" : "w-0"} transition-all ease-linear`}/>
             </Section>
             <Section
                 name={<>
@@ -177,8 +173,8 @@ export default () => {
                 {(() => strength().info) as any}
 
                 {rockyou.has(password()) && (
-                    <div class={"bg-red text-white mt-4 p-4 rounded-2xl font-bold"}>
-                        Your password is in the top 10,000 most common passwords.
+                    <div class={"bg-red text-black mt-4 p-4 rounded-2xl font-bold"}>
+                        Your password is in the top 10,000 most common passwords. DO NOT USE THIS PASSWORD!
                     </div>
                 )}
             </Section>
@@ -190,25 +186,25 @@ const ENTROPY_BOUNDARIES: {max?: number, name: string, info: string}[] = [
     {
         max: 39,
         name: "Insecure",
-        info: "This password is easily guessed or cracked by brute-force attacks in seconds to minutes."
+        info: "This password is easily guessed or cracked by brute-force attacks in seconds to minutes.",
     },
     {
         max: 59,
         name: "Weak",
-        info: "This password can be brute-forced with modern tools in hours to days."
+        info: "This password can be brute-forced with modern tools in hours to days.",
     },
     {
         max: 79,
         name: "Moderate",
-        info: "This password is acceptable for non-critical accounts or systems with rate-limited login attempts."
+        info: "This password is acceptable for non-critical accounts or systems with rate-limited login attempts.",
     },
     {
         max: 99,
         name: "Strong",
-        info: "This password is resilient against most offline attacks and brute-forcing with current technology."
+        info: "This password is resilient against most offline attacks and brute-forcing with current technology.",
     },
     {
         name: "Very Strong",
-        info: "This password is uncrackable with modern computing power for decades or centuries."
-    }
+        info: "This password is uncrackable with modern computing power for decades or centuries.",
+    },
 ];

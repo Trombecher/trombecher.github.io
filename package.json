@@ -1,31 +1,30 @@
 {
-  "name": "solid",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "@astrojs/check": "^0.9.4",
-    "@astrojs/mdx": "4.2.6",
-    "@astrojs/rss": "4.0.11",
-    "@astrojs/solid-js": "5.0.10",
-    "@libsql/client": "^0.15.4",
-    "allc": "^0.2.0",
-    "astro": "5.7.11",
-    "qrcode": "^1.5.4",
-    "solid-js": "^1.9.6",
-    "zod": "^3.24.4"
-  },
-  "devDependencies": {
-    "@tailwindcss/vite": "^4.1.5",
-    "tailwindcss": "^4.1.5",
-    "typescript": "^5.8.3",
-    "@types/qrcode": "^1.5.5",
-    "@webgpu/types": "^0.1.60"
-  }
+    "name": "solid",
+    "type": "module",
+    "version": "0.0.1",
+    "scripts": {
+        "dev": "astro dev",
+        "start": "astro dev",
+        "build": "astro check && astro build",
+        "preview": "astro preview",
+        "astro": "astro"
+    },
+    "dependencies": {
+        "allc": "^0.2.0",
+        "astro": "5.7.11",
+        "qrcode": "^1.5.4",
+        "solid-js": "^1.9.6",
+        "zod": "^3.24.4"
+    },
+    "devDependencies": {
+        "@astrojs/check": "^0.9.4",
+        "@astrojs/mdx": "4.2.6",
+        "@astrojs/rss": "4.0.11",
+        "@astrojs/solid-js": "5.0.10",
+        "@tailwindcss/vite": "^4.1.5",
+        "tailwindcss": "^4.1.5",
+        "typescript": "^5.8.3",
+        "@types/qrcode": "^1.5.5",
+        "@webgpu/types": "^0.1.60"
+    }
 }

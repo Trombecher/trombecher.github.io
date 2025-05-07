@@ -1,5 +1,5 @@
-import {getCollection} from "astro:content";
 import type {Tag} from "@/global.ts";
+import {getCollection} from "astro:content";
 
 export const getAllPosts = async(
     strip: boolean = !import.meta.env.DEV,

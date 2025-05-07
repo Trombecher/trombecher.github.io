@@ -1,8 +1,8 @@
 import {createSignal, type JSX} from "solid-js";
 
 export default ({
-                    class: className = "",
-                    children,
+    class: className = "",
+    children,
     ...rest
 }: JSX.ButtonHTMLAttributes<HTMLButtonElement>) => {
     const [forceDown, setForceDown] = createSignal(false);

@@ -8,7 +8,7 @@ This article is a collection of concepts and facts that I believe _every_ JavaSc
 
 This document is necessary because of bad language design. If you want to know more about JavaScript's issues, I might write an article about it.
 
-This article may skip on a few facts (because this is not a documentation). If you want to read the docs, go to [MDN](https://developer.mozilla.org/en-US/).
+This article may skip on a few facts (because this is not documentation). If you want to read the docs, go to [MDN](https://developer.mozilla.org/en-US/).
 
 ---
 
@@ -18,7 +18,7 @@ We'll start with the basics.
 
 Working in a programming language, you'll always have to ask yourself: _what do I have?_ And the JavaScript answer to this question is: you have _values_.
 
-If you have _something_ in JavaScript (labelled by property or a variable), it is a value, meaning an _object_ or a _primitive_. A value has a type (and associated data according to that type). You can test for that type, but the associated data is what we're modifying implicitly through operations.
+If you have _something_ in JavaScript (labeled by property or a variable), it is a value, meaning an _object_ or a _primitive_. A value has a type (and associated data according to that type). You can test for that type, but the associated data is what we're modifying implicitly through operations.
 
 ### Primitives
 
@@ -42,7 +42,7 @@ _Objects_ are JavaScript values that are not primitives.
 
 Objects can be thought of as _pointers_ (in like a low-level language such as C) as values. The value that lives in your storage location is a _reference_ (a _pointer_) to a **shared** storage location somewhere in your program's memory, meaning **multiple pointers can point to a single object**.
 
-This last statement is very important because it is the source of many side effect bugs in JavaScript code.
+This last statement is crucial because it is the source of many side effect bugs in JavaScript code.
 
 So in a sense objects are _mutable_, while primitives are not.
 
@@ -108,9 +108,9 @@ Data properties are described using those "properties":
 
 An accessor property is the JavaScript's equivalent of Java's (horrendous) getter and setter model (it's horrendous because if you have many properties you want to expose, you'll have to implement getter and setters for _all_ the properties). They are described by the following "properties":
 
-- `get`: a function called with an empty argument list to retrieve the property value whenever a get access to the value is performed. See also getters. May be undefined.
+- `get`: a function called with an empty argument list to retrieve the property value whenever get access to the value is performed. See also getters. Maybe undefined.
 
-- `set`: a function called with an argument that contains the assigned value. Executed whenever a specified property is attempted to be changed. See also setters. May be undefined.
+- `set`: a function called with an argument that contains the assigned value. Executed whenever a specified property is attempted to be changed. See also setters. Maybe undefined.
 
 - `enumerable`: a boolean value indicating if the property can be enumerated by a for...in loop. See also Enumerability and ownership of properties for how enumerability interacts with other functions and syntaxes.
 
@@ -140,11 +140,11 @@ If a property does not exist on an object, then the prototype object (if availab
 
 ---
 
-If you want to use objects as maps, please just use the built-in `Map`. Objects perform bad as key-value stores for _random and dynamic_ data.
+If you want to use objects as maps, please use the built-in `Map`. Objects perform badly as key-value stores for _random and dynamic_ data.
 
 ### Properties On Primitives And Special Objects
 
-If a property is accessed on a primitive, the corresponding wrapper function is used to create a new (special) object with that prototype and the property is then accessed on the object.
+If a property is accessed on a primitive, the corresponding wrapper function is used to create a new (special) object with that prototype, and the property is then accessed on the object.
 
 ### Indexed Collections
 
@@ -161,7 +161,7 @@ If a property is accessed on a primitive, the corresponding wrapper function is 
 ## Classes
 
 
-The one that I'm most mad about is the one that is the most standard in any programming language: _sum_ types. The ability to group other types in JavaScript is implemented with classes. Classes classically have polymorphic semantics, and they also in JS.
+The one that I'm most mad about is the one that is the most standard in any programming language: _sum_ types. The ability to group other types in JavaScript is implemented with classes. Classes classically have polymorphic semantics, and they also do in JS.
 
 A JS class looks like this:
 
@@ -205,7 +205,7 @@ console.log("associatedFunction" in instance); // logs "true"
 console.log(Object.keys(instance).includes("associatedFunction")); // logs "false"
 ```
 
-_What the heck is going on here?_ See, the property does not actually exist. _But_ **every object in JavaScript has a hidden prototype "field"**. You _can_ access it via the `__proto__` property, but that's deprecated (it might still work tho); instead it is recommended to use [`Object.getPrototypeOf(...)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getPrototypeOf) which is widely supported.
+_What the heck is going on here?_ See, the property does not exist. _But_ **every object in JavaScript has a hidden prototype "field"**. You _can_ access it via the `__proto__` property, but that's deprecated (it might still work tho); instead it is recommended to use [`Object.getPrototypeOf(...)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getPrototypeOf) which is widely supported.
 
 This property holds the _prototype object_ encountered earlier. In short, if a property is not found in the target object, JavaScript looks into the prototype object and continues the search.
 

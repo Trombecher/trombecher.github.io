@@ -38,9 +38,9 @@ export default () => {
 }
 
 const MenuButton = ({
-                        setIsOpen,
-                        isOpen,
-                    }: {
+    setIsOpen,
+    isOpen,
+}: {
     isOpen: Accessor<boolean>,
     setIsOpen: Setter<boolean>
 }) => (

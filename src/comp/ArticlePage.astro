@@ -3,7 +3,7 @@ import {getEntry} from "astro:content";
 import BlogImage from "./BlogImage.astro";
 import Page from "./Page.astro";
 import {TAG_TO_SLUG} from "@/global";
-import DateTime from "./DateTime.astro";
+import DateTime from "@/comp/system/DateTime";
 
 interface Props {
     slug: string,
@@ -35,7 +35,8 @@ const {Content} = await entry.render();
             }
             <span class="w-4 inline-block"></span>
             {entry.data.tags.map(tag => (
-                <a href={`/${TAG_TO_SLUG[tag]}/`} class="!text-white bg-blue !no-underline rounded-full px-3 inline-block mr-2">#{tag}</a>
+                <a href={`/${TAG_TO_SLUG[tag]}/`}
+                   class="!text-white bg-blue !no-underline rounded-full px-3 inline-block mr-2">#{tag}</a>
             ))}
         </div>
         <p class="text-2xl">

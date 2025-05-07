@@ -5,12 +5,12 @@ import PostGrid from "@/comp/PostGrid.astro";
 import ArticlePage from "@/comp/ArticlePage.astro";
 import {getAllPosts} from "../server";
 
-export const getStaticPaths: GetStaticPaths = async () => ((await getAllPosts())
+export const getStaticPaths: GetStaticPaths = async() => ((await getAllPosts())
     .map(({slug}) => ({
-        params: {slug: slug as string}
+        params: {slug: slug as string},
     }))
     .concat(TAGS
-    .map(tag => ({ params: { slug: TAG_TO_SLUG[tag] } }))));
+        .map(tag => ({params: {slug: TAG_TO_SLUG[tag]}}))));
 
 const slug = Astro.params.slug as string;
 
@@ -20,6 +20,8 @@ const res = TAGS
 ---
 
 {typeof res === "string"
-    ? <PostGrid onlyWithTag={res}/>
-    : <ArticlePage slug={slug}/>
-}
+    ?
+<PostGrid onlyWithTag={res}/>
+    :
+<ArticlePage slug={slug}/>
+    }

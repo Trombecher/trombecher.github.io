@@ -2,12 +2,12 @@
 import Page from "./Page.astro";
 import {type Slug, SLUG_TO_TAG, TAG_TO_DESCRIPTION, TAG_TO_MULTIPLE} from "../global";
 import {Image} from "astro:assets";
-import DateTime from "@/comp/DateTime.astro";
+import DateTime from "@/comp/system/DateTime";
 import {getAllPosts} from "../server";
 import LinkFollow from "./LinkFollow.astro";
 
 interface Props {
-    onlyWithTag?: Slug
+    onlyWithTag?: Slug;
 }
 
 const maybeSlug = Astro.props.onlyWithTag;
@@ -22,7 +22,7 @@ const description = maybeSlug
 
 const posts = await getAllPosts(
     !import.meta.env.DEV,
-    maybeSlug && SLUG_TO_TAG[maybeSlug]
+    maybeSlug && SLUG_TO_TAG[maybeSlug],
 );
 
 posts.sort((a, b) =>
@@ -34,7 +34,8 @@ posts.sort((a, b) =>
     <h2 class="text-center mt-2 text-black text-xl mb-12 px-6">{description}</h2>
     <div class="px-6 grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(256px,1fr))]">
         {posts.map(post => (
-            <a href={`/${post.slug}/`} class="relative group block p-4 bg-shade-50 hover:bg-shade-100 rounded-3xl transition active:bg-shade-200">
+            <a href={`/${post.slug}/`}
+               class="relative group block p-4 bg-shade-50 hover:bg-shade-100 rounded-3xl transition active:bg-shade-200">
                 {post.data.hero && (
                     <Image
                         src={post.data.hero}
@@ -48,7 +49,8 @@ posts.sort((a, b) =>
                     {post.data.title}
                 </div>
                 <div class="text-shade-800">
-                    {post.data.pubUnix && <DateTime date={post.data.pubUnix}/>}
+                    {post.data.pubUnix &&
+                        <DateTime date={post.data.pubUnix}/>}
                     {post.data.tags.map(tag => (
                         <span class="italic">#{tag}{" "}</span>
                     ))}

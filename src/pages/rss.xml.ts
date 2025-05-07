@@ -1,6 +1,6 @@
+import {getAllPosts} from "@/server.ts";
 import rss from "@astrojs/rss";
 import type {APIRoute} from "astro";
-import {getAllPosts} from "@/server.ts";
 
 export const GET: APIRoute = async context => {
     return rss({

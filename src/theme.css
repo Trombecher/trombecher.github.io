@@ -15,7 +15,7 @@
     --color-shade-900: color-mix(in oklch, var(--color-white) 10%, var(--color-black) 90%);
     --color-shade-950: color-mix(in oklch, var(--color-white) 5%, var(--color-black) 95%);
 
-    --color-white: oklch(0.9767 0.022 74.1);
+    --color-white: oklch(0.985 0.01 67.707);
     --color-black: oklch(0.256 0 89.876);
 
     --color-red: #FF5D41;
@@ -26,7 +26,7 @@
     --breakpoint-sm: 600px;
 
     --font-sans: Inter, system-ui, sans-serif;
-    --font-mono: ui-monospace, Consolas, monospace;
+    --font-mono: ui-monospace, "JetBrains Mono", Consolas, monospace;
 }
 
 @layer base {
@@ -151,12 +151,6 @@
 @utility expanded {
     font-stretch: expanded;
 }
-
-/*
-boxShadow: {
-    button: "0 4px theme(colors.black)"
-}
-*/
 
 @font-face {
     font-family: Inter;

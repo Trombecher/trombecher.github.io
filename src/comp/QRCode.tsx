@@ -41,12 +41,12 @@ export default () => {
                         toCanvas(canvas, text(), {
                             margin: 0,
                             scale: 1,
-                            errorCorrectionLevel: ecl()
+                            errorCorrectionLevel: ecl(),
                         });
-                    })
+                    });
                 }}
                 class={"my-12 mix-blend-multiply !w-full aspect-square !h-auto [image-rendering:pixelated]"}
             ></canvas>
         </>
-    )
+    );
 }

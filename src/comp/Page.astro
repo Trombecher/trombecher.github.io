@@ -14,7 +14,7 @@ const {
     title = "Tobias Hillemanns",
     wide = false,
     description = "Anything is here, even nothing.",
-    preloadImageURLs = []
+    preloadImageURLs = [],
 } = Astro.props;
 ---
 
@@ -27,7 +27,8 @@ const {
 
     <link rel="preload" href="/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
     <link rel="preload" href="/fonts/InterVariable-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
-    {preloadImageURLs.map(url => <link rel="preload" href={url} as="image" type="image/avif"/>)}
+    {preloadImageURLs.map(url =>
+        <link rel="preload" href={url} as="image" type="image/avif"/>)}
 
     <meta name="description" content={description}/>
     <title>{title}</title>

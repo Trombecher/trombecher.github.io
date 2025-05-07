@@ -4,10 +4,13 @@
         "jsx": "preserve",
         "jsxImportSource": "solid-js",
         "baseUrl": "./",
-        "allowJs": true,
-        "types": ["@webgpu/types"],
+        "types": [
+            "@webgpu/types"
+        ],
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": [
+                "./src/*"
+            ]
         }
     }
 }
