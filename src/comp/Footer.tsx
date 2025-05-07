@@ -14,7 +14,11 @@ export default () => (
             Hosted by <Link href="https://pages.github.com/">GitHub Pages</Link> ❤️
         </p>
         <p class={"mt-4"}>
-            <Link href={"/privacy-policy/"}>Privacy Policy</Link> · <Link href={"/imprint/"}>Imprint</Link>
+            <Link href={"/privacy-policy/"}>Privacy Policy</Link>
+            {" · "}
+            <Link href={"/imprint/"}>Imprint</Link>
+            {" · "}
+            <Link href={"/license/"}>License</Link>
         </p>
     </footer>
 );

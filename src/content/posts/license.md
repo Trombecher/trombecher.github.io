@@ -1,3 +1,15 @@
+---
+title: "License"
+tags: ["Article"]
+description: ""
+---
+
+The content of this website (and the [corresponding GitHub repository](https://github.com/Trombecher/trombecher.github.io)) is licensed using a modified version of the [MIT license](https://opensource.org/license/mit) containing a clause about training AI models on this data.
+
+A copy of the license can be found below and [in the GitHub repository](https://github.com/Trombecher/trombecher.github.io/blob/main/LICENSE.txt). If you would like to consent to using the data of this website to train commercial AI models, hit me up.
+
+## License Text
+
 Copyright 2025 Tobias Hillemanns
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
