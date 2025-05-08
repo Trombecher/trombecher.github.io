@@ -1,13 +1,18 @@
 import Button from "@/comp/system/Button.tsx";
 import Bin from "@/icons/Bin";
-import {createEffect, createMemo, For, onMount} from "solid-js";
-import {createStore} from "solid-js/store";
+import {createEffect, createMemo, createSignal, Index, onMount} from "solid-js";
 import {z} from "zod";
 
 type Person = {
-    name: string,
-    readonly id: number,
-};
+    name: string;
+    id: number;
+}
+
+type Expense = {
+    who: number;
+    description: string;
+    spent: number;
+}
 
 /*
  const FIELD_DELIMITER = "~";
@@ -44,7 +49,7 @@ function* generateActions(spendings: number[]): Generator<Action, void, unknown>
     const spendingTargetPerPerson = spent / spendings.length;
 
     while(true) {
-        // Find the person who spend the least.
+        // Find the person who spent the least.
         const minPerson = spendings.reduce<number>((minPerson, spent, person) =>
             spent < spendings[minPerson]!
                 ? person
@@ -53,7 +58,7 @@ function* generateActions(spendings: number[]): Generator<Action, void, unknown>
         // There is no more money to transfer.
         if(Math.abs(spendings[minPerson]! - spendingTargetPerPerson) < 0.01) break;
 
-        // Find the person who spend the most.
+        // Find the person who spent the most.
         const maxPerson = spendings.reduce<number>((maxPerson, spent, person) =>
             spent > spendings[maxPerson!]!
                 ? person
@@ -72,7 +77,7 @@ function* generateActions(spendings: number[]): Generator<Action, void, unknown>
         spendings[minPerson]! += transferAmount;
         spendings[maxPerson]! -= transferAmount;
     }
-};
+}
 
 /*
  const setDivSelection = (div: HTMLDivElement, start: number, end: number = start) => {
@@ -92,20 +97,6 @@ function* generateActions(spendings: number[]): Generator<Action, void, unknown>
  selection.addRange(range);
  };
  */
-
-type Expense = {
-    /** Person id */
-    who: number,
-    description: string,
-    spent: number
-};
-
-const PEOPLE_STORE_SCHEMA = z.set(z.string());
-const EXPENSES_STORE_SCHEMA = z.array(z.object({
-    who: z.string(),
-    description: z.string(),
-    spent: z.number(),
-}));
 
 export default () => {
     /*
@@ -128,50 +119,60 @@ export default () => {
      const sum = createMemo(() => people.reduce((sum, person) => sum + person.paid, 0));
      */
 
-    const [people, setPeople] = createStore<Person[]>([]);
-    const [expenses, setExpenses] = createStore<Expense[]>([]);
+    const [people, setPeople] = createSignal<Person[]>([]);
+    const [expenses, setExpenses] = createSignal<Expense[]>([]);
 
-    const summedExpenses = () => expenses.reduce(
+    const summedExpenses = () => expenses().reduce(
         (sums, expense) => (
-            sums[people.findIndex(p => p.id === expense.who)]! += expense.spent,
+            sums[people().findIndex(p => p.id === expense.who)]! += expense.spent,
                 sums),
-        people.map(() => 0),
+        people().map(() => 0),
     );
 
-    const getPersonByID = (id: number) => people.find(p => p.id === id);
+    const getPersonByName = (name: string) => people()
+        .find(p => p.name === name);
+    const getPersonByID = (id: number) => people()
+        .find(p => p.id === id);
+
     let idCounter = 0;
 
     onMount(() => {
         try {
+            const localNames = z.array(z.string()).parse(JSON.parse(localStorage.people || "[]"));
 
-            setPeople(() => [...PEOPLE_STORE_SCHEMA.parse(
-                new Set(JSON.parse(localStorage.people || "[]")),
-            ).values()].map(name => ({name, id: idCounter++})));
+            setPeople(localNames.map(name => ({name, id: idCounter++})));
         } catch(_) {
+            localStorage.removeItem("people");
         }
 
         try {
-            setExpenses(() => EXPENSES_STORE_SCHEMA.parse(
-                JSON.parse(localStorage.expenses || "[]"),
-            )
+            const localExpenses = z.array(z.object({
+                who: z.string(),
+                description: z.string(),
+                spent: z.number(),
+            })).parse(JSON.parse(localStorage.expenses || "[]"));
+
+            setExpenses(localExpenses
                 .map(({who, spent, description}) => {
-                    const whoID = people.find(x => x.name === who)?.id;
-                    return whoID !== undefined && {
-                        who: whoID,
+                    const whoId = getPersonByName(who);
+
+                    return whoId && {
+                        who: whoId.id,
                         spent,
                         description,
                     };
                 })
-                .filter(x => !!x));
+                .filter<Expense>(x => !!x));
         } catch(_) {
+            localStorage.removeItem("expenses");
         }
 
         createEffect(() => {
-            localStorage.people = JSON.stringify(people.map(p => p.name));
+            localStorage.people = JSON.stringify(people().map(p => p.name));
         });
 
         createEffect(() => {
-            localStorage.expenses = JSON.stringify(expenses.map(({who, description, spent}) => ({
+            localStorage.expenses = JSON.stringify(expenses().map(({who, description, spent}) => ({
                 who: getPersonByID(who)!.name,
                 description,
                 spent,
@@ -182,77 +183,70 @@ export default () => {
     const neededTransactions = createMemo(() => [...generateActions(summedExpenses())]);
 
     const countExpenses = (id: number) =>
-        expenses.reduce((count, expense) =>
+        expenses().reduce((count, expense) =>
             expense.who === id ? count + 1 : count, 0);
 
     return (
         <>
             <section class={"p-6 mt-12 border-2 rounded-3xl border-shade-100"}>
-                <h2 class={"mt-0 mb-6"}>People ({people.length})</h2>
+                <h2 class={"mt-0 mb-6"}>People ({people().length})</h2>
                 <div>
-                    <For each={people}>
-                        {({name, id}, i) => (
+                    <Index each={people()}>
+                        {person => (
                             <div class={"flex gap-3 mb-4"}>
-                                <div
-                                    contenteditable
+                                <input
+                                    type="text"
+                                    class={"px-4 py-1 bg-shade-100 rounded-xl"}
+                                    value={person().name}
                                     oninput={e => {
-                                        setPeople(i(), {
-                                            name: e.currentTarget.textContent || "",
-                                            id: idCounter++,
-                                        });
+                                        setPeople(people => people.map(iterPerson => {
+                                            if(iterPerson.id === person().id) return {
+                                                name: e.currentTarget.value || "",
+                                                id: iterPerson.id,
+                                            };
+
+                                            return iterPerson;
+                                        }));
                                     }}
                                     onblur={e => {
                                         // Delete empty elements
-                                        if(e.currentTarget.textContent === "" && countExpenses(id) === 0) {
-                                            setPeople(people => people.filter((_, index) => index !== i()));
+                                        if(e.currentTarget.value === "" && countExpenses(person().id) === 0) {
+                                            setPeople(people => people.filter(p => p.id !== person().id));
                                         }
                                     }}
                                     onkeydown={e => {
-                                        /*
-                                         if(e.currentTarget.textContent === "" && e.code === "Backspace") {
-                                         e.preventDefault();
-                                         const prev: HTMLDivElement | null = e.currentTarget.previousElementSibling as any;
-
-                                         setPeople(people => people.filter((_, index) => index !== i()));
-
-                                         prev?.focus();
-                                         if(prev) setDivSelection(prev, (prev.textContent || "").length);
-                                         }
-                                         */
-
                                         if(e.code === "Enter") {
                                             e.preventDefault();
-                                            setPeople(people.length, {name: ""});
+                                            setPeople(people => [...people, {name: "", id: idCounter++}]);
 
                                             // @ts-ignore
                                             e.currentTarget.parentElement.nextElementSibling.firstElementChild.focus();
                                         }
                                     }}
-                                    class={"px-4 py-1 bg-shade-100 rounded-xl"}
-                                >{name}</div>
+                                />
                                 <button
                                     class={"block"}
                                     onclick={() => {
-                                        if(0 !== countExpenses(id)) {
-                                            if(!confirm(`Do you really want to delete "${name}"? This will result in deletion of their expenses.`)) {
+                                        if(countExpenses(person().id)) {
+                                            if(!confirm(`Do you really want to delete "${person().name}"? This will result in deletion of their expenses.`)) {
                                                 return;
                                             }
 
                                             // The user has no expenses, or they confirmed to delete.
-                                            setExpenses(expenses => expenses.filter(exp => exp.who !== id));
+                                            setExpenses(expenses => expenses.filter(exp => exp.who !== person().id));
                                         }
 
-                                        setPeople(people => people.filter(p => p.name !== name));
+                                        setPeople(people => people.filter(p => p.id !== person().id));
                                     }}
                                 >
                                     <Bin/>
                                 </button>
                             </div>
                         )}
-                    </For>
+                    </Index>
                     <Button
                         onclick={e => {
-                            setPeople(people.length, {name: ""});
+                            setPeople(people => [...people, {name: "", id: idCounter++}]);
                             // @ts-ignore
                             e.currentTarget.previousElementSibling?.firstElementChild?.focus();
                         }}
@@ -262,47 +256,68 @@ export default () => {
                 </div>
             </section>
             <section class={"p-6 mt-6 border-2 rounded-3xl border-shade-100"}>
-                <h2 class={"mt-0"}>Expenses ({expenses.length})</h2>
-                <For each={expenses}>
-                    {({who, description, spent}, i) => (
+                <h2 class={"mt-0"}>Expenses ({expenses().length})</h2>
+                <Index each={expenses()}>
+                    {expense => (
                         <div class={"mb-8"}>
                             <input
                                 type="text"
                                 placeholder={"Name of the expense"}
                                 class={"mb-4 block px-4 bg-shade-100 py-1 rounded-xl placeholder:text-shade-500 w-full placeholder:italic"}
-                                value={description}
+                                value={expense().description}
                                 onInput={e => {
-                                    setExpenses(i(), "description", e.currentTarget.value);
+                                    setExpenses(expenses => expenses.map(iterExpense => {
+                                        if(iterExpense === expense()) return {
+                                            ...iterExpense,
+                                            description: e.currentTarget.value,
+                                        };
+
+                                        return iterExpense;
+                                    }));
                                 }}
                             />
                             <div class={"flex gap-4"}>
                                 <select
                                     oninput={e => {
-                                        setExpenses(i(), "who", +e.currentTarget.value);
+                                        setExpenses(expenses => expenses.map(iterExpense => {
+                                            if(iterExpense === expense()) return {
+                                                ...iterExpense,
+                                                who: +e.currentTarget.value,
+                                            };
+
+                                            return iterExpense;
+                                        }));
                                     }}
                                 >
-                                    <For each={people}>
-                                        {(person) => (
+                                    <Index each={people()}>
+                                        {person => (
                                             <option
-                                                data-x={JSON.stringify(person)}
-                                                value={person.id}
-                                                selected={who === person.id}
-                                            >{person.name}</option>
+                                                // data-x={JSON.stringify(person())}
+                                                value={person().id}
+                                                selected={expense().who === person().id}
+                                            >{person().name}</option>
                                         )}
-                                    </For>
+                                    </Index>
                                 </select>
                                 <input
                                     type="number"
                                     class={"grow w-0 block px-4 bg-shade-100 text-right py-1 rounded-xl"}
-                                    value={spent}
+                                    value={expense().spent}
                                     onInput={e => {
-                                        setExpenses(i(), "spent", +e.target.value);
+                                        setExpenses(expenses => expenses.map(iterExpense => {
+                                            if(iterExpense === expense()) return {
+                                                ...iterExpense,
+                                                spent: +e.currentTarget.value,
+                                            };
+
+                                            return iterExpense;
+                                        }));
                                     }}
                                 />
                                 <button
                                     class={"block"}
                                     onclick={() => {
-                                        setExpenses(expenses => expenses.filter((_, index) => i() !== index));
+                                        setExpenses(expenses => expenses.filter(e => expense() !== e));
                                     }}
                                 >
                                     <Bin/>
@@ -310,36 +325,36 @@ export default () => {
                             </div>
                         </div>
                     )}
-                </For>
+                </Index>
                 <Button
                     onClick={() => {
-                        if(!people.length) return;
+                        if(!people().length) return;
 
-                        setExpenses(expenses.length, {
-                            who: people[0]!.id,
+                        setExpenses(expenses => [...expenses, {
+                            who: people()[0]!.id,
                             description: "",
                             spent: 0,
-                        });
+                        }]);
                     }}
                 >
                     + Add Expense
                 </Button>
                 <hr/>
                 <div class={"text-2xl font-semibold"}>
-                    Total: {expenses.reduce((total, expense) => total + expense.spent, 0)}€
+                    Total: {expenses().reduce((total, expense) => total + expense.spent, 0)}€
                     <br/>
                     Expenses per person
-                    (mean): {Math.round(expenses.reduce((total, expense) => total + expense.spent, 0) / people.length * 100) / 100}€
+                    (mean): {Math.round(expenses().reduce((total, expense) => total + expense.spent, 0) / people().length * 100) / 100}€
                 </div>
             </section>
             <section class={"p-6 mt-6 border-2 rounded-3xl border-shade-100"}>
                 <h2 class={"mt-0"}>Needed Transactions ({neededTransactions().length})</h2>
-                <For each={neededTransactions()}>
-                    {({from, to, amount}) => (
-                        <div>{people[from]!.name} needs to transfer {Math.round(amount * 100) / 100}€
-                            to {people[to]!.name}</div>
+                <Index each={neededTransactions()}>
+                    {action => (
+                        <div>{people()[action().from]!.name} needs to transfer {Math.round(action().amount * 100) / 100}€
+                            to {people()[action().to]!.name}</div>
                     )}
-                </For>
+                </Index>
             </section>
         </>
     );
