@@ -1,0 +1,19 @@
+---
+import "../theme-ln.css";
+import LinkNet from "../net/LinkNet";
+---
+
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <link rel="icon" type="image/svg+xml" href="/fi.svg"/>
+    <meta name="viewport" content="width=device-width"/>
+    <meta name="generator" content={Astro.generator}/>
+    <meta name="description" content=""/>
+    <meta name="color-scheme" content="dark light">
+    <title>Tobias' Link Net</title>
+</head>
+<body class="min-h-screen bg-shade-950 text-white flex flex-col items-center">
+<LinkNet client:only/>
+</body>
+</html>

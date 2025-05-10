@@ -49,13 +49,13 @@ const MenuButton = ({
         class={"w-10 h-10 flex flex-col items-center justify-center m-5 gap-1 pointer-events-auto shrink-0 cursor-pointer hover:bg-shade-50 transition active:bg-shade-100 rounded-xl backdrop-blur-2xl bg-white/50"}
     >
         <span
-            class={`rounded-full bg-black h-0.5 w-[22px] origin-center transition ease-in-out duration-300 ${isOpen() ? "-rotate-45 translate-y-[6px]" : ""}`}
+            class={`shrink-0 rounded-full bg-black h-0.5 w-[22px] origin-center transition ease-in-out duration-300 ${isOpen() ? "-rotate-45 translate-y-[6px]" : ""}`}
         />
         <span
-            class={`rounded-full bg-black h-0.5 w-[22px] origin-center transition ease-in-out duration-300 ${isOpen() ? "-rotate-45 opacity-0" : "opacity-100"}`}
+            class={`shrink-0 rounded-full bg-black h-0.5 w-[22px] origin-center transition ease-in-out duration-300 ${isOpen() ? "-rotate-45 opacity-0" : "opacity-100"}`}
         />
         <span
-            class={`rounded-full bg-black h-0.5 w-[22px] origin-center transition ease-in-out duration-300 ${isOpen() ? "rotate-45 translate-y-[-6px]" : ""}`}
+            class={`shrink-0 rounded-full bg-black h-0.5 w-[22px] origin-center transition ease-in-out duration-300 ${isOpen() ? "rotate-45 translate-y-[-6px]" : ""}`}
         />
     </button>
 );
