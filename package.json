@@ -14,8 +14,8 @@
         "astro": "5.7.13",
         "peerjs": "^1.5.4",
         "qrcode": "^1.5.4",
-        "solid-js": "^1.9.6",
-        "zod": "^3.24.4"
+        "solid-js": "^1.9.7",
+        "zod": "^3.25.13"
     },
     "devDependencies": {
         "@astrojs/check": "^0.9.4",

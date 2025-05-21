@@ -10,9 +10,9 @@ export default defineConfig({
     vite: {
         plugins: [
             tailwindcss(),
-            viteBasicSslPlugin({
-                name: "yoyoyoyoyo",
-            })
+            // viteBasicSslPlugin({
+            //     name: "yoyoyoyoyo",
+            // })
         ]
     },
     trailingSlash: "always",
