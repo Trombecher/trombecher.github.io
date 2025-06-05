@@ -1,0 +1,379 @@
+---
+title: "Effective Images For The Web"
+tags: ["Article"]
+description: "This is a guide to using the HTML <img> tag and optimizing for bandwidth and performance. Also referred to as \"responsive images\"."
+published: 1749140670543
+---
+
+The `<img>` tag is arguably one of the most important HTML tags out there. It is one of the things that haven't been replaced by JavaScript over the years, contrasting `<textarea/>` or various input types. This is why its API has evolved over the years, enabling browsers to more effectively fetch and render images dynamically.
+
+But what if you just got started with the web and wanted to embed some images into your HTML? The corresponding [MDN docs for `<img>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img) are great at describing the tag, but fail to provide real world examples as for how to use them effectively. This is what this article is about.
+
+## Starting off,
+
+The standard `<img>` attributes everyone knows about are:
+
+```html
+<img
+    src="/test-img.webp"
+    alt="This is the image description."
+    width="250"
+    height="200"
+>
+```
+
+<img
+    src="/test-img.webp"
+    alt="This is the image description."
+    width="250"
+    height="200"
+/>
+
+This displays an image hosted at the `src`-URL with a width and height. But what does happen when we omit the image dimensions or just straight up provide false ones?
+
+## Omitting width and height
+
+```html
+<img
+    src="/test-img.webp"
+    alt="This is the image description."
+>
+```
+
+<img
+    src="/test-img.webp"
+    alt="This is the image description."
+/>
+
+## Providing false dimensions
+
+```html
+<img
+    src="/test-img.webp"
+    alt="This is the image description."
+    width="100"
+    height="10000"
+>
+```
+
+<img
+    src="/test-img.webp"
+    alt="This is the image description."
+    width="100"
+    height="10000"
+/>
+
+```html
+<img
+    src="/test-img.webp"
+    alt="This is the image description."
+    width="10000"
+    height="100"
+>
+```
+
+<img
+    src="/test-img.webp"
+    alt="This is the image description."
+    width="10000"
+    height="100"
+/>
+
+As you can see, the image is still rendered, specifically with the _actual_ aspect ratio of the image. Omitting the dimensions causes the image to be rendered at its pixel data size. Setting the width to 10,000 causes the image to just expand to the parent container, but not further. The height is ignored altogether.
+
+## Why, then, can't I just omit the dimensions if they are irrelevant?
+
+Well, picture yourself as the browser. You just got the HTML payload and started to parse it. The goal is to display content as fast as possible, so when you encounter the image tag, you start fetching the image from the URL.
+
+Suppose the image's dimensions have been omitted. Now you finished parsing and want to lay out the page. What are the dimensions of this image? You don't know until the image is loaded, so you lay out the page with zeroed image dimensions.
+
+When the image finally loads in, it causes a _reflow_, meaning you as the browser have to recalculate the entire page layout with the real image dimensions. This is suboptimal.
+
+This is why width and height are crucial, especially for SEO-heavy websites and images that are instantly visible when the user navigates to that page. These dimensions tell the browser's layout engine the expected <u>aspect ratio</u> of the image. Laying out the page, the engine then can calculate the displayed dimensions based off the `width` attribute and the aspect ratio.
+
+## Choosing the right format
+
+Browsers support a handful of image formats (sorted by age, oldest first):
+
+* GIF
+* JPEG
+* PNG
+* APNG
+* SVG
+* WebP
+* AVIF
+
+**Which one should you choose?**
+
+One important distinction is to be made upfront: the list is exclusively covering raster image formats, except for SVG (vector format). You should always try to use SVG if you have it. Because SVG is (most of the time) pretty small, SVG images are consuming only a few kb at most.
+
+And, because it is a vector format, it encodes shapes and colors instead of pixel values, meaning you can render it at arbitrary resolution. Due to that property, SVG images are not subject to the `<img/>` optimization strategies laid out in the rest of this article.
+
+### Focussing on raster image formats
+
+The remaining formats store pixel data, decoding to RGB(A) values. **TlDr; pick WebP or AVIF.**
+
+Choosing one of the newer formats has many advantages, such as fast/parallel decoding, progressive enhancement, better compression, more features, better-looking images at harder compression than other formats, etc. The potential downside is lacking support. But speaking realistically, most users have the latest modern browsers that support these.
+
+### WebP
+
+[Support among browsers for WebP is almost universal](https://caniuse.com/webp), with only Internet Explorer missing support. WebP supports lossless compression and lossy compression with variable levels. **WebP is an excellent choice for lossy compression and, currently, the best choice for lossless compression.**
+
+### AVIF
+
+Based off the AV1 video standard, the newer AVIF format excels at decoding speed but only supports lossy compression. If you are crazing for the lastest and greatest with [surprisingly good support (baseline 2024)](https://caniuse.com/avif), choose it.
+
+### JPEG XL
+
+This format was not listed because it is not even remotely ready for production. There has been a lot of controversy around this format, but in my opinion, it is the future. Read more [here](https://jpegxl.info/).
+
+---
+
+Now, with the right format in hand, we can continue to arguably the most important part of image optimization: sizing.
+
+## Sizing and quality
+
+I would like to start off with an example.
+
+Let's say, you wanted to host an image for your website. You converted it from PNG or whatever to lossless WebP using some online converter. What dimensions would that be? Well, duh, the dimensions of the image you want to host... Let's say 1920x1080 (Full HD).
+
+I have done that exact process for a picture of some wood and ended up with a 2.25MB file. Now imagine 10,000 users going to your Website and having to download this 2.25MB file.
+
+This would end up in 22.5GB of bandwidth for your server (bad!). This is also bad for the users that do not need a FHD image because they have fewer pixels on their phone screen, for example. Or the image is not even displayed as FHD, marking a lot of unused bytes downloaded. Or what about the users on a bad connection? Ain't nobody want to download 2.25MB on cellular E.
+
+This problem seems hard to solve because it heavily depends on the user client's needs. Going extreme the other way, serving a low-res image results in bad image scaling and your website looks bad. Basically, we are yearning for a solution that lets the client pick what to download.
+
+### The solution
+
+There are attributes on the `<img/>` tag that solve these problems. The core idea is that you (as the host) need to provide **various versions of your image**, each with a **different resolution**. And you need to provide the client with **meta-information on what the image URLs are, their sizes, and when to pick what image**. Using this information, the client itself figures out what to download.
+
+The implementation and syntax of this information is rather unintuitive and the documentation is spare. Which is why we will look at another example, whose methods can be generalized.
+
+### Example: a basic blog
+
+Picture this: you want to start a basic block and need to optimize the hero image of an article page. Let this be your layout for desktop:
+
+<svg class={"border-2 border-shade-200"} viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <clipPath id="clip_path_1">
+            <rect width="1920" height="1080" />
+        </clipPath>
+        <linearGradient id="gradient_2" gradientUnits="userSpaceOnUse" x1="313.5" y1="0" x2="313.5" y2="381">
+            <stop offset="0" stop-color="#6586FF" />
+            <stop offset="1" stop-color="#B7DAFF" />
+        </linearGradient>
+        <clipPath id="clip_path_3">
+            <rect width="627" height="381" rx="42" />
+        </clipPath>
+    </defs>
+    <g clip-path="url(#clip_path_1)">
+        <rect width="1920" height="1080" fill="#FFFFFF" fill-rule="evenodd" />
+        <path d="M503 0C522.333 0 538 15.6674 538 35L538 35C538 54.3326 522.333 70 503 70L35 70C15.6674 70 0 54.3326 0 35L0 35C0 15.6674 15.6674 0 35 0L503 0Z" fill="#434343" transform="translate(647 576)" />
+        <path d="M613 0C620.733 0 627 6.26697 627 14L627 14C627 21.733 620.733 28 613 28L14 28C6.26697 28 0 21.733 0 14L0 14C0 6.26697 6.26697 0 14 0L613 0Z" fill="#8F8F8F" transform="translate(647 777)" />
+        <path d="M613 0C620.733 0 627 6.26697 627 14L627 14C627 21.733 620.733 28 613 28L14 28C6.26697 28 0 21.733 0 14L0 14C0 6.26697 6.26697 0 14 0L613 0Z" fill="#8F8F8F" transform="translate(647 824)" />
+        <path d="M613 0C620.733 0 627 6.26697 627 14L627 14C627 21.733 620.733 28 613 28L14 28C6.26697 28 0 21.733 0 14L0 14C0 6.26697 6.26697 0 14 0L613 0Z" fill="#8F8F8F" transform="translate(647 871)" />
+        <path d="M372 0C379.733 0 386 6.26697 386 14L386 14C386 21.733 379.733 28 372 28L14 28C6.26697 28 0 21.733 0 14L0 14C0 6.26697 6.26697 0 14 0L372 0Z" fill="#8F8F8F" transform="translate(647 918)" />
+        <path d="M613 0C620.733 0 627 6.26697 627 14L627 14C627 21.733 620.733 28 613 28L14 28C6.26697 28 0 21.733 0 14L0 14C0 6.26697 6.26697 0 14 0L613 0Z" fill="#8F8F8F" transform="translate(647 1027)" />
+        <path d="M613 0C620.733 0 627 6.26697 627 14L627 14C627 21.733 620.733 28 613 28L14 28C6.26697 28 0 21.733 0 14L0 14C0 6.26697 6.26697 0 14 0L613 0Z" fill="#8F8F8F" transform="translate(647 1074)" />
+        <path d="M153.5 0C158.195 0 162 3.80493 162 8.5L162 8.5C162 13.1951 158.195 17 153.5 17L8.5 17C3.80493 17 0 13.1951 0 8.5L0 8.5C0 3.80493 3.80493 0 8.5 0L153.5 0Z" fill="#D4D4D4" transform="translate(647 679)" />
+        <path d="M83.5 0C88.1951 0 92 3.80493 92 8.5L92 8.5C92 13.1951 88.1951 17 83.5 17L8.5 17C3.80493 17 0 13.1951 0 8.5L0 8.5C0 3.80493 3.80493 0 8.5 0L83.5 0Z" fill="#D4D4D4" transform="translate(819 679)" />
+        <g clip-path="url(#clip_path_3)" transform="translate(647 133)">
+            <rect width="627" height="381" fill="url(#gradient_2)" fill-rule="evenodd" />
+            <path d="M0 148C119.454 27.4174 132.5 30 132.5 30L241.5 188L363 83L430.5 242.5L522.5 0L587.5 148L628 100.5L628 291.5L0 291.5L0 148Z" fill="#38344A" fill-rule="evenodd" transform="translate(-1 89.5)" />
+            <path d="M0 30C0 13.4315 13.4315 0 30 0C46.5685 0 60 13.4315 60 30C60 46.5685 46.5685 60 30 60C13.4315 60 0 46.5685 0 30Z" fill="#F4FF60" fill-rule="evenodd" transform="translate(29 41)" />
+        </g>
+        <path d="M83.5 0C88.1951 0 92 3.80494 92 8.5L92 8.5C92 13.1951 88.1951 17 83.5 17L8.5 17C3.80493 17 0 13.1951 0 8.5L0 8.5C0 3.80494 3.80493 0 8.5 0L83.5 0Z" fill="#D4D4D4" transform="translate(647 54)" />
+        <path d="M83.5 0C88.1951 0 92 3.80494 92 8.5L92 8.5C92 13.1951 88.1951 17 83.5 17L8.5 17C3.80493 17 0 13.1951 0 8.5L0 8.5C0 3.80494 3.80493 0 8.5 0L83.5 0Z" fill="#D4D4D4" transform="translate(1182 54)" />
+        <path d="M83.5 0C88.1951 0 92 3.80494 92 8.5L92 8.5C92 13.1951 88.1951 17 83.5 17L8.5 17C3.80493 17 0 13.1951 0 8.5L0 8.5C0 3.80494 3.80493 0 8.5 0L83.5 0Z" fill="#D4D4D4" transform="translate(1062 54)" />
+        <path d="M83.5 0C88.1951 0 92 3.80494 92 8.5L92 8.5C92 13.1951 88.1951 17 83.5 17L8.5 17C3.80493 17 0 13.1951 0 8.5L0 8.5C0 3.80494 3.80493 0 8.5 0L83.5 0Z" fill="#D4D4D4" transform="translate(942 54)" />
+        <line x1="0" y1="1" x2="627" y2="1" fill="none" stroke-width="8" stroke="#FF0000" stroke-linecap="square" transform="translate(647 99.5)" />
+        <line x1="0" y1="0" x2="92.837" y2="78.036" fill="none" stroke-width="8" stroke="#FF0000" stroke-linecap="square" transform="translate(1300.018 130.571)" />
+        <line x1="1" y1="0" x2="1" y2="24" fill="none" stroke-width="8" stroke="#FF0000" stroke-linecap="square" transform="translate(646 101)" />
+        <line x1="1" y1="0" x2="1" y2="24" fill="none" stroke-width="8" stroke="#FF0000" stroke-linecap="square" transform="translate(1273 101)" />
+        <g transform="translate(1355 225)">
+            <path d="M5.35014 78.4688L5.35014 34.2869L15.3026 34.2869L15.3026 41.7944L15.8203 41.7944Q17.201 38.0263 20.3938 35.869Q23.5866 33.7116 28.0163 33.7116Q32.4748 33.7116 35.5813 35.869Q38.6879 38.0263 39.9535 41.7944L40.4137 41.7944Q41.8807 38.1126 45.3755 35.9121Q48.8704 33.7117 53.674 33.7116Q59.772 33.7116 63.6264 37.566Q67.4808 41.4205 67.4808 48.8129L67.4808 78.4688L57.0394 78.4688L57.0394 50.4236Q57.0394 46.3104 54.8533 44.3975Q52.6673 42.4847 49.5032 42.4847Q45.7351 42.4847 43.6209 44.829Q41.5067 47.1733 41.5067 50.9126L41.5067 78.4688L31.2955 78.4688L31.2955 49.9922Q31.2955 46.5692 29.2388 44.527Q27.1822 42.4847 23.8743 42.4847Q20.5089 42.4847 18.1358 45.0016Q15.7628 47.5185 15.7628 51.603L15.7628 78.4688L5.35014 78.4688ZM90.7798 79.3604Q84.4517 79.3604 80.2234 75.9663Q75.995 72.5721 75.995 66.0714Q75.995 61.0952 78.3968 58.3482Q80.7987 55.6012 84.6387 54.35Q88.4787 53.0987 92.7646 52.6385Q98.6037 52.0057 101.149 51.4592Q103.695 50.9126 103.695 48.669L103.695 48.4964Q103.695 45.2461 101.768 43.4627Q99.8406 41.6793 96.2163 41.6793Q92.3906 41.6793 90.1614 43.3477Q87.9322 45.016 87.1555 47.2884L77.4332 45.9077Q79.1591 39.8672 84.1784 36.7894Q89.1978 33.7116 96.1587 33.7116Q99.3228 33.7116 102.487 34.4595Q105.651 35.2074 108.283 36.9332Q110.915 38.6591 112.511 41.593Q114.108 44.527 114.108 48.8991L114.108 78.4688L104.098 78.4688L104.098 72.3995L103.752 72.3995Q102.343 75.1896 99.1646 77.275Q95.9862 79.3604 90.7798 79.3604ZM93.4837 71.7092Q98.201 71.7092 100.962 69.0053Q103.724 66.3015 103.724 62.6197L103.724 57.4134Q103.062 57.9599 101.293 58.377Q99.5241 58.794 97.5394 59.0817Q95.5547 59.3693 94.174 59.5707Q90.6935 60.0597 88.3636 61.4835Q86.0337 62.9073 86.0337 65.8988Q86.0337 68.7752 88.1335 70.2422Q90.2333 71.7092 93.4837 71.7092ZM133.121 34.2869L142.038 50.5962L151.098 34.2869L162.115 34.2869L148.797 56.3778L162.345 78.4688L151.386 78.4688L142.038 62.5621L132.776 78.4688L121.73 78.4688L135.192 56.3778L122.075 34.2869L133.121 34.2869ZM199.393 78.4688L186.91 34.2869L197.524 34.2869L205.29 65.3523L205.693 65.3523L213.632 34.2869L224.131 34.2869L232.07 65.1797L232.501 65.1797L240.152 34.2869L250.795 34.2869L238.283 78.4688L227.439 78.4688L219.154 48.6115L218.55 48.6115L210.266 78.4688L199.393 78.4688ZM258.101 78.4688L258.101 34.2869L268.514 34.2869L268.514 78.4688L258.101 78.4688ZM263.336 28.0163Q260.834 28.0163 259.065 26.3624Q257.296 24.7085 257.296 22.3785Q257.296 20.0199 259.065 18.3659Q260.834 16.712 263.336 16.712Q265.81 16.712 267.579 18.3659Q269.348 20.0199 269.348 22.3785Q269.348 24.7084 267.579 26.3624Q265.81 28.0163 263.336 28.0163ZM295.61 79.2454Q290.403 79.2454 286.29 76.5703Q282.177 73.8952 279.789 68.804Q277.402 63.7127 277.402 56.4354Q277.402 49.0717 279.833 44.0092Q282.263 38.9467 286.405 36.3292Q290.547 33.7117 295.638 33.7116Q299.55 33.7116 302.039 35.0204Q304.527 36.3292 306.008 38.1557Q307.489 39.9822 308.266 41.593L308.697 41.593L308.697 19.5597L319.139 19.5597L319.139 78.4688L308.899 78.4688L308.899 71.5078L308.266 71.5078Q307.461 73.1186 305.936 74.9164Q304.412 76.7141 301.909 77.9798Q299.407 79.2454 295.61 79.2454ZM298.515 70.7024Q303.491 70.7024 306.195 66.7473Q308.899 62.7923 308.899 56.3778Q308.899 49.9347 306.224 46.0946Q303.549 42.2546 298.515 42.2546Q293.309 42.2546 290.662 46.2241Q288.016 50.1935 288.016 56.3778Q288.016 62.5909 290.691 66.6467Q293.366 70.7024 298.515 70.7024ZM352.333 34.2869L352.333 42.3409L343.617 42.3409L343.617 65.1797Q343.617 68.315 344.998 69.3074Q346.379 70.2997 348.335 70.2997Q349.313 70.2997 350.132 70.1559Q350.952 70.0121 351.384 69.897L353.138 78.0373Q352.304 78.3249 350.765 78.6701Q349.226 79.0153 347.011 79.0728Q341.143 79.2454 337.16 76.1964Q333.176 73.1474 333.205 66.9055L333.205 42.3409L326.934 42.3409L326.934 34.2869L333.205 34.2869L333.205 23.7017L343.617 23.7017L343.617 34.2869L352.333 34.2869ZM372.381 52.581L372.381 78.4688L361.969 78.4688L361.969 19.5597L372.151 19.5597L372.151 41.7944L372.669 41.7944Q374.194 38.0263 377.458 35.869Q380.723 33.7116 385.814 33.7116Q392.689 33.7116 396.86 38.0263Q401.031 42.3409 401.031 50.3374L401.031 78.4688L390.618 78.4688L390.618 51.9482Q390.618 47.4897 388.331 45.0016Q386.044 42.5135 381.931 42.5135Q377.76 42.5135 375.071 45.1454Q372.381 47.7773 372.381 52.581ZM418.03 79.1016Q415.413 79.1016 413.543 77.2463Q411.673 75.391 411.702 72.7734Q411.673 70.1847 413.543 68.3438Q415.413 66.5028 418.03 66.5028Q420.59 66.5028 422.46 68.3438Q424.33 70.1847 424.358 72.7734Q424.33 75.391 422.46 77.2463Q420.59 79.1016 418.03 79.1016ZM418.03 47.5472Q415.413 47.5472 413.543 45.6919Q411.673 43.8366 411.702 41.2191Q411.673 38.6303 413.543 36.7894Q415.413 34.9485 418.03 34.9485Q420.59 34.9485 422.46 36.7894Q424.33 38.6303 424.358 41.2191Q424.33 43.8366 422.46 45.6919Q420.59 47.5472 418.03 47.5472Z" fill="#FF0000" />
+            <path d="M26.8082 79.2741Q22.5799 79.2454 18.5529 77.7928Q14.5259 76.3402 11.3043 73.0611Q8.08274 69.782 6.19869 64.288Q4.31463 58.794 4.31463 50.6825Q4.31463 40.6151 7.1479 33.4672Q9.98118 26.3192 15.1587 22.5368Q20.3363 18.7543 27.4123 18.7543Q32.9925 18.7543 37.2784 20.9403Q41.5643 23.1264 44.2106 26.8945Q46.8569 30.6626 47.4897 35.4375L36.9908 35.4375Q36.1854 32.0433 33.6973 30.0154Q31.2092 27.9876 27.4123 27.9876Q21.2855 27.9876 17.992 33.3089Q14.6985 38.6303 14.6697 47.9212L15.0724 47.9212Q17.201 44.1243 21.1273 41.9526Q25.0536 39.7809 29.7997 39.7809Q34.9773 39.7809 39.1049 42.2546Q43.2326 44.7283 45.6488 49.0574Q48.065 53.3864 48.0362 58.9666Q48.065 64.777 45.4043 69.3936Q42.7436 74.0103 37.9544 76.6566Q33.1651 79.3029 26.8082 79.2741ZM26.7507 70.6449Q29.886 70.6449 32.3597 69.1204Q34.8335 67.5959 36.2717 65.0071Q37.7099 62.4183 37.6811 59.1967Q37.7099 56.0327 36.3004 53.4727Q34.891 50.9126 32.4604 49.4169Q30.0298 47.9212 26.8945 47.9212Q23.788 47.9212 21.2855 49.4744Q18.783 51.0277 17.3161 53.6021Q15.8491 56.1765 15.8203 59.283Q15.8491 62.3608 17.2585 64.9496Q18.668 67.5384 21.1417 69.0916Q23.6154 70.6449 26.7507 70.6449ZM79.5043 79.5906Q68.8615 79.5906 62.8354 71.5653Q56.8093 63.5401 56.8093 49.0717Q56.8381 34.6321 62.8642 26.6932Q68.8903 18.7543 79.5043 18.7543Q90.1183 18.7543 96.1587 26.7076Q102.199 34.6609 102.199 49.0717Q102.199 63.5689 96.1875 71.5941Q90.1758 79.6193 79.5043 79.5906ZM79.5043 70.5874Q85.027 70.5874 88.2342 65.1365Q91.4414 59.6857 91.4414 49.0717Q91.4126 38.544 88.2054 33.0932Q84.9982 27.6424 79.5043 27.6424Q74.0391 27.6424 70.8319 33.0932Q67.6246 38.544 67.5959 49.0717Q67.5671 59.6857 70.7887 65.1365Q74.0103 70.5874 79.5043 70.5874ZM133.523 79.5906Q122.881 79.5906 116.855 71.5653Q110.828 63.5401 110.828 49.0717Q110.857 34.6321 116.883 26.6932Q122.909 18.7543 133.523 18.7543Q144.137 18.7543 150.178 26.7076Q156.218 34.6609 156.218 49.0717Q156.218 63.5689 150.207 71.5941Q144.195 79.6193 133.523 79.5906ZM133.523 70.5874Q139.046 70.5874 142.253 65.1365Q145.461 59.6857 145.461 49.0717Q145.432 38.544 142.225 33.0932Q139.017 27.6424 133.523 27.6424Q128.058 27.6424 124.851 33.0932Q121.644 38.544 121.615 49.0717Q121.586 59.6857 124.808 65.1365Q128.029 70.5874 133.523 70.5874ZM165.883 95.0369L165.883 34.2869L176.123 34.2869L176.123 41.593L176.727 41.593Q177.533 39.9822 178.985 38.1557Q180.438 36.3292 182.955 35.0204Q185.472 33.7116 189.355 33.7116Q194.475 33.7116 198.602 36.3292Q202.73 38.9467 205.161 44.0092Q207.591 49.0717 207.591 56.4354Q207.591 63.7127 205.204 68.804Q202.816 73.8952 198.703 76.5703Q194.59 79.2454 189.384 79.2454Q185.587 79.2454 183.084 77.9798Q180.582 76.7141 179.072 74.9164Q177.561 73.1186 176.727 71.5078L176.296 71.5078L176.296 95.0369L165.883 95.0369ZM176.094 56.3778Q176.094 62.7923 178.798 66.7473Q181.502 70.7024 186.478 70.7024Q191.627 70.7024 194.302 66.6467Q196.977 62.5909 196.977 56.3778Q196.977 50.1935 194.331 46.2241Q191.685 42.2546 186.478 42.2546Q181.445 42.2546 178.77 46.0946Q176.094 49.9347 176.094 56.3778ZM223.297 34.2869L232.213 50.5962L241.274 34.2869L252.291 34.2869L238.973 56.3778L252.521 78.4688L241.562 78.4688L232.213 62.5621L222.951 78.4688L211.906 78.4688L225.368 56.3778L212.251 34.2869L223.297 34.2869Z" transform="translate(0 98.028)" fill="#FF0000" />
+        </g>
+    </g>
+</svg>
+
+and shrinking to
+
+<svg class={"border-2 border-shade-200"} viewBox="0 0 731 1298" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="gradient_1" gradientUnits="userSpaceOnUse" x1="313.5" y1="0" x2="313.5" y2="381">
+            <stop offset="0" stop-color="#6586FF" />
+            <stop offset="1" stop-color="#B7DAFF" />
+        </linearGradient>
+        <clipPath id="clip_path_2">
+            <rect width="627" height="381" rx="42" />
+        </clipPath>
+    </defs>
+    <g>
+        <rect width="731" height="1298" fill="#FFFFFF" fill-rule="evenodd" />
+        <path d="M503 0C522.333 0 538 15.6674 538 35L538 35C538 54.3326 522.333 70 503 70L35 70C15.6674 70 0 54.3326 0 35L0 35C0 15.6674 15.6674 0 35 0L503 0Z" fill="#434343" transform="translate(50 554)" />
+        <path d="M613 0C620.733 0 627 6.26697 627 14L627 14C627 21.733 620.733 28 613 28L14 28C6.26696 28 0 21.733 0 14L0 14C0 6.26697 6.26696 0 14 0L613 0Z" fill="#8F8F8F" transform="translate(50 755)" />
+        <path d="M613 0C620.733 0 627 6.26697 627 14L627 14C627 21.733 620.733 28 613 28L14 28C6.26696 28 0 21.733 0 14L0 14C0 6.26697 6.26696 0 14 0L613 0Z" fill="#8F8F8F" transform="translate(50 802)" />
+        <path d="M613 0C620.733 0 627 6.26697 627 14L627 14C627 21.733 620.733 28 613 28L14 28C6.26696 28 0 21.733 0 14L0 14C0 6.26697 6.26696 0 14 0L613 0Z" fill="#8F8F8F" transform="translate(50 849)" />
+        <path d="M372 0C379.733 0 386 6.26697 386 14L386 14C386 21.733 379.733 28 372 28L14 28C6.26696 28 0 21.733 0 14L0 14C0 6.26697 6.26696 0 14 0L372 0Z" fill="#8F8F8F" transform="translate(50 896)" />
+        <path d="M613 0C620.733 0 627 6.26697 627 14L627 14C627 21.733 620.733 28 613 28L14 28C6.26696 28 0 21.733 0 14L0 14C0 6.26697 6.26696 0 14 0L613 0Z" fill="#8F8F8F" transform="translate(50 1005)" />
+        <path d="M613 0C620.733 0 627 6.26697 627 14L627 14C627 21.733 620.733 28 613 28L14 28C6.26696 28 0 21.733 0 14L0 14C0 6.26697 6.26696 0 14 0L613 0Z" fill="#8F8F8F" transform="translate(50 1052)" />
+        <path d="M153.5 0C158.195 0 162 3.80493 162 8.5L162 8.5C162 13.1951 158.195 17 153.5 17L8.5 17C3.80494 17 0 13.1951 0 8.5L0 8.5C0 3.80493 3.80494 0 8.5 0L153.5 0Z" fill="#D4D4D4" transform="translate(50 657)" />
+        <path d="M83.5 0C88.1951 0 92 3.80493 92 8.5L92 8.5C92 13.1951 88.1951 17 83.5 17L8.5 17C3.80495 17 0 13.1951 0 8.5L0 8.5C0 3.80493 3.80495 0 8.5 0L83.5 0Z" fill="#D4D4D4" transform="translate(222 657)" />
+        <g clip-path="url(#clip_path_2)" transform="translate(50 111)">
+            <rect width="627" height="381" fill="url(#gradient_1)" fill-rule="evenodd" />
+            <path d="M0 148C119.454 27.4174 132.5 30 132.5 30L241.5 188L363 83L430.5 242.5L522.5 0L587.5 148L628 100.5L628 291.5L0 291.5L0 148Z" fill="#38344A" fill-rule="evenodd" transform="translate(-1 89.5)" />
+            <path d="M0 30C0 13.4315 13.4315 0 30 0C46.5685 0 60 13.4315 60 30C60 46.5685 46.5685 60 30 60C13.4315 60 0 46.5685 0 30Z" fill="#F4FF60" fill-rule="evenodd" transform="translate(29 41)" />
+        </g>
+        <path d="M83.5 0C88.1951 0 92 3.80494 92 8.5L92 8.5C92 13.1951 88.1951 17 83.5 17L8.5 17C3.80494 17 0 13.1951 0 8.5L0 8.5C0 3.80494 3.80494 0 8.5 0L83.5 0Z" fill="#D4D4D4" transform="translate(50 32)" />
+        <path d="M83.5 0C88.1951 0 92 3.80494 92 8.5L92 8.5C92 13.1951 88.1951 17 83.5 17L8.5 17C3.80493 17 0 13.1951 0 8.5L0 8.5C0 3.80494 3.80493 0 8.5 0L83.5 0Z" fill="#D4D4D4" transform="translate(585 32)" />
+        <path d="M83.5 0C88.1951 0 92 3.80494 92 8.5L92 8.5C92 13.1951 88.1951 17 83.5 17L8.5 17C3.80493 17 0 13.1951 0 8.5L0 8.5C0 3.80494 3.80493 0 8.5 0L83.5 0Z" fill="#D4D4D4" transform="translate(465 32)" />
+        <path d="M83.5 0C88.1951 0 92 3.80494 92 8.5L92 8.5C92 13.1951 88.1951 17 83.5 17L8.5 17C3.80493 17 0 13.1951 0 8.5L0 8.5C0 3.80494 3.80493 0 8.5 0L83.5 0Z" fill="#D4D4D4" transform="translate(345 32)" />
+    </g>
+</svg>
+
+for mobile. How would you optimize the hero image? Let's say that you have hero image sources at 1920x1080 which you want to use (the procedure is not limited to 16:9 aspect ratio images).
+
+First, observe that your hero image **does not get larger than 600 pixels** wide, due to the max width on the container. At 1:1 pixel mapping (meaning that one pixel in HTML gets mapped to one physical pixel), the perfect image dimensions would be 600x337.5, rounding up to 600x338.
+
+Note, that I have mentioned pixel mappings. This is important because not every device maps one HTML pixel to one physical one. On phones, for example, because they have such a high PPI (pixels per inch), websites would look tiny. This is why they "lie" to the browser about their screen dimensions but actually render the page to the physical dimensions. This also is relevant for users on desktops with scaling other than 100% and zoomed-in users.
+
+Therefore, assuming a 1:1 pixel mapping is insufficient. This is why we should provide higher resolution images, e.g., at 1.5x, 2x, or even at 3x the HTML pixel size.
+
+Now to the users that have smaller screens and less PPI. For them, we provide scaled-down variants at 0.75x, 0.5x, and 0.25x. Alternatively, you can provide images in various widths, instead of scaling of the base image (e.g., 400w, 300w, 200w, ...).
+
+### Choosing quality
+
+Most images, including hero images for blogs, presentation images, etc., do not need lossless encoding. The goal of the image is not to preserve all data, but to save time, bandwidth, and provide a good-ish looking visuals. Using WebP, a good quality recommendation is 80%.
+
+### Resulting Images
+
+For our example, this means we need to host the following images:
+
+| Image path/name                               | Width x Height | Raw Size (80% Q) |
+|-----------------------------------------------|----------------|------------------|
+| `/your-image-base-path/image-name@0.25x.webp` | 150x84         | 5KB              |
+| `/your-image-base-path/image-name@0.5x.webp`  | 300x169        | 14KB             |
+| `/your-image-base-path/image-name@0.75x.webp` | 450x253        | 27KB             |
+| `/your-image-base-path/image-name@1x.webp`    | 600x338        | 41KB             |
+| `/your-image-base-path/image-name@1.5x.webp`  | 900x506        | 74KB             |
+| `/your-image-base-path/image-name@2x.webp`    | 1200x675       | 106KB            |
+| `/your-image-base-path/image-name@3x.webp`    | 1800x1013      | 183KB            |
+
+(The size was from my testing with the wood picture mentioned earlier.)
+
+The sum of all images' sizes is even smaller than just the source image's size (which was 2.25MB).
+
+### Additional notes
+
+For such small images like 150x84 or 300x169, sometimes it is not worth hosting them because they only occupy a few KB.
+
+## What about the HTML?
+
+Continuing the example from before, now let's actually tell the client how to select and fetch these images. For that we need the `srcset` and `sizes` attribute of `<img>`.
+
+The [`srcset` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img#srcset) specifies the set of image source URLs we want the `<img/>` to have. It is a list of URLs, followed by `<WIDTH>w`. This is how we tell the client what images this `<img/>` could display.
+
+The way the browser chooses the image is based off the [`sizes` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img#sizes): it is a list of [media conditions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries#syntax), followed by the image width when the media condition is true.
+
+Instead of discussing the exact syntax, look at the example hero image:
+
+```html
+<img
+    srcset="
+        /your-image-base-path/image-name@0.25x.webp 150w,
+        /your-image-base-path/image-name@0.5x.webp 300w,
+        /your-image-base-path/image-name@0.75x.webp 450w,
+        /your-image-base-path/image-name@1x.webp 600w,
+        /your-image-base-path/image-name@1.5x.webp 900w,
+        /your-image-base-path/image-name@2x.webp 1200w,
+        /your-image-base-path/image-name@3x.webp 1800w
+    "
+    sizes="(max-width: 600px) 100vw, 600px"
+    width="1920"
+    height="1080"
+    alt="Logs of wood."
+>
+```
+
+<img
+    srcset="
+        /img-size-test/img@0.25x.webp 150w,
+        /img-size-test/img@0.5x.webp 300w,
+        /img-size-test/img@0.75x.webp 450w,
+        /img-size-test/img@1x.webp 600w,
+        /img-size-test/img@1.5x.webp 900w,
+        /img-size-test/img@2x.webp 1200w,
+        /img-size-test/img@3x.webp 1800w
+    "
+    sizes="(max-width: 600px) 100vw, 600px"
+    width="1920"
+    height="1080"
+    alt="Logs of wood."
+/>
+
+(You can go into the Devtools → Network Manager and inspect how resizing the window and zooming triggers the browser to fetch other images in the srcset.)
+
+The `sizes` attribute matches the behavior of the image resizing at breakpoints. When the viewport has a _maximum width of 600px_, the image is expected to cover ~100% of the viewport's width, which is what `100vw` (vw = "visual width") encodes.
+
+When the viewport is larger than 600px, the hero image in our example stays at 600px. Meaning the first media condition `(max-width: 600px)` fails and the browser tries to match the next media condition, but there is none, so it assumes a width of 600px (as specified).
+
+Now that it has the expected image width, it chooses what image to download based off the specified image widths in the `srcset` attribute. And remember the `width` and `height` attributes so that the browser's layout engine can predict the element size. Because the image aspect ratio does not change for the various image resolutions, you can just plug in the source image dimensions, but this is up to you.
+
+### Fixed-Size Images Shorthand Syntax
+
+If you have fixed-size images that always will occupy the same size in the HTML, you can use this shorthand `srcset` syntax:
+
+```html
+<img
+    srcset="
+        /image@1x.webp,
+        /image@1.5x.webp 1.5x,
+        /image@2x.webp 2x,
+        ...
+    "
+    alt="..."
+    width="..."
+    height="..."
+>
+```
+
+### Advanced Features
+
+You can use other media conditions/features for more fine-grained control over the images the client requests. A full list is [here](https://developer.mozilla.org/en-US/docs/Web/CSS/@media#media_features). For example, you could fetch different images based off the user's color gamut, providing sRGB and P3 versions.
+
+## Cache control
+
+Ideally, images (or any static resources even) should not be re-fetched when encountered multiple times because they did not change. This is what caching does. When the browser first fetches your images, the server's HTTP(s) response may (or should) include the `Cache-Control` header specifying how long the resource should be cached.
+
+This is a thing your server may do, so if you want caching: inspect your server. But how long should you cache the images? Because maybe your image path includes the slug of the article, so when you want to change the image, the URL does not change in response. The client will think that the resource content has not changed and read the cache.
+
+### Hashing Resources
+
+The solution to this problem is, surprisingly, to hash the file contents (like the image) and include parts of the hash in the URL. This is what [Astro](https://astro.build/) does when optimizing images with the [`<Image/>` component](https://docs.astro.build/en/reference/modules/astro-assets/#image-) and [Vite](https://vite.dev/) does when bundling JS or other resources.
+
+This way, the server can send a cache control header to the client, specifying one month of caching, and whenever the file changes, it is a new URL for the client, so it does not mistakenly read the cache.
+
+## Framework integration and tools
+
+I, personally, have used a custom Rust script using [tokio](https://tokio.rs/) and [image](https://lib.rs/crates/image) to mass-optimize images. I've also used [GIMP](https://www.gimp.org/) for manual optimization.
+
+For this blog I use [Astro](https://astro.build/), which exposes the [`<Image/>` component](https://docs.astro.build/en/reference/modules/astro-assets/#image-) that does all the stuff mentioned in this article automatically.
+
+## Progressive enhancement and the future of image optimization
+
+In an ideal world, we would not have to think about all this. It would be cool if the client could just load as many bytes as it needs without choosing between source files.
+
+This is what JPEG XL promises. Even if the file is 1MB the client can progressively load images rendering early responses as blurry. The [JPEG XL community website has great images covering this](https://jpegxl.info/) (you'll have to scroll a bit).
+
+## Art Direction
+
+"Art Direction" is a somewhat similar problem which the picture element solves. It involves displaying different images (not just different resolutions) for different viewport sizes. Maybe I'll cover this in the future, the following sources do tho.
+
+## Other excellent information sources
+
+* `<img>` on MDN: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img
+* Can I use " "?: https://caniuse.com/
+* https://www.tunetheweb.com/blog/what-does-the-image-decoding-attribute-actually-do/
+* _Responsive Images_: https://cloudfour.com/thinks/responsive-images-101-definitions/
+* _Using responsive images in HTML_: https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images
