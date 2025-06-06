@@ -11,11 +11,11 @@
     },
     "dependencies": {
         "allc": "^0.3.1",
-        "astro": "5.8.2",
+        "astro": "5.9.0",
         "peerjs": "^1.5.4",
         "qrcode": "^1.5.4",
         "solid-js": "^1.9.7",
-        "zod": "^3.25.51"
+        "zod": "^3.25.55"
     },
     "devDependencies": {
         "@astrojs/check": "^0.9.4",
