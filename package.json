@@ -11,22 +11,22 @@
     },
     "dependencies": {
         "allc": "^0.3.1",
-        "astro": "5.8.2",
-        "peerjs": "^1.5.4",
+        "astro": "5.10.1",
+        "peerjs": "^1.5.5",
         "qrcode": "^1.5.4",
         "solid-js": "^1.9.7",
-        "zod": "^3.25.51"
+        "zod": "^3.25.67"
     },
     "devDependencies": {
         "@astrojs/check": "^0.9.4",
         "@astrojs/mdx": "4.3.0",
         "@astrojs/rss": "4.0.12",
         "@astrojs/solid-js": "5.1.0",
-        "@tailwindcss/vite": "^4.1.8",
+        "@tailwindcss/vite": "^4.1.10",
         "@types/qrcode": "^1.5.5",
         "@vitejs/plugin-basic-ssl": "^2.0.0",
         "@webgpu/types": "^0.1.61",
-        "tailwindcss": "^4.1.8",
+        "tailwindcss": "^4.1.10",
         "typescript": "^5.8.3"
     }
 }
