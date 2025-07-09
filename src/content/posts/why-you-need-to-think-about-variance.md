@@ -1,12 +1,11 @@
 ---
 title: "Why You Need To Think About Variance"
 tags: ["Article"]
-description: "Dynamic typing, which is available in almost all big programming language, implies the discussion about variance. Here is why thinking about it is important."
+description: "Dynamic typing, which is available in almost all big programming language, implies the discussion about variance. This is a guide to variance and its application."
+pubUnix: 1752101357223
 ---
 
-During my journey of learning Kotlin, I always wondered what `in` and `out` meant. [The corresponding documentation page](https://kotlinlang.org/docs/generics.html#type-projections) was rich and hasn't changed significantly since then, but I have not encountered any issues from not using them.
-
-Three years passed, and today I found myself asking: _would they have solved it?_ And by it, I am referring to the following code snipped discussed in [a Standup episode](https://youtu.be/dh6BCSzaF6g?si=h9NUYxjKDUKHeDIE):
+Recently on the Standup, a series of TypeScript examples was discussed, including this code sample (insignificantly altered):
 
 ```ts
 const foo: string[] = ["a", "b"];
@@ -18,213 +17,287 @@ function illegal(arr: (string | number)[]) {
 illegal(foo);
 ```
 
-This TypeScript code is _valid_ and will compile without errors. If you are not careful, it may even fail at runtime.
+This TypeScript code is _valid_ and will compile without errors. But why? It is obviously false! The string array will contain a number. I'll give a clue: it has something to do with variance.
 
-Basically, what this TypeScript code does is, it declares an array of strings and passes that to a function that accepts arrays that contain numbers _and_ strings. The function then pushes a number into the array, since it is an array of numbers and strings. Now, `foo` contains a number, although the type is still `string[]`.
+## What Is Variance?
 
-_How can that be?_
+Variance is the part of type theory that concerns itself with subtyping. It is a concept that applies when asking the question:
 
-## Variance – What Is It?
+_Is type `A` a subtype of `B`?_
 
-Essentially, the basic idea is that, for a generic type `X`, `X<A>` may be viewed as `X<B>`.
+For this article, a _type_ represents a **set of all values** this type can represent. This formalizes the latter question into subset notation: $A \subseteq B$, specifically: _is every value in $A$ also in $B$?_ (Fancy math notation: $\forall a \in A: a \in B$.)
 
-### Covariance
+$A \subseteq B$ can thus be read as "A is a subtype of B", "A extends B", or "A can be cast to B".
 
-Consider this interface:
+Type unions `A | B` have the equivalent (and more accurate) formal definition: $A \cup B$.
 
-```ts
-interface Producer<T> {
-    produce(): T;
-}
-```
+Examples from TypeScript:
 
-If you have a `Producer<number>`, then this producer object can be viewed as `Producer<number | string>` because every `number` is a `number | string`. This _property_ is called _covariance_.
+* $\text{number} \subseteq \text{number} \cup \text{string}$
+* $A \subseteq B \Leftrightarrow A \text{ extends }B$
+* $10 \subseteq \text{number}$, with $10$ as the type representing a set of the value `10`
+* $\text{\{x: number\}} \subseteq \text{\{x: number, y: string\}}$
 
-The rigorous definition is:
+## Parameterized Types
 
-```
-            X is covariant over T
-                    :<=>
-T is subtype of S => X<T> is subtype of X<S>
-```
+As applications get more complex, there is a need for _generic_ (or _parameterized_) types. They are also referred to as _type constructors_. For example, a type $X$ is generic over $T$, written as $X(T)$ or `X<T>`.
 
-### Contravariance
+What variance theory does is it relates the subtyping question of generic types to their parameters.
 
-Conversely, consider this interface instead:
+## Covariance And Contravariance
 
-```ts
-interface Consumer<T> {
-    consume(t: T);
-}
-```
+A generic type $X(Y)$ is said to be _covariant over a parameter_ $Y$ if (and only if) $A \subseteq B$ implies that $X(A) \subseteq X(B)$.
 
-If you have a `Consumer<number | string>`, then calling the `consume()` function on this object with a `number` is totally fine (again because every `number` is a `number | string`). This means that every `Consumer<number | string>` can be safely cast to a `Consumer<number>`. This _property_ is called _contravariance_.
-
-The rigorous definition is:
-
-```
-          X is contravariant over T
-                    :<=>
-T is subtype of S => X<S> is subtype of X<T>
-```
-
-### Subtypes
-
-The operator `is subtype of` is defined as follows:
-
-```
-          A is subtype of B
-                :<=>
-forall a which have type A: a has type B
-```
-
-This is equivalent to TypeScript's `extends` operator.
-
-### Variance And Functions
-
-Covariance and contravariance of generic types is an effect of what methods involving the type parameter are declared on that type OR which we want to restrict us to.
-
-But it always boils down to functions. If you are declaring a [covariant](#covariance) function on a generic type, then you cannot use this function in a contravariant way. Similarly, a [contravariant](#contravariance) function cannot be used covariantly. This means that to use both covariant and contravariant methods on a type, the _actual_ type must be invariant to the type (they must be the same type).
-
-Example: consider a mutable list `MutableList` of things `T`. The list interface declares methods to access elements and to modify the list. To push elements of type `T` into a list of type `S` AND access elements of type `S` from a list of type `T`, `S` MUST be equal to `T`.
-
-However, if you decide you only want to push `T`s into `MutableList<S>`, the list is contravariant, so `T` has to just be a subtype of `S`.
-
-### Call-Site Variance
-
-Because functions are contravariant over their parameters, you can pass a more specific type than required. Meaning:
-
-```
-               T is subtype of S
-                      <=>
-(function S -> X) is subtype of (function T -> X)
-```
+Conversely, a generic type $X(Y)$ is said to be _contravariant over a parameter_ $Y$ if (and only if) $A \subseteq B$ implies that $X(B) \subseteq X(A)$.
 
 ---
 
-(Returning to our list example...)
+To apply this concept, let's look at functions.
 
-Sometimes you only modify the list in the function. But the list is still invariant, so the caller cannot pass in a more general list. But this should be possible since you can push `T`s into a list of `S`s.
+## Functions
 
-_Call-site variance_ fixes this.
+In any reasonable programming language there are function types. For this article, function types are generic types of the form `Fn<InputType, OutputType>`.
 
-```
-               MutableList<T> is subtype of MutableList<S>
-                                   <=>
-(function MutableList<S> -> X) is subtype of (function MutableList<T> -> X)
-```
+**Functions are covariant over the codomain (output type) and contravariant over the domain (input type).**
 
-## Application
+<details class="mt-6">
+<summary class="cursor-pointer">Here is the proof:</summary>
 
-Taking another look at the entry example, we can conclude that arrays in TypeScript are covariant because we can cast `string[]` to `(string | number)[]` without any error.
+$\text{Let } f \in B^A \text{, } C \text{ a set, } B \subseteq C \text{.}$
 
-This works fine when accessing elements but quickly falls apart when mutating. To fix the issue in the code, we need to forbid one of the two lines:
+$\Rightarrow \exists id \in C^B, b \mapsto b$  
+$\Rightarrow id \circ f \in C^A$  
+$\Rightarrow id \circ f = (id \circ f)(a) = (id(f(a)))(a) = (f(a))(a) = f$  
+$\Rightarrow f \in C^A$  
+$\Rightarrow f \text{ is covariant over the codomain.}$  
 
-```ts
-arr.push(1); // (1) or
-illegal(foo); // (2)
-```
+$\text{Let } f \in C^B \text{, } A \text{ a set, } A \subseteq B \text{.}$
 
-...meaning, either (1) we have to forbid pushing a `number` into `(string | number)[]` OR (2) we have to forbid casting a `string[]` to a `(string | number)[]`. This means forbidding either contravariance (1) OR covariance (2).
+$\Rightarrow \exists id \in B^A, a \mapsto a$  
+$\Rightarrow f \circ id \in C^A$  
+$\Rightarrow f \circ id = (f \circ id)(a) = (f(id(a)))(a) = (f(a))(a) = f$
+$\Rightarrow f \in C^A$  
+$\Rightarrow f \text{ is contravariant over the domain.}$
 
-TypeScript has no way of declaring that, [in fact](https://github.com/Microsoft/TypeScript/wiki/FAQ#why-are-function-parameters-bivariant) function parameters are _bivariant_ (meaning contra- and covariant), which leads to unsoundness issues (including our bug from above).
+</details>
 
-Concluding, what you should be able to pass into the function is depending on what you _do with it_ in the function.
+But variance does not only apply to functions but to any generic type. Because interacting with an instance of a generic type requires calling some sort of method _on_ the object, the concept of variance is derivable from functions.
 
-## Fixing Unsoundness
+## Declaration-Site Variance
 
-This issue solely arises as an effect of TypeScript's type system. But this is not the only type system out in the wild. Let's look at Kotlin and how the problem is solved in its type system.
+### Declaration-Site Covariance
 
-```kt
-open class Super {}
-
-class A : Super() {}
-class B : Super() {}
-
-fun illegal(list: MutableList<Super>) {
-    list.add(B())
-}
-
-fun main() {
-    val foo: MutableList<A> = mutableListOf(A(), A())
-    
-    illegal(foo)
-}
-```
-
-(Kotlin does not have type unions, so `A` represents a `string`, `B` a `number`, and `Super` the union `number | string`.)
-
-Compiling that yields an error at `illegal(foo)`:
-
-```
-Argument type mismatch: actual type is 'MutableList<A>', but 'MutableList<Super>' was expected.
-```
-
-This is because function parameters are contravariant.
-
-An important factor is that `MutableList<E>` is invariant over `E` (meaning, neither contra- nor covariant) for all methods of `MutableList` to be callable. This is because the `MutableList` interface declares methods that are both consumers and producers.
-
-Because we are modifying the list in the function, it MUST be contravariant as well ("consumer"). This _prevents_ us from calling it with a covariant type.
-
-However, we can _declare_ that this parameter is covariant using Kotlin's (excellent) use-site variance called "type projections". The keyword is `out`:
-
-```kt
-open class Super {}
-
-class A : Super() {}
-class B : Super() {}
-
-fun illegal(list: MutableList<out Super>) {
-    list.add(B())
-}
-
-fun main() {
-    val foo: MutableList<A> = mutableListOf(A(), A())
-    
-    illegal(foo)
-}
-```
-
-But what does this do? Since we now declare our list parameter as covariant, we are not allowed to modify the list. This means, the error is now at `list.add(B())`.
-
-The corresponding contravariance keyword is `in`. The naming is quite smart because
-
-## Ideally...
-
-...you would not have encountered this issue in Kotlin because if you were to pass in a list that you only read from, you would use [the `List` interface](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/), which is covariant (!!!).
-
-By default, Kotlin assumes that you use the contravariance of input parameters.
-
-## Unique Corner Cases
-
-Marking a type parameter bivariant (meaning, contravariant AND covariant) is not allowed in Kotlin, but it would be technically possible. Since covariant types cannot be mutated with a subtype, and contravariant types cannot be "viewed" as a subtype, you can only call functions on a bivariant type excluding this type parameter. E.g., this TypeScript interface
+This is best explained with an example in TypeScript:
 
 ```ts
-interface X<in out T> {
-    printHelloWorld(): void;
+//             covariance annotation at
+//             type declaration (optional)
+//             \/
+interface Into<out T> {
+    into(): T;
+}
+
+const a: Into<string> = {
+    into() {
+        return "Hello, World";
+    }
+};
+
+const b: Into<number | string> = a;
+```
+
+The interface `Into` is always covariant over `T` because all methods you can call on instances are covariant. In this example an instance of `Into<string>` is validly cast to `Into<number | string>` because `Into` is covariant and `string` is a subtype of `number | string`.
+
+This works because you are implicitly casting a function of type `() -> number` to `() -> number | string` and this works because functions are covariant on their codomains.
+
+### Declaration-Site Contravariance
+
+This is best explained with another TypeScript example:
+
+```ts
+//             contravariance annotation at
+//             type declaration (optional)
+//             \/
+interface From<in T> {
+    from(value: T): string;
+}
+
+const a: From<number | string> = {
+    from(value: number | string) {
+        return `value: ${value}`;
+    }
+};
+
+const b: From<number> = a;
+```
+
+The interface `From` is always contravariant over `T` because all methods you can call on instances are contravariant. In this example an instance of `From<string | number>` is validly cast to `From<number>` because `From` is contravariant and `number` is a subtype of `number | string`.
+
+This works because you are implicitly casting a function of type `(number | string) -> void` to `(number) -> void` and this works because functions are contravariant on their codomains.
+
+### Declaration-Site Bivariance
+
+A type is _bivariant_ iff it is contravariant and covariant. But this can only happen if the parameter is never used in a method.
+
+If it were to be used in a return-type of a method, for example, then this method would not be contravariant, rendering the type as non-contravariant.
+
+If the type parameter were to be used in a parameter of a method, then this method would not be covariant over that parameter, which would render the type as non-covariant.
+
+Technically, you can declare bivariant types and interfaces. But since the parameter is never used, it can be removed. This also explains the property of a bivariant type `X` that `X<A>` would always be a subtype of `X<B>` because you could cast `X<A>` to `X<any>` (where `any` represents the type of all possible values) and then `X<any>` to `X<B>`.
+
+### Declaration-Site Invariance
+
+A type is _invariant_ iff it is neither contravariant nor covariant. This is by far the most common form of variance. Having an invariant type means you have no flexibility: you have to pass in the exact type.
+
+Invariance in types and interfaces stems from the fact that they declare both contravariant and covariant methods. To use all methods, the type MUST be invariant.
+
+### A Rule Of Thumb
+
+To know if a generic type or interface is covariant, look at the method signatures. If none of them have the type parameter in their parameter list, the type is covariant. Conversely, if no methods have the type parameter in their return type, then the type is contravariant.
+
+Some compilers will infer these properties automatically, but it does not hurt to annotate them manually. TypeScript and Kotlin use the keywords `in` and `out` to denote contravariance and covariance respectively.
+
+The names are straightforward to remember:
+
+* variance on function `in`-put: contravariance
+* variance on function `out`-put: covariance
+
+---
+
+But sometimes you want to restrict yourself in what you want to use. This is where use-site variance is applied.
+
+## Use-Site Variance
+
+The core concept of use-site variance is to restrict a type to be contravariant or covariant when you only use it this way. This is commonly done functions.
+
+There are no examples of use-site variance in TypeScript because TypeScript's type system has no such annotations. Therefore, I will be using examples from Kotlin, which is (in many ways) very similar to TypeScript.
+
+Use-site variance is explained best with an example:
+
+```kt
+interface StackLike<T> {
+    fun push(v: T)
+    fun pop(): T
+}
+
+open class A {}
+open class B : A() {}
+class C : B() {}
+
+fun processStack(stack: StackLike<B>) {
+    onlyPop(stack) // (1)
+    onlyPush(stack) // (2)
+}
+
+fun onlyPop(stack: StackLike<A>): A {
+    return stack.pop()
+}
+
+fun onlyPush(stack: StackLike<C>) {
+    stack.push(C())
 }
 ```
 
-would be bivariant, but the type parameter is pointless since it is not used in any way.
+(The types/classes have this hierarchy: $C \subseteq B \subseteq A$.)
 
-Technically, this kotlin interface
+This code will fail to compile (type-check) with two errors at lines (1) and (2). Why? Because `StackLike` is invariant over `T`. This is because it both contains methods with `T` in arguments as well as a return type.
 
-```kotlin
-interface Y<T> {
-    fun greet(value: T)
-    
-    fun greetEverybody()
+But this code _should_ work, since we only _use_ the type in a covariant context in `onlyPop` or in a contravariant context in `onlyPush` respectively.
+
+This is what use-site variance declarations enable. To make the code compile, we modify the signatures of `onlyPop` and `onlyPush` to:
+
+```kt
+fun onlyPop(stack: StackLike<out A>): A
+
+fun onlyPush(stack: StackLike<in C>)
+```
+
+Basically, what we declare is a "contract". We allow the caller to be more flexible what to pass into our function while we adhere to the restrictions. For example in
+
+```kt
+fun modify(stack: StackLike<in C>): C {
+    stack.push(C())
+    return stack.pop()
 }
 ```
 
-could be restricted to be bivariant at use-site. Though you would only be able to call `greetEverybody()`.
+calling `stack.pop()` is _possible_. But we cannot do anything with the return type because it is not `C`, it is `CapturedType(in C)`.
 
-## _But how do we solve the TypeScript problem?_
+### The Mental Model
 
-Since TypeScript does not have the concept of use-site variance (it does have variance on type aliases, interfaces, and classes when you declare them), the next best thing is to _disallow_ the cast `string[] -> (string | number)[]` because they should not be covariant.
+When you see `X<in Y>`, you can think of it as `X<Z>` with $Y \subseteq Z$, like a "minimum" requirement. `in Y` is _something more general_ than `Y`.
 
-Instead, `string[]` should only be castable to `readonly (string | number)[]` because `T[]` is a subtype of `readonly T[]` which is covariant. This prevents modifications.
+Conversely, `out Y` can be thought of _something more specific_ than `Y`, `Y` as a "maximum" requirement.
 
-For when you need contravariance, TypeScript could add a modifier called `writeonly` which is contravariant: `T extends S => writeonly S[] extends writeonly T[]`. That means any `writeonly S[]` can be cast to `writeonly T[]`.
+This is similar to the way Java does it: `X<in Y>` in Kotlin is equivalent to `X<? super Y>` and `X<out Y>` is equivalent to `X<? extends Y>` in Java. However, Java does not have declaration-site variance.
 
-Or, TypeScript could add use-site variance (like Kotlin's) using the existing `in` and `out` keywords.
+## Solutions For Languages With No Use-Site Variance
+
+TypeScript does not have use-site variance. But we can emulate it with extra types.
+
+For example, the Set type could be made covariant with an interface `ReadonlySet` (which already exists) and an interface `WriteonlySet` which would be contravariant. This would allow valid casts `Set<T> -> ReadonlySet<U>` and `Set<U> -> WriteonlySet<T>` for `T extends U`.
+
+These new interfaces would include all covariant and all contravariant functions respectively.
+
+## Back To The TypeScript example
+
+Now can you spot what was wrong with that TypeScript sample?
+
+```ts
+const foo: string[] = ["a", "b"];
+
+function illegal(arr: (string | number)[]) {
+    arr.push(1);
+}
+
+illegal(foo);
+```
+
+This code sample highlights a core feature in TypeScript's type system: the lack of use-site variance. But that is not the issue. TypeScript allows the cast `string[] -> (string | number)[]`, but this cast is invalid. Rather, `string[] -> readonly (string | number)[]` should be the only valid cast. This would disallow the push.
+
+But this also highlights another issue: TypeScript's functions are [bivariant on their parameters](https://github.com/Microsoft/TypeScript/wiki/FAQ#why-are-function-parameters-bivariant). And TypeScript knows this. But why are they bivariant?
+
+## TypeScript's Issue
+
+Arrays in TypeScript are both writeable and readable, so they _should_ be invariant over their type parameter. But this would result in annoyances like:
+
+```ts
+function countItems(arr: any[]) {
+    console.log(arr.length);
+}
+
+const strings: string[] = ["a", "b"];
+
+// Error: string[] is not a subtype of any[]
+countItems(strings);
+```
+
+This code _should_ work and would work if we could change the `countItems` signature to:
+
+```ts
+function countItems(arr: (out any)[])
+```
+
+But we can't, so we can't tell the compiler that we're only using covariant methods on the array. But forbidding this code would be incredibly annoying. So the compiler just chose to allow it, therefore making function parameters covariant.
+
+(Actually, we should be able to annotate `any` with `in` and `out`, since length is neither a function, nor does it take in the type parameters, nor does it return an instance of the type parameter. It just returns a quantity independent of the type parameter, marking it as _invariant_.)
+
+## What TypeScript Could Do To Fix This
+
+First, TypeScript needs to disallow these casts, making functions contravariant-only on their parameters. Obviously, they _could_ add use-site variance to the language, but I don't think that is going to happen.
+
+Instead, they could provide readonly (covariant) and writeonly (contravariant) interfaces of all built-in classes. This way they could allow covariant casts between `string[]` and `readonly (string | number)[]`, but forbit `string[]` to `(string | number)[]`. The same with contravariance.
+
+Then, the function signature from above would change to:
+
+```ts
+function countItems(arr: readonly any[])
+```
+
+## Wrapping Up
+
+A final answer to the question at the top of this article "But why?" would be:
+
+**Because TypeScript's functions are bivariant on their parameters due to a tradeoff for ergonomics working in a type system that lacks use-site variance.**
+
+And this is why you need to think about variance.
