@@ -36,7 +36,7 @@ Examples from TypeScript:
 * $\text{number} \subseteq \text{number} \cup \text{string}$
 * $A \subseteq B \Leftrightarrow A \text{ extends }B$
 * $10 \subseteq \text{number}$, with $10$ as the type representing a set of the value `10`
-* $\text{\{x: number\}} \subseteq \text{\{x: number, y: string\}}$
+* $\text{\{x: number\}} \subseteq$ $\text{\{x: number, y: string\}}$
 
 ## Parameterized Types
 
