@@ -6,7 +6,7 @@ export default () => {
     return (
         <>
             <header
-                class={`${isOpen() ? "backdrop-blur-2xl bg-white/50" : "pointer-events-none blur-none"} z-50 h-screen fixed inset-0 select-none transition ease-in-out duration-300 flex flex-col items-center`}
+                class={`${isOpen() ? "backdrop-blur-2xl bg-white/50" : "pointer-events-none blur-none"} z-40 h-screen fixed inset-0 select-none transition ease-in-out duration-300 flex flex-col items-center`}
                 onclick={e => {
                     if(e.target !== e.currentTarget) return;
                     setIsOpen(false);

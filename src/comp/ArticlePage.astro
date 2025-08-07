@@ -17,7 +17,7 @@ const {Content} = await entry.render();
 ---
 
 <Page title={`${entry.data.title} | Tobias Hillemanns Blog`} description={entry.data.description}>
-    <article class="px-6 pb-6 text-xl max-w-full leading-relaxed break-words">
+    <article class="px-6 pb-6 text-xl max-w-full leading-relaxed break-words overflow-x-hidden">
         {entry.data.hero && (
             <BlogImage
                 src={entry.data.hero}
