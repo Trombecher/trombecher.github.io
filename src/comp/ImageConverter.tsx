@@ -127,7 +127,7 @@ export default () => {
 
                                         const anchor = document.createElement("a");
                                         anchor.download = newFileName;
-                                        anchor.href = URL.createObjectURL(new Blob([convertedImage]));
+                                        anchor.href = URL.createObjectURL(new Blob([convertedImage as any]));
                                         document.body.append(anchor);
                                         anchor.click();
                                         document.body.removeChild(anchor);

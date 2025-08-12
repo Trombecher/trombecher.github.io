@@ -45,7 +45,7 @@ const {
 </head>
 <body class="bg-white text-black flex flex-col items-center min-h-screen selection:bg-blue selection:text-white">
 <!-- <Header pathname={Astro.url.pathname} client:load/> -->
-<Menu client:load/>
+<Menu wide={wide} client:load/>
 <main class={`${wide ? "" : "max-w-screen-sm"} w-full mt-12`}>
     <slot/>
 </main>

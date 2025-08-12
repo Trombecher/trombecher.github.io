@@ -1,6 +1,10 @@
 import {type Accessor, createSignal, type Setter} from "solid-js";
 
-export default () => {
+export default ({
+    wide = false
+}: {
+    wide?: boolean
+}) => {
     const [isOpen, setIsOpen] = createSignal(false);
 
     return (
@@ -12,7 +16,7 @@ export default () => {
                     setIsOpen(false);
                 }}
             >
-                <div class={"w-full max-w-screen-sm flex"}>
+                <div class={`w-full ${wide ? "" : "max-w-screen-sm"} flex`}>
                     <div
                         class={`w-full mt-6 ${isOpen() ? "opacity-100 blur-none" : "blur-2xl opacity-0"}`}
                     >

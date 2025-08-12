@@ -10,23 +10,26 @@
         "astro": "astro"
     },
     "dependencies": {
+        "@spotify/web-api-ts-sdk": "^1.2.0",
+        "@tidal-music/api": "^0.4.0",
+        "@tidal-music/auth": "^1.3.4",
         "allc": "^0.3.1",
-        "astro": "5.9.0",
-        "peerjs": "^1.5.4",
+        "astro": "5.10.0",
+        "peerjs": "^1.5.5",
         "qrcode": "^1.5.4",
-        "solid-js": "^1.9.7",
-        "zod": "^3.25.55"
+        "solid-js": "^1.9.8",
+        "zod": "^3.25.76"
     },
     "devDependencies": {
         "@astrojs/check": "^0.9.4",
         "@astrojs/mdx": "4.3.0",
         "@astrojs/rss": "4.0.12",
         "@astrojs/solid-js": "5.1.0",
-        "@tailwindcss/vite": "^4.1.8",
+        "@tailwindcss/vite": "^4.1.11",
         "@types/qrcode": "^1.5.5",
-        "@vitejs/plugin-basic-ssl": "^2.0.0",
-        "@webgpu/types": "^0.1.61",
-        "tailwindcss": "^4.1.8",
-        "typescript": "^5.8.3"
+        "@vitejs/plugin-basic-ssl": "^2.1.0",
+        "@webgpu/types": "^0.1.64",
+        "tailwindcss": "^4.1.11",
+        "typescript": "^5.9.2"
     }
 }
